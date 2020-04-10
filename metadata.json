@@ -1,0 +1,8 @@
+{
+  "name": "Executor",
+  "description": "Executes shell command and displays result in gnome top bar",
+  "uuid": "executor@rau.jonas@web.de",
+  "shell-version": [
+    "3.36"
+  ]
+}
