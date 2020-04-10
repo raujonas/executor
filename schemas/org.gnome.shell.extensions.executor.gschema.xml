@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.executor" path="/org/gnome/shell/extensions/executor/">
+    <key name="command" type="s">
+      <default>'echo "Executor works!"'</default>
+    </key>
+    <key name="interval" type="i">
+      <default>5</default>
+    </key>
+  </schema>
+</schemalist>
