@@ -10,7 +10,7 @@ const Gio = imports.gi.Gio;
 
 let text, button, output, box;
 
-let COMMAND = 'echo -n "psuinfo: " && psuinfo -Castmu -S"|"';
+let COMMAND = 'echo -n "psuinfo: " && psuinfo -Castmwu -S"|"';
 let INTERVAL = 3;
 
 function init() {
