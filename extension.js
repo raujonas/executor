@@ -8,17 +8,15 @@ const Mainloop = imports.mainloop;
 const Clutter = imports.gi.Clutter;
 const Gio = imports.gi.Gio;
 
-let text, button, output, box, commands = [];
+let text, button, output, box;
 
-let COMMAND = "psuinfo -Castmu -S|";
+let COMMAND = 'echo -n "psuinfo: " && psuinfo -Castmu -S"|"';
 let INTERVAL = 3;
 
 function init() {
 	box = new St.BoxLayout({ style_class: 'panel-button' });
     output = new St.Label();    
-    box.add(output, {y_fill: false, y_align: St.Align.MIDDLE})
-    
-    COMMAND.split(' ').map(arg => commands.push(arg));
+    box.add(output, {y_fill: false, y_align: St.Align.MIDDLE});
                                      
     this.executeCommand();
     
@@ -40,12 +38,16 @@ function init() {
 }
 
 function executeCommand() {
-	execCommand(commands).then(stdout => {
+	execCommand(['/bin/sh', '-c', COMMAND]).then(stdout => {
 		if (stdout) {
 			let entries = [];
 		    stdout.split('\n').map(line => entries.push(line));
-		    log(entries[0]);
-		    output.set_text(entries[0]);
+		    let outputAsOneLine = '';
+		    entries.forEach(output => {
+		    	outputAsOneLine = outputAsOneLine + output + ' ';
+		    });
+		    log(outputAsOneLine);
+		    output.set_text(outputAsOneLine);
 		}
 	});
 	
@@ -62,9 +64,6 @@ function enable() {
 }
 
 function disable() {
-        /*
-         we remove the button from the right panel
-         */
     Main.panel._rightBox.remove_child(button);
 }
 
