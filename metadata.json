@@ -1,6 +1,6 @@
 {
   "name": "Executor",
-  "description": "Executes arbitrary shell commands and displays the result in gnome top bar",
+  "description": "Executes arbitrary shell commands periodically and displays the result in gnome top bar",
   "uuid": "executor@raujonas.github.io",
   "shell-version": [
     "3.36"
