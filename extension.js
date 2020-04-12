@@ -4,7 +4,7 @@ const GLib = imports.gi.GLib;
 const Mainloop = imports.mainloop;
 const Gio = imports.gi.Gio;
 
-let text, button, output, box;
+let output, box;
 
 let COMMAND = 'echo "Executor works!"';
 
@@ -16,20 +16,19 @@ let COMMAND = 'echo -n "psuinfo: " && psuinfo -Castmwu -S"|"';
 
 let INTERVAL = 3;
 
-function init() {
-	box = new St.BoxLayout({ style_class: 'panel-button' });
-    output = new St.Label();    
-    box.add(output, {y_fill: false, y_align: St.Align.MIDDLE});
-    
+function init() { 
     this.start();
 }
 
 function enable() {
+    box = new St.BoxLayout({ style_class: 'panel-button' });
+    output = new St.Label();    
+    box.add(output, {y_fill: false, y_align: St.Align.MIDDLE});
     Main.panel._rightBox.insert_child_at_index(box, 0);
 }
 
 function disable() {
-    Main.panel._rightBox.remove_child(button);
+    Main.panel._rightBox.remove_child(box);
 }
 
 function start() {
