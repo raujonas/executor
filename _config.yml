@@ -1,1 +1,3 @@
 theme: jekyll-theme-cayman
+title: Executor
+description: Executes arbitrary shell commands and displays the result in gnome top bar
