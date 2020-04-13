@@ -1,4 +1,4 @@
-# Executor
+# Executor - Gnome Shell Extension
 Executes arbitrary shell commands periodically and displays the result in gnome status bar. 
 
 <p align="center">
