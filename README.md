@@ -15,7 +15,7 @@ Command and interval can be set in the preferences window.
   <img align="middle" src="/docs/settings.png" alt="settings">
 </p>
 
-The inital intention was to use it with psuinfo, so you get an easy way to monitor your system usage. Psuinfo needs to be manually installed in this case:
+The inital intention was to use it with psuinfo, so you get an easy way to monitor your system usage. Psuinfo needs to be manually installed.
 
 <p align="center">
   <img src="/docs/psuinfoResult.png" alt="psuinfoResult">
