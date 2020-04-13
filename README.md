@@ -1,14 +1,26 @@
 # Executor
 Executes arbitrary shell commands periodically and displays the result in gnome status bar. 
 
-![Extensions](docs/result.png)
-
-The inital intention was to use it with psuinfo for example, so you get an easy way to monitor your system usage. Psuinfo needs to be manually installed in this case:
-
-![psuinfo](docs/psuinfo.png)
+<p align="center">
+  <img src="/docs/result.png" alt="result">
+</p>
 
 Command and interval can be set in the preferences window.
 
-![Extensions](docs/extensions.png)
+<p align="center">
+  <img align="middle" src="/docs/extensions.png" alt="Extensions" width="600">
+</p>
 
-![Settings](docs/settings.png)
+<p align="center">
+  <img align="middle" src="/docs/settings.png" alt="settings">
+</p>
+
+The inital intention was to use it with psuinfo, so you get an easy way to monitor your system usage. Psuinfo needs to be manually installed in this case:
+
+<p align="center">
+  <img src="/docs/psuinfoResult.png" alt="psuinfoResult">
+</p>
+
+<p align="center">
+  <img src="/docs/psuinfoSettings.png" alt="psuinfoSettings">
+</p>
