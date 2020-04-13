@@ -59,7 +59,7 @@ function buildPrefsWidget() {
     let intervalEntry = new Gtk.SpinButton({
         adjustment: new Gtk.Adjustment({
             lower: 1,
-            upper: 2147483647,
+            upper: 86400,
             step_increment: 1
         }),
         visible: true

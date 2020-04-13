@@ -6,30 +6,36 @@ const Gio = imports.gi.Gio;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 
-let output, box, settings;
+let output, box, settings, gschema, stopped;
 
 function init() { 
-    let gschema = Gio.SettingsSchemaSource.new_from_directory(
+    //nothing todo here
+}
+
+function enable() {
+    stopped = false;
+
+    gschema = Gio.SettingsSchemaSource.new_from_directory(
         Me.dir.get_child('schemas').get_path(),
         Gio.SettingsSchemaSource.get_default(),
         false
     );
 
-    this.settings = new Gio.Settings({
+    settings = new Gio.Settings({
         settings_schema: gschema.lookup('org.gnome.shell.extensions.executor', true)
     });
 
-    this.refresh();
-}
-
-function enable() {
     box = new St.BoxLayout({ style_class: 'panel-button' });
     output = new St.Label();    
     box.add(output, {y_fill: false, y_align: St.Align.MIDDLE});
     Main.panel._rightBox.insert_child_at_index(box, 0);
+
+    this.refresh();
 }
 
 function disable() {
+    stopped = true;
+    log("Executor stopped");
     Main.panel._rightBox.remove_child(box);
 }
 
@@ -37,8 +43,10 @@ async function refresh() {
     await this.updateGui();
     
 	Mainloop.timeout_add_seconds(this.settings.get_value('interval').deep_unpack(), () => {
+        if (!stopped) {
             this.refresh();
-        });
+        }    
+    });
 }
 
 async function updateGui() {
@@ -49,9 +57,11 @@ async function updateGui() {
 		    let outputAsOneLine = '';
 		    entries.forEach(output => {
 		    	outputAsOneLine = outputAsOneLine + output + ' ';
-		    });
-		    log(outputAsOneLine);
-		    output.set_text(outputAsOneLine);
+            });
+            if (!stopped) {
+                log(outputAsOneLine);
+		        output.set_text(outputAsOneLine);
+            }    
 		}
 	});
 }
