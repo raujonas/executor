@@ -51,7 +51,7 @@ async function refresh() {
 }
 
 async function updateGui() {
-    await execCommand(['/bin/sh', '-c', this.settings.get_value('command').deep_unpack()]).then(stdout => {
+    await execCommand(['/bin/bash', '-c', this.settings.get_value('command').deep_unpack()]).then(stdout => {
 		if (stdout) {
 			let entries = [];
 		    stdout.split('\n').map(line => entries.push(line));
