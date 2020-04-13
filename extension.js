@@ -3,21 +3,23 @@ const Main = imports.ui.main;
 const GLib = imports.gi.GLib;
 const Mainloop = imports.mainloop;
 const Gio = imports.gi.Gio;
+const ExtensionUtils = imports.misc.extensionUtils;
+const Me = ExtensionUtils.getCurrentExtension();
 
-let output, box;
-
-let COMMAND = 'echo "Executor works!"';
-
-/* Example for using other commands: 
-In this case, psuinfo needs to be installed first.
-
-let COMMAND = 'echo -n "psuinfo: " && psuinfo -Castmwu -S"|"';
-*/
-
-let INTERVAL = 3;
+let output, box, settings;
 
 function init() { 
-    this.start();
+    let gschema = Gio.SettingsSchemaSource.new_from_directory(
+        Me.dir.get_child('schemas').get_path(),
+        Gio.SettingsSchemaSource.get_default(),
+        false
+    );
+
+    this.settings = new Gio.Settings({
+        settings_schema: gschema.lookup('org.gnome.shell.extensions.executor', true)
+    });
+
+    this.refresh();
 }
 
 function enable() {
@@ -31,17 +33,16 @@ function disable() {
     Main.panel._rightBox.remove_child(box);
 }
 
-function start() {
-    this.update();
+async function refresh() {
+    await this.updateGui();
     
-    Mainloop.timeout_add_seconds(INTERVAL, () => {
-            this.update();
-            return GLib.SOURCE_CONTINUE;
+	Mainloop.timeout_add_seconds(this.settings.get_value('interval').deep_unpack(), () => {
+            this.refresh();
         });
 }
 
-function update() {
-	execCommand(['/bin/sh', '-c', COMMAND]).then(stdout => {
+async function updateGui() {
+    await execCommand(['/bin/sh', '-c', this.settings.get_value('command').deep_unpack()]).then(stdout => {
 		if (stdout) {
 			let entries = [];
 		    stdout.split('\n').map(line => entries.push(line));
@@ -55,7 +56,10 @@ function update() {
 	});
 }
 
-/* https://wiki.gnome.org/AndyHolmes/Sandbox/SpawningProcesses */
+/*  
+    Thanks to Andy again for helping with this:
+    https://stackoverflow.com/questions/61147229/multiple-arguments-in-gio-subprocess/61150669#61150669
+ */
 async function execCommand(argv, input = null, cancellable = null) {
     try {
         let flags = Gio.SubprocessFlags.STDOUT_PIPE;
