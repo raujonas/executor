@@ -1,5 +1,5 @@
 # Executor - Gnome Shell Extension
-Executes arbitrary shell commands periodically and displays the result in gnome status bar. 
+Executes arbitrary shell commands periodically and displays the result in gnome status bar. Get it here once it is reviewed: https://extensions.gnome.org/extension/2932/executor/ or download the .zip-file and extract the content to ~/.local/share/gnome-shell/extensions/executor@raujonas.github.io
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/raujonas/executor/master/docs/result.png" alt="result">
