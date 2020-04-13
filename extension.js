@@ -3,46 +3,46 @@ const Main = imports.ui.main;
 const GLib = imports.gi.GLib;
 const Mainloop = imports.mainloop;
 const Gio = imports.gi.Gio;
+const ExtensionUtils = imports.misc.extensionUtils;
+const Me = ExtensionUtils.getCurrentExtension();
 
-let text, button, output, box;
+let output, box, settings;
 
-let COMMAND = 'echo "Executor works!"';
+function init() { 
+    let gschema = Gio.SettingsSchemaSource.new_from_directory(
+        Me.dir.get_child('schemas').get_path(),
+        Gio.SettingsSchemaSource.get_default(),
+        false
+    );
 
-/* Example for using other commands: 
-In this case, psuinfo needs to be installed first.
+    this.settings = new Gio.Settings({
+        settings_schema: gschema.lookup('org.gnome.shell.extensions.executor', true)
+    });
 
-let COMMAND = 'echo -n "psuinfo: " && psuinfo -Castmwu -S"|"';
-*/
-
-let INTERVAL = 3;
-
-function init() {
-	box = new St.BoxLayout({ style_class: 'panel-button' });
-    output = new St.Label();    
-    box.add(output, {y_fill: false, y_align: St.Align.MIDDLE});
-    
-    this.start();
+    this.refresh();
 }
 
 function enable() {
+    box = new St.BoxLayout({ style_class: 'panel-button' });
+    output = new St.Label();    
+    box.add(output, {y_fill: false, y_align: St.Align.MIDDLE});
     Main.panel._rightBox.insert_child_at_index(box, 0);
 }
 
 function disable() {
-    Main.panel._rightBox.remove_child(button);
+    Main.panel._rightBox.remove_child(box);
 }
 
-function start() {
-    this.update();
+async function refresh() {
+    await this.updateGui();
     
-    Mainloop.timeout_add_seconds(INTERVAL, () => {
-            this.update();
-            return GLib.SOURCE_CONTINUE;
+	Mainloop.timeout_add_seconds(this.settings.get_value('interval').deep_unpack(), () => {
+            this.refresh();
         });
 }
 
-function update() {
-	execCommand(['/bin/sh', '-c', COMMAND]).then(stdout => {
+async function updateGui() {
+    await execCommand(['/bin/sh', '-c', this.settings.get_value('command').deep_unpack()]).then(stdout => {
 		if (stdout) {
 			let entries = [];
 		    stdout.split('\n').map(line => entries.push(line));
@@ -56,7 +56,10 @@ function update() {
 	});
 }
 
-/* https://wiki.gnome.org/AndyHolmes/Sandbox/SpawningProcesses */
+/*  
+    Thanks to Andy again for helping with this:
+    https://stackoverflow.com/questions/61147229/multiple-arguments-in-gio-subprocess/61150669#61150669
+ */
 async function execCommand(argv, input = null, cancellable = null) {
     try {
         let flags = Gio.SubprocessFlags.STDOUT_PIPE;
