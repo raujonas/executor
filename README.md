@@ -22,5 +22,5 @@ The inital intention was to use it with psuinfo, so you get an easy way to monit
 </p>
 
 <p align="center">
-  <img src="/docs/psuinfoSettings.png" alt="psuinfoSettings">
+  <img src="/docs/psuinfoSettings.png" alt="psuinfoSettings" width="600">
 </p>
