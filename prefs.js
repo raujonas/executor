@@ -25,7 +25,8 @@ function buildPrefsWidget() {
         margin: 18,
         column_spacing: 12,
         row_spacing: 12,
-        visible: true
+        visible: true,
+        column_homogeneous: true,
     });
 
     let title = new Gtk.Label({
@@ -34,7 +35,7 @@ function buildPrefsWidget() {
         use_markup: true,
         visible: true
     });
-    prefsWidget.attach(title, 0, 0, 2, 1);
+    prefsWidget.attach(title, 0, 0, 1, 1);
 
     let commandLabel = new Gtk.Label({
         label: 'Command to execute:',
@@ -43,10 +44,10 @@ function buildPrefsWidget() {
     });
     prefsWidget.attach(commandLabel, 0, 1, 1, 1);
 
-    let commandEntry = new Gtk.Entry();
+    let commandEntry = new Gtk.Entry({
+        visible: true
+    });
     prefsWidget.attach(commandEntry, 1, 1, 1, 1);
-
-    //button.connect('clicked', (button) => this.settings.reset('panel-states'));
 
     let intervalLabel = new Gtk.Label({
         label: 'Set execution interval (seconds):',
@@ -55,12 +56,18 @@ function buildPrefsWidget() {
     });
     prefsWidget.attach(intervalLabel, 0, 2, 1, 1);
 
-    let intervalEntry = new Gtk.Entry();
+    let intervalEntry = new Gtk.SpinButton({
+        adjustment: new Gtk.Adjustment({
+            lower: 1,
+            upper: 2147483647,
+            step_increment: 1
+        }),
+        visible: true
+    });
     prefsWidget.attach(intervalEntry, 1, 2, 1, 1);
 
     settings.bind('command', commandEntry, 'text', Gio.SettingsBindFlags.DEFAULT);
     settings.bind('interval', intervalEntry, 'value', Gio.SettingsBindFlags.DEFAULT);
 
-    // Return our widget which will be added to the window
     return prefsWidget;
 }
