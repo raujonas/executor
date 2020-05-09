@@ -9,7 +9,7 @@ const Me = ExtensionUtils.getCurrentExtension();
 let output, box, gschema, stopped;
 var settings;
 
-let commandsRight = {
+let commandsSettings = {
 	"commands": [
         {
 			"command": "date | awk '{print $4}'",
@@ -22,7 +22,11 @@ let commandsRight = {
 	]
 }
 
-let commandsRightOutput = [];
+let commandsCopy = {
+	"commands": []
+}
+
+let commandsOutput = [];
 
 function init() { 
     //nothing todo here
@@ -46,7 +50,7 @@ function enable() {
     box.add(output, {y_fill: false, y_align: St.Align.MIDDLE});
     Main.panel._rightBox.insert_child_at_index(box, 0);
 
-    this.waitForCommands();
+    this.checkCommands();
 }
 
 function disable() {
@@ -55,29 +59,39 @@ function disable() {
     Main.panel._rightBox.remove_child(box);
 }
 
-function waitForCommands() {
-    if (commandsRight.commands.length > 0) {
-        commandsRight.commands.forEach(function (command, index) {
-                this.refresh(command, index);
+function checkCommands() {
+    if (commandsSettings.commands.length > 0) {
+        if (commandsSettings.commands.length < commandsCopy.commands.length) {
+            commandsCopy = commandsSettings;
+        } else if (commandsSettings.commands.length > commandsCopy.commands.length){
+            commandsSettings.commands.forEach(function (command, index) {
+                if (!commandsCopy.commands.some(c => c === command)) {
+                    commandsCopy.commands.splice(index, 0, command);
+                    this.refresh(command, index);
+                }
             }, this); 
+        }
     } else {
         log('No commands specified');
-        Mainloop.timeout_add_seconds(1, () => {
-            if (!stopped) {
-                this.waitForCommands();
-            }    
-        });
     }
+
+    Mainloop.timeout_add_seconds(1, () => {
+        if (!stopped) {
+            this.checkCommands();
+        }    
+    });
 }
 
 async function refresh(command, index) {
     await this.updateGui(command, index);
 
-    //TODO: Check if command is still in list or new command was added
+    //TODO: Check if command is still in list
 
     Mainloop.timeout_add_seconds(/*this.settings.get_value('interval').deep_unpack()*/ command.interval, () => {
         if (!stopped) {
-            this.refresh(command, index);
+            if (commandsCopy.commands.some(c => c === command)) {
+                this.refresh(command, commandsCopy.commands.indexOf(command));
+            }
         }    
     });
 }
@@ -93,9 +107,14 @@ async function updateGui(command, index) {
             });
             if (!stopped) {
                 log(outputAsOneLine);
-                commandsRightOutput[index] = outputAsOneLine
+                if (!commandsCopy.commands.some(c => c === command)) {
+                    commandsOutput.splice(index, 1);
+                } else {
+                    commandsOutput[index] = outputAsOneLine
+                }
+                
                 let string = '';
-                commandsRightOutput.forEach(result => {
+                commandsOutput.forEach(result => {
                     string = string + " " + result;
                 })
                 output.set_text(string);
