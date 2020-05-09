@@ -51,7 +51,15 @@ function disable() {
 }
 
 function checkCommands() {
-    commandsSettings = JSON.parse(this.settings.get_value('right-commands-json').deep_unpack());
+    try {
+        commandsSettings = JSON.parse(this.settings.get_value('right-commands-json').deep_unpack());
+    } catch (e) {
+        Mainloop.timeout_add_seconds(1, () => {
+            if (!stopped) {
+                this.checkCommands();
+            }    
+        });
+      }
 
     if (commandsSettings.commands.length > 0) {
 
@@ -65,7 +73,6 @@ function checkCommands() {
         commandsCopy.commands.forEach(function (command, index) {
             if (!commandsSettings.commands.some(c => c.command === command.command && c.interval === command.interval)) {
                 commandsCopy.commands.splice(index, 1);
-                commandsOutput.splice(index, 1);
             }
         }, this); 
 
@@ -85,7 +92,7 @@ async function refresh(command, index) {
 
     //TODO: Check if command is still in list
 
-    Mainloop.timeout_add_seconds(/*this.settings.get_value('interval').deep_unpack()*/ command.interval, () => {
+    Mainloop.timeout_add_seconds(command.interval, () => {
         if (!stopped) {
             if (commandsCopy.commands.some(c => c === command)) {
                 this.refresh(command, commandsCopy.commands.indexOf(command));
@@ -104,7 +111,7 @@ async function updateGui(command, index) {
 		    	outputAsOneLine = outputAsOneLine + output + ' ';
             });
             if (!stopped) {
-                if (!commandsCopy.commands.some(c => c === command)) {
+                if (!commandsCopy.commands.some(c => c.command === command.command && c.interval === command.interval)) {
                     commandsOutput.splice(index, 1);
                 } else {
                     commandsOutput[index] = outputAsOneLine
