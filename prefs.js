@@ -29,45 +29,53 @@ function buildPrefsWidget() {
         column_homogeneous: true,
     });
 
-    let title = new Gtk.Label({
-        label: '<b>' + Me.metadata.name + ' Extension Preferences</b>',
+    let rightLabel = new Gtk.Label({
+        label: '<b>Right:</b>',
         halign: Gtk.Align.START,
         use_markup: true,
         visible: true
     });
-    prefsWidget.attach(title, 0, 0, 1, 1);
+    prefsWidget.attach(rightLabel, 0, 0, 1, 1);
 
-    let commandLabel = new Gtk.Label({
-        label: 'Command to execute:',
+    let rightActive = new Gtk.Switch({
+    	valign: Gtk.Align.END,
+    	halign: Gtk.Align.END,
+    	visible: true
+    });
+    prefsWidget.attach(rightActive, 1, 0, 1, 1);
+
+    let rightIndexLabel = new Gtk.Label({
+        label: 'Index:',
         halign: Gtk.Align.START,
         visible: true
     });
-    prefsWidget.attach(commandLabel, 0, 1, 1, 1);
+    prefsWidget.attach(rightIndexLabel, 0, 1, 1, 1);
 
-    let commandEntry = new Gtk.Entry({
-        visible: true
-    });
-    prefsWidget.attach(commandEntry, 1, 1, 1, 1);
-
-    let intervalLabel = new Gtk.Label({
-        label: 'Set execution interval (seconds):',
-        halign: Gtk.Align.START,
-        visible: true
-    });
-    prefsWidget.attach(intervalLabel, 0, 2, 1, 1);
-
-    let intervalEntry = new Gtk.SpinButton({
+    let rightIndex = new Gtk.SpinButton({
         adjustment: new Gtk.Adjustment({
             lower: 1,
-            upper: 86400,
+            upper: 10,
             step_increment: 1
         }),
         visible: true
     });
-    prefsWidget.attach(intervalEntry, 1, 2, 1, 1);
+    prefsWidget.attach(rightIndex, 1, 1, 1, 1);
 
-    settings.bind('command', commandEntry, 'text', Gio.SettingsBindFlags.DEFAULT);
-    settings.bind('interval', intervalEntry, 'value', Gio.SettingsBindFlags.DEFAULT);
+    let commandsJsonLabel = new Gtk.Label({
+        label: 'Commands as JSON:',
+        halign: Gtk.Align.START,
+        visible: true
+    });
+    prefsWidget.attach(commandsJsonLabel, 0, 2, 1, 1);
+
+    let rightCommandsJson = new Gtk.Entry({
+        visible: true
+    });
+    prefsWidget.attach(rightCommandsJson, 1, 2, 1, 1);
+
+    settings.bind('right-active', rightActive, 'active', Gio.SettingsBindFlags.DEFAULT);
+    settings.bind('right-index', rightIndex, 'value', Gio.SettingsBindFlags.DEFAULT);
+    settings.bind('right-commands-json', rightCommandsJson, 'text', Gio.SettingsBindFlags.DEFAULT);
 
     return prefsWidget;
 }

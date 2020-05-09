@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
   <schema id="org.gnome.shell.extensions.executor" path="/org/gnome/shell/extensions/executor/">
-    <key name="command" type="s">
-      <default>'echo "Executor works!"'</default>
+    <key name="right-active" type="b">
+      <default>true</default>
     </key>
-    <key name="interval" type="i">
-      <default>5</default>
+    <key name="right-index" type="i">
+      <default>2</default>
+    </key>
+    <key name="right-commands-json" type="s">
+      <default>'{"commands":[{"command":"echo Executor works!","interval":1}]}'</default>
     </key>
   </schema>
 </schemalist>

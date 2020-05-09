@@ -106,7 +106,6 @@ async function updateGui(command, index) {
 		    	outputAsOneLine = outputAsOneLine + output + ' ';
             });
             if (!stopped) {
-                log(outputAsOneLine);
                 if (!commandsCopy.commands.some(c => c === command)) {
                     commandsOutput.splice(index, 1);
                 } else {
