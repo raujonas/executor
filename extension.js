@@ -9,6 +9,21 @@ const Me = ExtensionUtils.getCurrentExtension();
 let output, box, gschema, stopped;
 var settings;
 
+let commandsRight = {
+	"commands": [
+        {
+			"command": "date | awk '{print $4}'",
+			"interval": 1
+		},
+		{
+			"command": "date | awk '{print $4}'",
+			"interval": 4
+		}
+	]
+}
+
+let commandsRightOutput = [];
+
 function init() { 
     //nothing todo here
 }
@@ -31,7 +46,7 @@ function enable() {
     box.add(output, {y_fill: false, y_align: St.Align.MIDDLE});
     Main.panel._rightBox.insert_child_at_index(box, 0);
 
-    this.refresh();
+    this.waitForCommands();
 }
 
 function disable() {
@@ -40,18 +55,35 @@ function disable() {
     Main.panel._rightBox.remove_child(box);
 }
 
-async function refresh() {
-    await this.updateGui();
-    
-	Mainloop.timeout_add_seconds(this.settings.get_value('interval').deep_unpack(), () => {
+function waitForCommands() {
+    if (commandsRight.commands.length > 0) {
+        commandsRight.commands.forEach(function (command, index) {
+                this.refresh(command, index);
+            }, this); 
+    } else {
+        log('No commands specified');
+        Mainloop.timeout_add_seconds(1, () => {
+            if (!stopped) {
+                this.waitForCommands();
+            }    
+        });
+    }
+}
+
+async function refresh(command, index) {
+    await this.updateGui(command, index);
+
+    //TODO: Check if command is still in list or new command was added
+
+    Mainloop.timeout_add_seconds(/*this.settings.get_value('interval').deep_unpack()*/ command.interval, () => {
         if (!stopped) {
-            this.refresh();
+            this.refresh(command, index);
         }    
     });
 }
 
-async function updateGui() {
-    await execCommand(['/bin/bash', '-c', this.settings.get_value('command').deep_unpack()]).then(stdout => {
+async function updateGui(command, index) {
+    await execCommand(['/bin/bash', '-c', /*this.settings.get_value('command').deep_unpack()*/ command.command]).then(stdout => {
 		if (stdout) {
 			let entries = [];
 		    stdout.split('\n').map(line => entries.push(line));
@@ -61,7 +93,12 @@ async function updateGui() {
             });
             if (!stopped) {
                 log(outputAsOneLine);
-		        output.set_text(outputAsOneLine);
+                commandsRightOutput[index] = outputAsOneLine
+                let string = '';
+                commandsRightOutput.forEach(result => {
+                    string = string + " " + result;
+                })
+                output.set_text(string);
             }    
 		}
 	});
