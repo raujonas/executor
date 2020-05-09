@@ -10,16 +10,7 @@ let output, box, gschema, stopped;
 var settings;
 
 let commandsSettings = {
-	"commands": [
-        {
-			"command": "date | awk '{print $4}'",
-			"interval": 1
-		},
-		{
-			"command": "date | awk '{print $4}'",
-			"interval": 4
-		}
-	]
+	"commands": []
 }
 
 let commandsCopy = {
@@ -60,17 +51,24 @@ function disable() {
 }
 
 function checkCommands() {
+    commandsSettings = JSON.parse(this.settings.get_value('right-commands-json').deep_unpack());
+
     if (commandsSettings.commands.length > 0) {
-        if (commandsSettings.commands.length < commandsCopy.commands.length) {
-            commandsCopy = commandsSettings;
-        } else if (commandsSettings.commands.length > commandsCopy.commands.length){
-            commandsSettings.commands.forEach(function (command, index) {
-                if (!commandsCopy.commands.some(c => c === command)) {
-                    commandsCopy.commands.splice(index, 0, command);
-                    this.refresh(command, index);
-                }
-            }, this); 
-        }
+
+        commandsSettings.commands.forEach(function (command, index) {
+            if (!commandsCopy.commands.some(c => c.command === command.command && c.interval === command.interval)) {
+                commandsCopy.commands.splice(index, 0, command);
+                this.refresh(command, index);
+            }
+        }, this); 
+
+        commandsCopy.commands.forEach(function (command, index) {
+            if (!commandsSettings.commands.some(c => c.command === command.command && c.interval === command.interval)) {
+                commandsCopy.commands.splice(index, 1);
+                commandsOutput.splice(index, 1);
+            }
+        }, this); 
+
     } else {
         log('No commands specified');
     }
