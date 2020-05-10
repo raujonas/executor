@@ -262,7 +262,7 @@ async function updateGui(location, command, index) {
 		    stdout.split('\n').map(line => entries.push(line));
 		    let outputAsOneLine = '';
 		    entries.forEach(output => {
-		    	outputAsOneLine = outputAsOneLine + output + ' ';
+		    	outputAsOneLine = outputAsOneLine + output;
             });
             if (!location.stopped) {
                 if (!location.commandsCopy.commands.some(c => c.command === command.command && c.interval === command.interval)) {
