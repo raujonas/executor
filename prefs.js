@@ -54,7 +54,7 @@ function buildPrefsWidget() {
 
     let leftIndex = new Gtk.SpinButton({
         adjustment: new Gtk.Adjustment({
-            lower: 1,
+            lower: 0,
             upper: 10,
             step_increment: 1
         }),
@@ -99,7 +99,7 @@ function buildPrefsWidget() {
 
     let centerIndex = new Gtk.SpinButton({
         adjustment: new Gtk.Adjustment({
-            lower: 1,
+            lower: 0,
             upper: 10,
             step_increment: 1
         }),
@@ -144,7 +144,7 @@ function buildPrefsWidget() {
 
     let rightIndex = new Gtk.SpinButton({
         adjustment: new Gtk.Adjustment({
-            lower: 1,
+            lower: 0,
             upper: 10,
             step_increment: 1
         }),

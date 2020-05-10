@@ -6,25 +6,53 @@ const Gio = imports.gi.Gio;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 
-let output, box, gschema, stopped;
+let gschema;
 var settings;
 
-let commandsSettings = {
-	"commands": []
+let leftActiveChanged, leftIndexChanged;
+let centerActiveChanged, centerIndexChanged;
+let rightActiveChanged, rightIndexChanged;
+
+let left = {
+    "name": "left",
+    "output": null,
+    "box": null,
+    "stopped": null,
+    "commandsSettings": {"commands": []},
+    "commandsCopy": {"commands": []},
+    "commandsOutput": []
 }
 
-let commandsCopy = {
-	"commands": []
+let center = {
+    "name": "center",
+    "output": null,
+    "box": null,
+    "stopped": null,
+    "commandsSettings": {"commands": []},
+    "commandsCopy": {"commands": []},
+    "commandsOutput": []
 }
 
-let commandsOutput = [];
+let right = {
+    "name": "right",
+    "output": null,
+    "box": null,
+    "stopped": null,
+    "commandsSettings": {"commands": []},
+    "commandsCopy": {"commands": []},
+    "commandsOutput": []
+}
 
 function init() { 
     //nothing todo here
 }
 
 function enable() {
-    stopped = false;
+    log('Executor enabled');
+
+    left.stopped = false;
+    center.stopped = false;
+    right.stopped = false;
 
     gschema = Gio.SettingsSchemaSource.new_from_directory(
         Me.dir.get_child('schemas').get_path(),
@@ -36,75 +64,198 @@ function enable() {
         settings_schema: gschema.lookup('org.gnome.shell.extensions.executor', true)
     });
 
-    box = new St.BoxLayout({ style_class: 'panel-button' });
-    output = new St.Label();    
-    box.add(output, {y_fill: false, y_align: St.Align.MIDDLE});
-    Main.panel._rightBox.insert_child_at_index(box, 0);
+    left.box = new St.BoxLayout({ style_class: 'panel-button' });
+    if (left.box.get_parent()) {
+        left.box.get_parent().remove_child(left.box);
+    }
+    left.output = new St.Label();
+    left.box.add(left.output, {y_fill: false, y_align: St.Align.MIDDLE});
+    this.onLeftStatusChanged();
 
-    this.checkCommands();
+    center.box = new St.BoxLayout({ style_class: 'panel-button' });
+    if (center.box.get_parent()) {
+        center.box.get_parent().remove_child(center.box);
+    }
+    center.output = new St.Label();
+    center.box.add(center.output, {y_fill: false, y_align: St.Align.MIDDLE});
+    this.onCenterStatusChanged();
+
+    right.box = new St.BoxLayout({ style_class: 'panel-button' });
+    if (right.box.get_parent()) {
+        right.box.get_parent().remove_child(right.box);
+    }
+    right.output = new St.Label();
+    right.box.add(right.output, {y_fill: false, y_align: St.Align.MIDDLE});
+    this.onRightStatusChanged();
+
+    leftActiveChanged = this.settings.connect(
+		'changed::left-active',
+		this.onLeftStatusChanged.bind(this)
+    );
+    
+    leftIndexChanged = this.settings.connect(
+		'changed::left-index',
+		this.onLeftStatusChanged.bind(this)
+    );
+    
+    centerActiveChanged = this.settings.connect(
+		'changed::center-active',
+		this.onCenterStatusChanged.bind(this)
+    );
+    
+    centerIndexChanged = this.settings.connect(
+		'changed::center-index',
+		this.onCenterStatusChanged.bind(this)
+	);
+
+    rightActiveChanged = this.settings.connect(
+		'changed::right-active',
+		this.onRightStatusChanged.bind(this)
+    );
+    
+    rightIndexChanged = this.settings.connect(
+		'changed::right-index',
+		this.onRightStatusChanged.bind(this)
+	);
 }
 
 function disable() {
-    stopped = true;
+    left.stopped = true;
+    center.stopped = true;
+    right.stopped = true;
     log("Executor stopped");
-    Main.panel._rightBox.remove_child(box);
+    if (left.box.get_parent()) {
+        left.box.get_parent().remove_child(left.box);
+    }
+    if (center.box.get_parent()) {
+        center.box.get_parent().remove_child(center.box);
+    }
+    if (right.box.get_parent()) {
+        right.box.get_parent().remove_child(right.box);
+    }
+    left.box = null;
+    center.box = null;
+    right.box = null;
+    left.commandsCopy = {"commands": []};
+    left.commandsOutput = [];
+    center.commandsCopy = {"commands": []};
+    center.commandsOutput = [];    
+    right.commandsCopy = {"commands": []};
+    right.commandsOutput = [];
 }
 
-function checkCommands() {
+function onLeftStatusChanged() {
+    if(this.settings.get_value('left-active').deep_unpack()) {
+        if (left.box.get_parent()) {
+            left.box.get_parent().remove_child(left.box);
+        }
+        
+        left.stopped = false;
+        Main.panel._leftBox.insert_child_at_index(left.box, settings.get_value('left-index').deep_unpack());
+        this.checkCommands(left, this.settings.get_value('left-commands-json').deep_unpack());
+    } else {
+        left.stopped = true;
+        if (left.box.get_parent()) {
+            left.box.get_parent().remove_child(left.box);
+        }        
+        left.commandsCopy = {"commands": []}
+        left.commandsOutput = [];
+    }
+}
+
+function onCenterStatusChanged() {
+    if(this.settings.get_value('center-active').deep_unpack()) {
+        if (center.box.get_parent()) {
+            center.box.get_parent().remove_child(center.box);
+        }
+
+        center.stopped = false;
+        Main.panel._centerBox.insert_child_at_index(center.box, settings.get_value('center-index').deep_unpack());
+        this.checkCommands(center, this.settings.get_value('center-commands-json').deep_unpack());
+    } else {
+        center.stopped = true;
+        if (center.box.get_parent()) {
+            center.box.get_parent().remove_child(center.box);
+        }
+        center.commandsCopy = {"commands": []}
+        center.commandsOutput = [];
+    }
+}
+
+function onRightStatusChanged() {
+    if(this.settings.get_value('right-active').deep_unpack()) {
+        if (right.box.get_parent()) {
+            right.box.get_parent().remove_child(right.box);
+        }
+
+        right.stopped = false;
+        Main.panel._rightBox.insert_child_at_index(right.box, settings.get_value('right-index').deep_unpack());
+        this.checkCommands(right, this.settings.get_value('right-commands-json').deep_unpack());
+    } else {
+        right.stopped = true;
+        if (right.box.get_parent()) {
+            right.box.get_parent().remove_child(right.box);
+        }
+        right.commandsCopy = {"commands": []}
+        right.commandsOutput = [];
+    }
+}
+
+function checkCommands(location, json) {
     try {
-        commandsSettings = JSON.parse(this.settings.get_value('right-commands-json').deep_unpack());
+        location.commandsSettings = JSON.parse(json);
     } catch (e) {
         Mainloop.timeout_add_seconds(1, () => {
-            if (!stopped) {
-                this.checkCommands();
+            if (!location.stopped) {
+                this.checkCommands(location, json);
             }    
         });
-      }
+    }
 
-    if (commandsSettings.commands.length > 0) {
+    if (location.commandsSettings.commands.length > 0) {
 
-        commandsSettings.commands.forEach(function (command, index) {
-            if (!commandsCopy.commands.some(c => c.command === command.command && c.interval === command.interval)) {
-                commandsCopy.commands.splice(index, 0, command);
-                this.refresh(command, index);
+        location.commandsSettings.commands.forEach(function (command, index) {
+            if (!location.commandsCopy.commands.some(c => c.command === command.command && c.interval === command.interval)) {
+                location.commandsCopy.commands.splice(index, 0, command);
+                this.refresh(location, command, index);
             }
         }, this); 
 
-        commandsCopy.commands.forEach(function (command, index) {
-            if (!commandsSettings.commands.some(c => c.command === command.command && c.interval === command.interval)) {
-                commandsCopy.commands.splice(index, 1);
-                commandsOutput.splice(index, 1);
+        location.commandsCopy.commands.forEach(function (command, index) {
+            if (!location.commandsSettings.commands.some(c => c.command === command.command && c.interval === command.interval)) {
+                location.commandsCopy.commands.splice(index, 1);
+                location.commandsOutput.splice(index, 1);
             }
         }, this); 
 
-        this.setOutput();
+        this.setOutput(location);
 
     } else {
         log('No commands specified');
     }
 
     Mainloop.timeout_add_seconds(1, () => {
-        if (!stopped) {
-            this.checkCommands();
+        if (!location.stopped) {
+            this.checkCommands(location, this.settings.get_value('' + location.name + '-commands-json').deep_unpack());
         }    
     });
 }
 
-async function refresh(command, index) {
-    await this.updateGui(command, index);
+async function refresh(location, command, index) {
+    await this.updateGui(location, command, index);
 
-    if (commandsCopy.commands.some(c => c.command === command.command && c.interval === command.interval)) {
+    if (location.commandsCopy.commands.some(c => c.command === command.command && c.interval === command.interval)) {
         Mainloop.timeout_add_seconds(command.interval, () => {
-            if (!stopped) {
-                if (commandsCopy.commands.some(c => c === command)) {
-                    this.refresh(command, commandsCopy.commands.indexOf(command));
+            if (!location.stopped) {
+                if (location.commandsCopy.commands.some(c => c === command)) {
+                    this.refresh(location, command, location.commandsCopy.commands.indexOf(command));
                 }
             }    
         });
     }
 }
 
-async function updateGui(command, index) {
+async function updateGui(location, command, index) {
     await execCommand(['/bin/bash', '-c', command.command]).then(stdout => {
 		if (stdout) {
 			let entries = [];
@@ -113,25 +264,25 @@ async function updateGui(command, index) {
 		    entries.forEach(output => {
 		    	outputAsOneLine = outputAsOneLine + output + ' ';
             });
-            if (!stopped) {
-                if (!commandsCopy.commands.some(c => c.command === command.command && c.interval === command.interval)) {
-                    commandsOutput.splice(index, 1);
+            if (!location.stopped) {
+                if (!location.commandsCopy.commands.some(c => c.command === command.command && c.interval === command.interval)) {
+                    location.commandsOutput.splice(index, 1);
                 } else {
-                    commandsOutput[index] = outputAsOneLine
+                    location.commandsOutput[index] = outputAsOneLine
                 }
                 
-                this.setOutput();
+                this.setOutput(location);
             }    
 		}
 	});
 }
 
-function setOutput() {
+function setOutput(location) {
     let string = '';
-                commandsOutput.forEach(result => {
-                    string = string + " " + result;
-                })
-                output.set_text(string);
+    location.commandsOutput.forEach(result => {
+        string = string + " " + result;
+    })
+    location.output.set_text(string);
 }
 
 /*  
