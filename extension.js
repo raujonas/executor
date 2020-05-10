@@ -114,6 +114,9 @@ async function updateGui(command, index) {
                 if (!commandsCopy.commands.some(c => c.command === command.command && c.interval === command.interval)) {
                     commandsOutput.splice(index, 1);
                 } else {
+                    if (commandsSettings.commands.length > commandsCopy.commands.length) {
+                        commandsOutput.splice(commandsCopy.commands.length, commandsSettings.commands.length);
+                    }
                     commandsOutput[index] = outputAsOneLine
                 }
                 
