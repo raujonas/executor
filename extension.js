@@ -92,13 +92,15 @@ async function refresh(command, index) {
 
     //TODO: Check if command is still in list
 
-    Mainloop.timeout_add_seconds(command.interval, () => {
-        if (!stopped) {
-            if (commandsCopy.commands.some(c => c === command)) {
-                this.refresh(command, commandsCopy.commands.indexOf(command));
-            }
-        }    
-    });
+    if (commandsCopy.commands.some(c => c.command === command.command && c.interval === command.interval)) {
+        Mainloop.timeout_add_seconds(command.interval, () => {
+            if (!stopped) {
+                if (commandsCopy.commands.some(c => c === command)) {
+                    this.refresh(command, commandsCopy.commands.indexOf(command));
+                }
+            }    
+        });
+    }
 }
 
 async function updateGui(command, index) {
