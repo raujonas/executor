@@ -73,8 +73,11 @@ function checkCommands() {
         commandsCopy.commands.forEach(function (command, index) {
             if (!commandsSettings.commands.some(c => c.command === command.command && c.interval === command.interval)) {
                 commandsCopy.commands.splice(index, 1);
+                commandsOutput.splice(index, 1);
             }
         }, this); 
+
+        this.setOutput();
 
     } else {
         log('No commands specified');
@@ -89,8 +92,6 @@ function checkCommands() {
 
 async function refresh(command, index) {
     await this.updateGui(command, index);
-
-    //TODO: Check if command is still in list
 
     if (commandsCopy.commands.some(c => c.command === command.command && c.interval === command.interval)) {
         Mainloop.timeout_add_seconds(command.interval, () => {
@@ -116,20 +117,21 @@ async function updateGui(command, index) {
                 if (!commandsCopy.commands.some(c => c.command === command.command && c.interval === command.interval)) {
                     commandsOutput.splice(index, 1);
                 } else {
-                    if (commandsSettings.commands.length > commandsCopy.commands.length) {
-                        commandsOutput.splice(commandsCopy.commands.length, commandsSettings.commands.length);
-                    }
                     commandsOutput[index] = outputAsOneLine
                 }
                 
-                let string = '';
+                this.setOutput();
+            }    
+		}
+	});
+}
+
+function setOutput() {
+    let string = '';
                 commandsOutput.forEach(result => {
                     string = string + " " + result;
                 })
                 output.set_text(string);
-            }    
-		}
-	});
 }
 
 /*  
