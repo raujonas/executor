@@ -9,9 +9,9 @@ const Me = ExtensionUtils.getCurrentExtension();
 let gschema;
 var settings;
 
-let leftActiveChanged, leftIndexChanged;
-let centerActiveChanged, centerIndexChanged;
-let rightActiveChanged, rightIndexChanged;
+let leftActiveChanged, leftIndexChanged, leftCommandsJsonChanged;
+let centerActiveChanged, centerIndexChanged, centerCommandsJsonChanged;
+let rightActiveChanged, rightIndexChanged, rightCommandsJsonChanged;
 
 let left = {
     "name": "left",
@@ -97,6 +97,11 @@ function enable() {
 		'changed::left-index',
 		this.onLeftStatusChanged.bind(this)
     );
+
+    leftCommandsJsonChanged = this.settings.connect(
+		'changed::left-commands-json',
+		this.onLeftStatusChanged.bind(this)
+    );
     
     centerActiveChanged = this.settings.connect(
 		'changed::center-active',
@@ -106,7 +111,12 @@ function enable() {
     centerIndexChanged = this.settings.connect(
 		'changed::center-index',
 		this.onCenterStatusChanged.bind(this)
-	);
+    );
+    
+    centerCommandsJsonChanged = this.settings.connect(
+		'changed::center-commands-json',
+		this.onCenterStatusChanged.bind(this)
+    );
 
     rightActiveChanged = this.settings.connect(
 		'changed::right-active',
@@ -116,7 +126,12 @@ function enable() {
     rightIndexChanged = this.settings.connect(
 		'changed::right-index',
 		this.onRightStatusChanged.bind(this)
-	);
+    );
+    
+    rightCommandsJsonChanged = this.settings.connect(
+		'changed::right-commands-json',
+		this.onRightStatusChanged.bind(this)
+    );
 }
 
 function disable() {
@@ -205,11 +220,7 @@ function checkCommands(location, json) {
     try {
         location.commandsSettings = JSON.parse(json);
     } catch (e) {
-        Mainloop.timeout_add_seconds(1, () => {
-            if (!location.stopped) {
-                this.checkCommands(location, json);
-            }    
-        });
+
     }
 
     if (location.commandsSettings.commands.length > 0) {
@@ -233,12 +244,6 @@ function checkCommands(location, json) {
     } else {
         log('No commands specified');
     }
-
-    Mainloop.timeout_add_seconds(1, () => {
-        if (!location.stopped) {
-            this.checkCommands(location, this.settings.get_value('' + location.name + '-commands-json').deep_unpack());
-        }    
-    });
 }
 
 async function refresh(location, command, index) {
@@ -256,7 +261,7 @@ async function refresh(location, command, index) {
 }
 
 async function updateGui(location, command, index) {
-    await execCommand(['/bin/bash', '-c', command.command]).then(stdout => {
+    await execCommand(['/bin/bash', '-c', command.command]).then(async stdout => {
 		if (stdout) {
 			let entries = [];
 		    stdout.split('\n').map(line => entries.push(line));
@@ -271,13 +276,13 @@ async function updateGui(location, command, index) {
                     location.commandsOutput[index] = outputAsOneLine
                 }
                 
-                this.setOutput(location);
+                await this.setOutput(location);
             }    
 		}
 	});
 }
 
-function setOutput(location) {
+async function setOutput(location) {
     let string = '';
     location.commandsOutput.forEach(result => {
         string = string + " " + result;
