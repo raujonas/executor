@@ -19,7 +19,6 @@ let left = {
     "box": null,
     "stopped": null,
     "commandsSettings": {"commands": []},
-    "commandsCopy": {"commands": []},
     "commandsOutput": []
 }
 
@@ -29,7 +28,6 @@ let center = {
     "box": null,
     "stopped": null,
     "commandsSettings": {"commands": []},
-    "commandsCopy": {"commands": []},
     "commandsOutput": []
 }
 
@@ -39,15 +37,22 @@ let right = {
     "box": null,
     "stopped": null,
     "commandsSettings": {"commands": []},
-    "commandsCopy": {"commands": []},
     "commandsOutput": []
 }
+
+let cancellable = null;
+let executeQueue = [];
+let resultEvent;
 
 function init() { 
     //nothing todo here
 }
 
 function enable() {
+    if (cancellable === null) {
+        cancellable = new Gio.Cancellable()
+    }
+
     log('Executor enabled');
 
     left.stopped = false;
@@ -132,6 +137,8 @@ function enable() {
 		'changed::right-commands-json',
 		this.onRightStatusChanged.bind(this)
     );
+
+    this.checkQueue();
 }
 
 function disable() {
@@ -151,11 +158,8 @@ function disable() {
     left.box = null;
     center.box = null;
     right.box = null;
-    left.commandsCopy = {"commands": []};
     left.commandsOutput = [];
-    center.commandsCopy = {"commands": []};
     center.commandsOutput = [];    
-    right.commandsCopy = {"commands": []};
     right.commandsOutput = [];
 }
 
@@ -173,7 +177,7 @@ function onLeftStatusChanged() {
         if (left.box.get_parent()) {
             left.box.get_parent().remove_child(left.box);
         }        
-        left.commandsCopy = {"commands": []}
+        this.removeOldCommands(left);
         left.commandsOutput = [];
     }
 }
@@ -192,7 +196,7 @@ function onCenterStatusChanged() {
         if (center.box.get_parent()) {
             center.box.get_parent().remove_child(center.box);
         }
-        center.commandsCopy = {"commands": []}
+        this.removeOldCommands(center);
         center.commandsOutput = [];
     }
 }
@@ -211,9 +215,17 @@ function onRightStatusChanged() {
         if (right.box.get_parent()) {
             right.box.get_parent().remove_child(right.box);
         }
-        right.commandsCopy = {"commands": []}
+        this.removeOldCommands(right);
         right.commandsOutput = [];
     }
+}
+
+function removeOldCommands(location) {
+    executeQueue.forEach(function (command, index) {
+        if (command.locationName === location.name) {
+            executeQueue.splice(index, 1);
+        }
+    }, this); 
 }
 
 function checkCommands(location, json) {
@@ -226,16 +238,20 @@ function checkCommands(location, json) {
     if (location.commandsSettings.commands.length > 0) {
 
         location.commandsSettings.commands.forEach(function (command, index) {
-            if (!location.commandsCopy.commands.some(c => c.command === command.command && c.interval === command.interval)) {
-                location.commandsCopy.commands.splice(index, 0, command);
-                this.refresh(location, command, index);
+            if (!executeQueue.some(c => c.command === command.command && c.interval === command.interval)) {
+                command.locationName = location.name;
+                command.index = index;
+                executeQueue.push(command);
             }
         }, this); 
 
-        location.commandsCopy.commands.forEach(function (command, index) {
-            if (!location.commandsSettings.commands.some(c => c.command === command.command && c.interval === command.interval)) {
-                location.commandsCopy.commands.splice(index, 1);
-                location.commandsOutput.splice(index, 1);
+        executeQueue.forEach(function (command, index) {
+            if (command.locationName !== location.name) {
+                //do nothing
+            } else {
+                if (!location.commandsSettings.commands.some(c => c.command === command.command && c.interval === command.interval && c.locationName === location.name)) {
+                    executeQueue.splice(index, 1);
+                }
             }
         }, this); 
 
@@ -246,40 +262,117 @@ function checkCommands(location, json) {
     }
 }
 
-async function refresh(location, command, index) {
-    await this.updateGui(location, command, index);
-
-    if (location.commandsCopy.commands.some(c => c.command === command.command && c.interval === command.interval)) {
-        Mainloop.timeout_add_seconds(command.interval, () => {
-            if (!location.stopped) {
-                if (location.commandsCopy.commands.some(c => c === command)) {
-                    this.refresh(location, command, location.commandsCopy.commands.indexOf(command));
-                }
-            }    
+function checkQueue() {
+    if (executeQueue.length > 0) {
+        let copy = executeQueue;
+        executeQueue = [];
+        this.handleCurrentQueue(copy);
+    } else {
+        GLib.timeout_add(0, 500, () => {
+            this.checkQueue()
+            return GLib.SOURCE_REMOVE;
         });
     }
 }
 
-async function updateGui(location, command, index) {
-    await execCommand(['/bin/bash', '-c', command.command]).then(async stdout => {
-		if (stdout) {
-			let entries = [];
-		    stdout.split('\n').map(line => entries.push(line));
-		    let outputAsOneLine = '';
-		    entries.forEach(output => {
-		    	outputAsOneLine = outputAsOneLine + output;
-            });
-            if (!location.stopped) {
-                if (!location.commandsCopy.commands.some(c => c.command === command.command && c.interval === command.interval)) {
-                    location.commandsOutput.splice(index, 1);
-                } else {
-                    location.commandsOutput[index] = outputAsOneLine
+function handleCurrentQueue(copy) {
+    let current = copy.shift();
+    let isLastElement;
+    if (copy.length === 0) {
+        isLastElement = true;
+    }
+
+    this.execCommand(isLastElement, current, ['/bin/bash', '-c', current.command]);
+
+    if (copy.length > 0) {            
+        GLib.timeout_add(0, 50, () => {
+            if (copy.length > 0) {                
+                this.handleCurrentQueue(copy)
+            }
+            return GLib.SOURCE_REMOVE;
+        });
+    }
+}
+
+async function execCommand(isLastElement, command, argv, input = null, cancellable = null) {
+    try {
+        let flags = (Gio.SubprocessFlags.STDOUT_PIPE |
+            Gio.SubprocessFlags.STDERR_PIPE);
+
+        if (input !== null)
+            flags |= Gio.SubprocessFlags.STDIN_PIPE;
+
+        let proc = Gio.Subprocess.new(argv,flags);
+        
+        return new Promise((resolve, reject) => {
+            proc.communicate_utf8_async(input, cancellable, (proc, res) => {
+                try {
+                    let [, stdout, stderr] = proc.communicate_utf8_finish(res);
+
+                    /* If you do opt for stderr output, you might as
+                     * well use it for more informative errors */
+                    if (!proc.get_successful()) {
+                        let status = proc.get_exit_status();
+
+                        throw new Gio.IOErrorEnum({
+                            code: Gio.io_error_from_errno(status),
+                            message: stderr ? stderr.trim() : GLib.strerror(status)
+                        });
+                    }
+                    this.callback(isLastElement, command, stdout);
+                    resolve(stdout);
+                } catch (e) {
+                    reject(e);
                 }
-                
-                await this.setOutput(location);
-            }    
-		}
-	});
+            });
+        });
+    } catch (e) {
+        return Promise.reject(e);
+    }
+}
+
+function callback(isLastElement, command, stdout) {
+    if (stdout) {
+        let outputAsOneLine = stdout.replace('\n', '');
+
+        if (command.locationName === 'left' && !left.stopped) {
+            if (!left.commandsSettings.commands.some(c => c.command === command.command && c.interval === command.interval)) {
+                left.commandsOutput.splice(index, 1);
+            } else {
+                left.commandsOutput[command.index] = outputAsOneLine
+            }
+            
+            this.setOutput(left);
+        } else if (command.locationName === 'center' && !center.stopped) {
+            if (!center.commandsSettings.commands.some(c => c.command === command.command && c.interval === command.interval)) {
+                center.commandsOutput.splice(index, 1);
+            } else {
+                center.commandsOutput[command.index] = outputAsOneLine
+            }
+            
+            this.setOutput(center);
+        } else if (command.locationName === 'right' && !right.stopped) {
+            if (!right.commandsSettings.commands.some(c => c.command === command.command && c.interval === command.interval)) {
+                right.commandsOutput.splice(index, 1);
+            } else {
+                right.commandsOutput[command.index] = outputAsOneLine
+            }
+            
+            this.setOutput(right);
+        }
+
+    }
+    
+    GLib.timeout_add_seconds(0, command.interval, () => {
+                if (cancellable && !cancellable.is_cancelled())
+                    executeQueue.push(command);
+
+                return GLib.SOURCE_REMOVE;
+            });
+
+    if (isLastElement) {
+        this.checkQueue();
+    }
 }
 
 async function setOutput(location) {
@@ -290,37 +383,3 @@ async function setOutput(location) {
     location.output.set_text(string);
 }
 
-/*  
-    Thanks to Andy again for helping with this:
-    https://stackoverflow.com/questions/61147229/multiple-arguments-in-gio-subprocess/61150669#61150669
- */
-async function execCommand(argv, input = null, cancellable = null) {
-    try {
-        let flags = Gio.SubprocessFlags.STDOUT_PIPE;
-
-        if (input !== null)
-            flags |= Gio.SubprocessFlags.STDIN_PIPE;
-
-        let proc = new Gio.Subprocess({
-            argv: argv,
-            flags: flags
-        });
-        
-        proc.init(cancellable);
-
-        let stdout = await new Promise((resolve, reject) => {
-            proc.communicate_utf8_async(input, cancellable, (proc, res) => {
-                try {
-                    let [ok, stdout, stderr] = proc.communicate_utf8_finish(res);
-                    resolve(stdout);
-                } catch (e) {
-                    reject(e);
-                }
-            });
-        });
-
-        return stdout;
-    } catch (e) {
-        logError(e);
-    }
-}
