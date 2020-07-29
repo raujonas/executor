@@ -332,7 +332,7 @@ async function execCommand(isLastElement, command, argv, input = null, cancellab
 }
 
 function callback(isLastElement, command, stdout) {
-    log(stdout);
+
     if (stdout) {
         let outputAsOneLine = stdout.replace('\n', '');
 
