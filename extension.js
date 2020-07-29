@@ -332,6 +332,7 @@ async function execCommand(isLastElement, command, argv, input = null, cancellab
 }
 
 function callback(isLastElement, command, stdout) {
+    log(stdout);
     if (stdout) {
         let outputAsOneLine = stdout.replace('\n', '');
 
@@ -364,8 +365,13 @@ function callback(isLastElement, command, stdout) {
     }
     
     GLib.timeout_add_seconds(0, command.interval, () => {
-                if (cancellable && !cancellable.is_cancelled())
-                    executeQueue.push(command);
+                if (cancellable && !cancellable.is_cancelled()) {
+                    if(command.locationName === 'left' && !left.stopped ||
+                        command.locationName === 'center' && !center.stopped ||
+                        command.locationName === 'right' && !right.stopped) {
+                            executeQueue.push(command);
+                    }
+                }
 
                 return GLib.SOURCE_REMOVE;
             });
