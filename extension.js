@@ -238,7 +238,8 @@ function checkCommands(location, json) {
     if (location.commandsSettings.commands.length > 0) {
 
         location.commandsSettings.commands.forEach(function (command, index) {
-            if (!executeQueue.some(c => c.command === command.command && c.interval === command.interval)) {
+            if (!executeQueue.some(c => c.command === command.command && c.interval === command.interval
+                && c.index === index && c.location === location.name)) {
                 command.locationName = location.name;
                 command.index = index;
                 executeQueue.push(command);
@@ -369,7 +370,10 @@ function callback(isLastElement, command, stdout) {
                     if(command.locationName === 'left' && !left.stopped ||
                         command.locationName === 'center' && !center.stopped ||
                         command.locationName === 'right' && !right.stopped) {
-                            executeQueue.push(command);
+                            if (!executeQueue.some(c => c.command === command.command && c.interval === command.interval
+                                && c.index === command.index && c.location === command.location)) {
+                                executeQueue.push(command);
+                            }
                     }
                 }
 
