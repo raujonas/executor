@@ -323,7 +323,12 @@ async function execCommand(command, argv, input = null, cancellable = null) {
 function callback(command, stdout) {
 
     if (stdout) {
-        let outputAsOneLine = stdout.replace('\n', '');
+        let entries = [];
+        stdout.split('\n').map(line => entries.push(line));
+        let outputAsOneLine = '';
+        entries.forEach(output => {
+            outputAsOneLine = outputAsOneLine + output;
+        });
 
         if (command.locationName === 'left' && !left.stopped) {
             if (!left.commandsSettings.commands.some(c => c.command === command.command && c.interval === command.interval)) {
