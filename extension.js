@@ -246,16 +246,6 @@ function checkCommands(location, json) {
             }
         }, this); 
 
-        executeQueue.forEach(function (command, index) {
-            if (command.locationName !== location.name) {
-                //do nothing
-            } else {
-                if (!location.commandsSettings.commands.some(c => c.command === command.command && c.interval === command.interval && c.locationName === location.name)) {
-                    executeQueue.splice(index, 1);
-                }
-            }
-        }, this); 
-
         this.setOutput(location);
 
     } else {
@@ -278,12 +268,8 @@ function checkQueue() {
 
 function handleCurrentQueue(copy) {
     let current = copy.shift();
-    let isLastElement;
-    if (copy.length === 0) {
-        isLastElement = true;
-    }
 
-    this.execCommand(isLastElement, current, ['/bin/bash', '-c', current.command]);
+    this.execCommand(current, ['/bin/bash', '-c', current.command]);
 
     if (copy.length > 0) {            
         GLib.timeout_add(0, 50, () => {
@@ -292,10 +278,12 @@ function handleCurrentQueue(copy) {
             }
             return GLib.SOURCE_REMOVE;
         });
+    } else {
+        this.checkQueue();
     }
 }
 
-async function execCommand(isLastElement, command, argv, input = null, cancellable = null) {
+async function execCommand(command, argv, input = null, cancellable = null) {
     try {
         let flags = (Gio.SubprocessFlags.STDOUT_PIPE |
             Gio.SubprocessFlags.STDERR_PIPE);
@@ -320,7 +308,7 @@ async function execCommand(isLastElement, command, argv, input = null, cancellab
                             message: stderr ? stderr.trim() : GLib.strerror(status)
                         });
                     }
-                    this.callback(isLastElement, command, stdout);
+                    this.callback(command, stdout);
                     resolve(stdout);
                 } catch (e) {
                     reject(e);
@@ -332,7 +320,7 @@ async function execCommand(isLastElement, command, argv, input = null, cancellab
     }
 }
 
-function callback(isLastElement, command, stdout) {
+function callback(command, stdout) {
 
     if (stdout) {
         let outputAsOneLine = stdout.replace('\n', '');
@@ -379,10 +367,6 @@ function callback(isLastElement, command, stdout) {
 
                 return GLib.SOURCE_REMOVE;
             });
-
-    if (isLastElement) {
-        this.checkQueue();
-    }
 }
 
 async function setOutput(location) {
