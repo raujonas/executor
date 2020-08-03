@@ -13,14 +13,33 @@ OR checkout this repo to ~/.local/share/gnome-shell/extensions/ and rename the p
 
 ## Configuration
 
-Command and interval can be set in the preferences window.
-
-<img src="https://raw.githubusercontent.com/raujonas/executor/master/docs/extensions.png" alt="Extensions" width="500">
+The commands and the index of the result string in the top bar could be set for each location (left, center, right) separately in the settings view.
 
 <img src="https://raw.githubusercontent.com/raujonas/executor/master/docs/settings.png" alt="settings" width="500">
 
-The inital intention was to use it with psuinfo, so you get an easy way to monitor your system usage. Psuinfo needs to be manually installed.
+### Basic example
 
-<img src="https://raw.githubusercontent.com/raujonas/executor/master/docs/psuinfoResult.png" alt="psuinfoResult" width="350">
+The commands and the interval for each command are currently set via a simple json file:
 
-<img src="https://raw.githubusercontent.com/raujonas/executor/master/docs/psuinfoSettings.png" alt="psuinfoSettings" width="500">
+
+```json
+{"commands":[
+    {"command":"echo Executor works!","interval":1}
+]}
+```
+
+{"commands":[{"command":"echo Executor works!","interval":1}]}
+
+### Advanced example
+
+NOTE: if quotation marks are used inside a command they have to be escaped: awk '{printf (\\"%.2f\\", $3/1000)}'
+
+```json
+{"commands":[
+    {"command":"top -b -i -n1 | grep -i 'cpu(s)' | head -c13 | awk '{print $2}' | tr ',' '.' && echo -n '% |'","interval":1},
+    {"command":"lscpu | grep 'MHz' | awk '{printf (\"%.2f\", $3/1000)}' && echo 'Ghz |'","interval":2},
+    {"command":"free | grep 'Speicher' | head -c33 | awk '{printf (\"%.2f\", $3/1024/1024)}' && echo 'GB |'","interval":2},
+    {"command":"free | grep 'Auslager' | head -c33 | awk '{printf (\"%.2f\", $3/1024/1024)}' && echo 'GB |'","interval":5},
+    {"command":"uptime | sed 's/^.\\+up\\ \\+\\([^,]*\\).*/\\1/g'","interval":60}
+]}
+```
