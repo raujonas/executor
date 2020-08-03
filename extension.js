@@ -242,7 +242,7 @@ function checkCommands(location, json) {
     try {
         location.commandsSettings = JSON.parse(json);
     } catch (e) {
-
+        log('Error in json file for location: ' + location.name);
     }
 
     if (location.commandsSettings.commands.length > 0) {
@@ -309,8 +309,6 @@ async function execCommand(command, argv, input = null, cancellable = null) {
                 try {
                     let [, stdout, stderr] = proc.communicate_utf8_finish(res);
 
-                    /* If you do opt for stderr output, you might as
-                     * well use it for more informative errors */
                     if (!proc.get_successful()) {
                         let status = proc.get_exit_status();
 
