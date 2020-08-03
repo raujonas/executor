@@ -161,6 +161,16 @@ function disable() {
     left.commandsOutput = [];
     center.commandsOutput = [];    
     right.commandsOutput = [];
+
+    this.settings.disconnect(leftActiveChanged);
+    this.settings.disconnect(leftIndexChanged);
+    this.settings.disconnect(leftCommandsJsonChanged);
+    this.settings.disconnect(centerActiveChanged);
+    this.settings.disconnect(centerIndexChanged);
+    this.settings.disconnect(centerCommandsJsonChanged);
+    this.settings.disconnect(rightActiveChanged);
+    this.settings.disconnect(rightIndexChanged);
+    this.settings.disconnect(rightCommandsJsonChanged);
 }
 
 function onLeftStatusChanged() {
@@ -239,9 +249,10 @@ function checkCommands(location, json) {
 
         location.commandsSettings.commands.forEach(function (command, index) {
             if (!executeQueue.some(c => c.command === command.command && c.interval === command.interval
-                && c.index === index && c.location === location.name)) {
+                && c.index === index && c.locationName === location.name)) {
                 command.locationName = location.name;
                 command.index = index;
+                log('PUSH: ' + command.command)
                 executeQueue.push(command);
             }
         }, this); 
@@ -340,7 +351,7 @@ function callback(command, stdout) {
                     if (cancellable && !cancellable.is_cancelled()) {
                         if(command.locationName === 'left' && !left.stopped) {
                                 if (!executeQueue.some(c => c.command === command.command && c.interval === command.interval
-                                    && c.index === command.index && c.location === command.location)) {
+                                    && c.index === command.index && c.locationName === command.locationName)) {
                                     executeQueue.push(command);
                                 }
                         }
@@ -361,7 +372,7 @@ function callback(command, stdout) {
                     if (cancellable && !cancellable.is_cancelled()) {
                         if(command.locationName === 'center' && !center.stopped) {
                                 if (!executeQueue.some(c => c.command === command.command && c.interval === command.interval
-                                    && c.index === command.index && c.location === command.location)) {
+                                    && c.index === command.index && c.locationName === command.locationName)) {
                                     executeQueue.push(command);
                                 }
                         }
@@ -382,7 +393,7 @@ function callback(command, stdout) {
                     if (cancellable && !cancellable.is_cancelled()) {
                         if(command.locationName === 'right' && !right.stopped) {
                                 if (!executeQueue.some(c => c.command === command.command && c.interval === command.interval
-                                    && c.index === command.index && c.location === command.location)) {
+                                    && c.index === command.index && c.locationName === command.locationName)) {
                                     executeQueue.push(command);
                                 }
                         }
