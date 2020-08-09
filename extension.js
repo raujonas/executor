@@ -257,6 +257,10 @@ function checkCommands(location, json) {
             }
         }, this); 
 
+        if (location.commandsSettings.commands.length < location.commandsOutput.length) {
+            location.commandsOutput = [];
+        }
+
         this.setOutput(location);
 
     } else {
