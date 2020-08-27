@@ -252,7 +252,6 @@ function checkCommands(location, json) {
                 && c.index === index && c.locationName === location.name)) {
                 command.locationName = location.name;
                 command.index = index;
-                log('PUSH: ' + command.command)
                 executeQueue.push(command);
             }
         }, this); 
@@ -316,11 +315,14 @@ async function execCommand(command, argv, input = null, cancellable = null) {
                     if (!proc.get_successful()) {
                         let status = proc.get_exit_status();
 
-                        throw new Gio.IOErrorEnum({
+                        log('Executor: error in command "' + command.command + '": ' + (stderr ? stderr.trim() : GLib.strerror(status)));
+
+                        /*throw new Gio.IOErrorEnum({
                             code: Gio.io_error_from_errno(status),
                             message: stderr ? stderr.trim() : GLib.strerror(status)
-                        });
+                        });*/
                     }
+                    
                     this.callback(command, stdout);
                     resolve(stdout);
                 } catch (e) {
