@@ -36,6 +36,9 @@ function buildPrefsWidget() {
     prefsWidget.attach(notebook, 0, 0, 1, 1);
 
     /* LEFT */
+    let leftCommandsArray = [{"command":"sh ~/script.sh","interval":2},
+                            {"command":"echo 'Executor works'","interval":1}]
+
     let leftGrid = new Gtk.Grid({
         /*margin: 18,*/
         column_spacing: 12,
@@ -47,13 +50,12 @@ function buildPrefsWidget() {
     });
 
     let leftLabel = new Gtk.Label({
-        label: '<b>Active:</b>',
+        label: 'Active:',
         halign: Gtk.Align.START,
         use_markup: true,
         visible: true
     });
     leftGrid.attach(leftLabel, 0, 0, 1, 1);
-
     let leftActive = new Gtk.Switch({
     	valign: Gtk.Align.END,
     	halign: Gtk.Align.END,
@@ -67,7 +69,6 @@ function buildPrefsWidget() {
         visible: true
     });
     leftGrid.attach(leftIndexLabel, 0, 1, 1, 1);
-
     let leftIndex = new Gtk.SpinButton({
         adjustment: new Gtk.Adjustment({
             lower: 0,
@@ -78,18 +79,39 @@ function buildPrefsWidget() {
     });
     leftGrid.attach(leftIndex, 1, 1, 1, 1);
 
-    let leftCommandsJsonLabel = new Gtk.Label({
-        label: 'Commands as JSON:',
-        halign: Gtk.Align.START,
+    let leftSeparator = new Gtk.Separator({
+        visible: true,
+        orientation: Gtk.Orientation.VERTICAL
+    })
+    leftGrid.attach(leftSeparator, 0, 2, 2, 1);
+
+    let leftListBox = new Gtk.ListBox({
         visible: true
     });
-    leftGrid.attach(leftCommandsJsonLabel, 0, 2, 1, 1);
+    leftGrid.attach(leftListBox, 0, 3, 2, 1);
 
-    let leftCommandsJson = new Gtk.Entry({
-        visible: true
-    });
-    leftGrid.attach(leftCommandsJson, 1, 2, 1, 1);
-
+    leftCommandsArray.forEach(c => {
+        let row = new Gtk.ListBoxRow({visible: true});
+        let command = new Gtk.Entry({
+            visible: true
+        });
+        command.set_text(c.command);
+        let hbox = new Gtk.Box({orientation: Gtk.Orientation.HORIZONTAL, spacing: 50, visible: true});
+        row.add(hbox);
+        hbox.pack_start(command,true,true, 0);
+        let interval = new Gtk.SpinButton({
+            adjustment: new Gtk.Adjustment({
+                lower: 0,
+                upper: 86400,
+                step_increment: 1
+            }),
+            visible: true
+        });
+        interval.set_value(c.interval);
+        hbox.pack_start(interval,false,true, 0);
+        leftListBox.add(row);
+    })
+    
     let pageLeft = new Gtk.Box({
         visible: true
     });
@@ -223,7 +245,6 @@ function buildPrefsWidget() {
 
     settings.bind('left-active', leftActive, 'active', Gio.SettingsBindFlags.DEFAULT);
     settings.bind('left-index', leftIndex, 'value', Gio.SettingsBindFlags.DEFAULT);
-    settings.bind('left-commands-json', leftCommandsJson, 'text', Gio.SettingsBindFlags.DEFAULT);
     settings.bind('center-active', centerActive, 'active', Gio.SettingsBindFlags.DEFAULT);
     settings.bind('center-index', centerIndex, 'value', Gio.SettingsBindFlags.DEFAULT);
     settings.bind('center-commands-json', centerCommandsJson, 'text', Gio.SettingsBindFlags.DEFAULT);
