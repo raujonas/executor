@@ -6,8 +6,20 @@ const Gtk = imports.gi.Gtk;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 
+let gschema = Gio.SettingsSchemaSource.new_from_directory(
+    Me.dir.get_child('schemas').get_path(),
+    Gio.SettingsSchemaSource.get_default(),
+    false
+);
+
+let settings = new Gio.Settings({
+    settings_schema: gschema.lookup('org.gnome.shell.extensions.executor', true)
+});
+
 let leftCommandsArray = []
 let leftListBox = new Gtk.ListBox({visible: true});
+leftListBox.connect("row-selected", this.enableRemoveCommandButton.bind(this));
+let leftRemoveButton = new Gtk.Button({visible: true, label: 'Remove'});
 
 let notebook = new Gtk.Notebook({visible: true});
 
@@ -16,17 +28,7 @@ function init() {
 
 function buildPrefsWidget() {
 
-    let gschema = Gio.SettingsSchemaSource.new_from_directory(
-        Me.dir.get_child('schemas').get_path(),
-        Gio.SettingsSchemaSource.get_default(),
-        false
-    );
-
-    let settings = new Gio.Settings({
-        settings_schema: gschema.lookup('org.gnome.shell.extensions.executor', true)
-    });
-
-    this.leftCommandsArray = JSON.parse(settings.get_value('left-commands-json').deep_unpack()).commands;
+    this.leftCommandsArray = JSON.parse(this.settings.get_value('left-commands-json').deep_unpack()).commands;
     
     let prefsWidget = new Gtk.Grid({/*margin: 18, column_spacing: 12, row_spacing: 12,*/ visible: true, column_homogeneous: true});
 
@@ -55,10 +57,12 @@ function buildPrefsWidget() {
     let leftButtonsHbox = new Gtk.Box({orientation: Gtk.Orientation.HORIZONTAL, spacing: 10, visible: true});
     let leftAddButton = new Gtk.Button({visible: true, label: 'Add'});
     leftAddButton.connect("clicked", this.addCommandToList.bind(this));
-    let leftRemoveButton = new Gtk.Button({visible: true, label: 'Remove'});
+    this.leftRemoveButton.set_sensitive(false);
+    leftRemoveButton.connect("clicked", this.removeCommandFromList.bind(this));
     let leftSaveButton = new Gtk.Button({visible: true, label: 'Save'});
+    leftSaveButton.connect("clicked", this.saveCommands.bind(this));
     leftButtonsHbox.pack_start(leftAddButton,false,true, 0);
-    leftButtonsHbox.pack_start(leftRemoveButton,false,true, 0);
+    leftButtonsHbox.pack_start(this.leftRemoveButton,false,true, 0);
     leftButtonsHbox.pack_end(leftSaveButton,false,true, 0);
     leftGrid.attach(leftButtonsHbox, 0, 4, 2, 1);
     
@@ -191,21 +195,20 @@ function buildPrefsWidget() {
     pageRight.add(rightGrid)
     this.notebook.append_page(pageRight,new Gtk.Label({label: "Right", visible: true}));
 
-    settings.bind('left-active', leftActive, 'active', Gio.SettingsBindFlags.DEFAULT);
-    settings.bind('left-index', leftIndex, 'value', Gio.SettingsBindFlags.DEFAULT);
-    settings.bind('center-active', centerActive, 'active', Gio.SettingsBindFlags.DEFAULT);
-    settings.bind('center-index', centerIndex, 'value', Gio.SettingsBindFlags.DEFAULT);
-    settings.bind('center-commands-json', centerCommandsJson, 'text', Gio.SettingsBindFlags.DEFAULT);
-    settings.bind('right-active', rightActive, 'active', Gio.SettingsBindFlags.DEFAULT);
-    settings.bind('right-index', rightIndex, 'value', Gio.SettingsBindFlags.DEFAULT);
-    settings.bind('right-commands-json', rightCommandsJson, 'text', Gio.SettingsBindFlags.DEFAULT);
+    this.settings.bind('left-active', leftActive, 'active', Gio.SettingsBindFlags.DEFAULT);
+    this.settings.bind('left-index', leftIndex, 'value', Gio.SettingsBindFlags.DEFAULT);
+    this.settings.bind('center-active', centerActive, 'active', Gio.SettingsBindFlags.DEFAULT);
+    this.settings.bind('center-index', centerIndex, 'value', Gio.SettingsBindFlags.DEFAULT);
+    this.settings.bind('center-commands-json', centerCommandsJson, 'text', Gio.SettingsBindFlags.DEFAULT);
+    this.settings.bind('right-active', rightActive, 'active', Gio.SettingsBindFlags.DEFAULT);
+    this.settings.bind('right-index', rightIndex, 'value', Gio.SettingsBindFlags.DEFAULT);
+    this.settings.bind('right-commands-json', rightCommandsJson, 'text', Gio.SettingsBindFlags.DEFAULT);
 
     return prefsWidget;
 }
 
 function populateCommandList(page_number) {
 
-    //case left
     if (page_number === 0) {
 
         this.leftListBox.foreach((element) => this.leftListBox.remove(element));
@@ -248,4 +251,56 @@ function addCommandToList() {
     } else if (this.notebook.get_current_page() === 2) {
 
     }
+}
+
+function enableRemoveCommandButton() {
+
+    if (this.notebook.get_current_page() === 0) {
+
+        this.leftRemoveButton.set_sensitive(true);
+
+    } else if (this.notebook.get_current_page() === 1) {
+
+    } else if (this.notebook.get_current_page() === 2) {
+
+    }
+}
+
+function removeCommandFromList() {
+
+    if (this.notebook.get_current_page() === 0) {
+
+        this.leftRemoveButton.set_sensitive(false);
+        this.leftCommandsArray.splice(this.leftListBox.get_selected_row().get_index(), 1);
+        this.populateCommandList(this.notebook.get_current_page());
+
+    } else if (this.notebook.get_current_page() === 1) {
+
+    } else if (this.notebook.get_current_page() === 2) {
+
+    }
+}
+
+function saveCommands() {
+
+    if (this.notebook.get_current_page() === 0) {
+
+        this.leftCommandsArray.splice(0, this.leftCommandsArray.length);
+
+        let count = 0;
+        this.leftListBox.foreach((element) => count++);
+
+        for (var i = 0; i < count; i++) {
+            this.leftCommandsArray.push({"command": this.leftListBox.get_row_at_index(i).get_child().get_children()[0].get_text(),"interval": this.leftListBox.get_row_at_index(i).get_child().get_children()[1].get_value()});
+            this.leftRemoveButton.set_sensitive(false);
+        }
+
+        this.settings.set_string('left-commands-json', '{"commands":' + JSON.stringify(this.leftCommandsArray) + '}');
+
+    } else if (this.notebook.get_current_page() === 1) {
+
+    } else if (this.notebook.get_current_page() === 2) {
+
+    }
+
 }
