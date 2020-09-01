@@ -6,10 +6,10 @@ const Gtk = imports.gi.Gtk;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 
-let leftCommandsArray = [{"command":"sh ~/script.sh","interval":2}, {"command":"echo 'Executor works'","interval":1}]
-let leftListBox = new Gtk.ListBox({
-    visible: true
-});
+let leftCommandsArray = []
+let leftListBox = new Gtk.ListBox({visible: true});
+
+let notebook = new Gtk.Notebook({visible: true});
 
 function init() {
 }
@@ -26,74 +26,35 @@ function buildPrefsWidget() {
         settings_schema: gschema.lookup('org.gnome.shell.extensions.executor', true)
     });
 
-    let notebook = new Gtk.Notebook({
-        visible: true
-    });
+    this.leftCommandsArray = JSON.parse(settings.get_value('left-commands-json').deep_unpack()).commands;
     
-    let prefsWidget = new Gtk.Grid({
-        /*margin: 18,
-        column_spacing: 12,
-        row_spacing: 12,*/
-        visible: true,
-        column_homogeneous: true,
-    });
+    let prefsWidget = new Gtk.Grid({/*margin: 18, column_spacing: 12, row_spacing: 12,*/ visible: true, column_homogeneous: true});
 
-    prefsWidget.attach(notebook, 0, 0, 1, 1);
+    prefsWidget.attach(this.notebook, 0, 0, 1, 1);
 
     /* LEFT */
-    let leftGrid = new Gtk.Grid({
-        /*margin: 18,*/
-        column_spacing: 12,
-        row_spacing: 12,
-        visible: true,
-        column_homogeneous: true,
-        vexpand: true,
-        hexpand: true
-    });
+    let leftGrid = new Gtk.Grid({/*margin: 18,*/ column_spacing: 12, row_spacing: 12, visible: true, column_homogeneous: true, vexpand: true, hexpand: true});
 
     let leftTopHbox = new Gtk.Box({orientation: Gtk.Orientation.HORIZONTAL, spacing: 20, visible: true});
     leftGrid.attach(leftTopHbox, 0, 0, 2, 1);
-    let leftLabel = new Gtk.Label({
-        label: 'Active:',
-        use_markup: true,
-        visible: true
-    });
-    let leftActive = new Gtk.Switch({
-        visible: true,
-        halign: Gtk.Align.CENTER,
-    });
 
-    let leftIndexLabel = new Gtk.Label({
-        label: 'Index:',
-        visible: true,
-        halign: Gtk.Align.END,
-    });
-    let leftIndex = new Gtk.SpinButton({
-        adjustment: new Gtk.Adjustment({
-            lower: 0,
-            upper: 10,
-            step_increment: 1
-        }),
-        visible: true
-    });
+    let leftActive = new Gtk.Switch({visible: true, halign: Gtk.Align.CENTER});
+    let leftIndex = new Gtk.SpinButton({adjustment: new Gtk.Adjustment({lower: 0, upper: 10, step_increment: 1}), visible: true});
     leftIndex.set_size_request(125,0);
-    leftTopHbox.pack_start(leftLabel,false,true, 0);
+    leftTopHbox.pack_start(new Gtk.Label({label: 'Active:', use_markup: true, visible: true}),false,true, 0);
     leftTopHbox.pack_start(leftActive,false,true, 0);
-    leftTopHbox.pack_start(leftIndexLabel,true,true, 0);
+    leftTopHbox.pack_start(new Gtk.Label({label: 'Index:', visible: true, halign: Gtk.Align.END}),true,true, 0);
     leftTopHbox.pack_start(leftIndex,false,true, 0);
 
-    let leftSeparator = new Gtk.Separator({
-        visible: true,
-        orientation: Gtk.Orientation.VERTICAL
-    })
-    leftGrid.attach(leftSeparator, 0, 2, 2, 1);
+    leftGrid.attach(new Gtk.Separator({visible: true, orientation: Gtk.Orientation.VERTICAL}), 0, 1, 2, 1);
+    leftGrid.attach(new Gtk.Label({label: 'Add commands and intervals in seconds:', visible: true}), 0, 2, 2, 1);
 
     leftGrid.attach(this.leftListBox, 0, 3, 2, 1);
-    this.populateLeftCommands();
+    this.populateCommandList(0);
 
     let leftButtonsHbox = new Gtk.Box({orientation: Gtk.Orientation.HORIZONTAL, spacing: 10, visible: true});
     let leftAddButton = new Gtk.Button({visible: true, label: 'Add'});
-    leftAddButton.connect ("clicked", this.leftAddButtonClicked.bind(this));
+    leftAddButton.connect("clicked", this.addCommandToList.bind(this));
     let leftRemoveButton = new Gtk.Button({visible: true, label: 'Remove'});
     let leftSaveButton = new Gtk.Button({visible: true, label: 'Save'});
     leftButtonsHbox.pack_start(leftAddButton,false,true, 0);
@@ -101,12 +62,10 @@ function buildPrefsWidget() {
     leftButtonsHbox.pack_end(leftSaveButton,false,true, 0);
     leftGrid.attach(leftButtonsHbox, 0, 4, 2, 1);
     
-    let pageLeft = new Gtk.Box({
-        visible: true
-    });
+    let pageLeft = new Gtk.Box({visible: true});
     pageLeft.border_width = 10;
     pageLeft.add(leftGrid);
-    notebook.append_page(pageLeft,new Gtk.Label({label: "Left", visible: true}));
+    this.notebook.append_page(pageLeft,new Gtk.Label({label: "Left", visible: true}));
 
     /* CENTER */
     let centerGrid = new Gtk.Grid({
@@ -168,7 +127,7 @@ function buildPrefsWidget() {
     });
     pageCenter.border_width = 10;
     pageCenter.add(centerGrid)
-    notebook.append_page(pageCenter,new Gtk.Label({label: "Center", visible: true}));
+    this.notebook.append_page(pageCenter,new Gtk.Label({label: "Center", visible: true}));
 
     /* RIGHT */
     let rightGrid = new Gtk.Grid({
@@ -230,7 +189,7 @@ function buildPrefsWidget() {
     });
     pageRight.border_width = 10;
     pageRight.add(rightGrid)
-    notebook.append_page(pageRight,new Gtk.Label({label: "Right", visible: true}));
+    this.notebook.append_page(pageRight,new Gtk.Label({label: "Right", visible: true}));
 
     settings.bind('left-active', leftActive, 'active', Gio.SettingsBindFlags.DEFAULT);
     settings.bind('left-index', leftIndex, 'value', Gio.SettingsBindFlags.DEFAULT);
@@ -244,33 +203,49 @@ function buildPrefsWidget() {
     return prefsWidget;
 }
 
-function populateLeftCommands() {
-    this.leftListBox.foreach((element) =>  this.leftListBox.remove(element));
+function populateCommandList(page_number) {
 
-    this.leftCommandsArray.forEach(c => {
-        let row = new Gtk.ListBoxRow({visible: true});
-        let command = new Gtk.Entry({
-            visible: true
-        });
-        command.set_text(c.command);
-        let hbox = new Gtk.Box({orientation: Gtk.Orientation.HORIZONTAL, spacing: 10, visible: true});
-        row.add(hbox);
-        hbox.pack_start(command,true,true, 0);
-        let interval = new Gtk.SpinButton({
-            adjustment: new Gtk.Adjustment({
-                lower: 0,
-                upper: 86400,
-                step_increment: 1
-            }),
-            visible: true
-        });
-        interval.set_value(c.interval);
-        hbox.pack_start(interval,false,true, 0);
-        this.leftListBox.add(row);
-    })
+    //case left
+    if (page_number === 0) {
+
+        this.leftListBox.foreach((element) => this.leftListBox.remove(element));
+
+        this.leftCommandsArray.forEach(c => {
+            this.leftListBox.add(this.prepareRow(c));
+        })
+
+    } else if (page_number === 1) {
+
+    } else if (page_number === 2) {
+
+    }
 }
 
-function leftAddButtonClicked() {
-    this.leftCommandsArray.push({"command":"new command","interval":1})
-    this.populateLeftCommands();
+function prepareRow(c) {
+    let row = new Gtk.ListBoxRow({visible: true});
+    let command = new Gtk.Entry({visible: true});
+    command.set_text(c.command);
+    let hbox = new Gtk.Box({orientation: Gtk.Orientation.HORIZONTAL, spacing: 10, visible: true});
+    row.add(hbox);
+    hbox.pack_start(command,true,true, 0);
+    let interval = new Gtk.SpinButton({adjustment: new Gtk.Adjustment({lower: 0,upper: 86400,step_increment: 1}),visible: true});
+    interval.set_value(c.interval);
+    hbox.pack_start(interval,false,true, 0);
+    
+    return row;
+}
+
+function addCommandToList() {
+    
+    //case left
+    if (this.notebook.get_current_page() === 0) {
+
+        this.leftCommandsArray.push({"command":"new command","interval":1})
+        this.populateCommandList(this.notebook.get_current_page());
+
+    } else if (this.notebook.get_current_page() === 1) {
+
+    } else if (this.notebook.get_current_page() === 2) {
+
+    }
 }
