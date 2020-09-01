@@ -17,11 +17,10 @@ let settings = new Gio.Settings({
 });
 
 let leftCommandsArray = []
-let leftListBox = new Gtk.ListBox({visible: true});
-leftListBox.connect("row-selected", this.enableRemoveCommandButton.bind(this));
-let leftRemoveButton = new Gtk.Button({visible: true, label: 'Remove'});
+let leftListBox;
+let leftRemoveButton;
 
-let notebook = new Gtk.Notebook({visible: true});
+let notebook;
 
 function init() {
 }
@@ -32,6 +31,7 @@ function buildPrefsWidget() {
     
     let prefsWidget = new Gtk.Grid({/*margin: 18, column_spacing: 12, row_spacing: 12,*/ visible: true, column_homogeneous: true});
 
+    this.notebook = new Gtk.Notebook({visible: true});
     prefsWidget.attach(this.notebook, 0, 0, 1, 1);
 
     /* LEFT */
@@ -49,16 +49,19 @@ function buildPrefsWidget() {
     leftTopHbox.pack_start(leftIndex,false,true, 0);
 
     leftGrid.attach(new Gtk.Separator({visible: true, orientation: Gtk.Orientation.VERTICAL}), 0, 1, 2, 1);
-    leftGrid.attach(new Gtk.Label({label: 'Add commands and intervals in seconds:', visible: true}), 0, 2, 2, 1);
+    leftGrid.attach(new Gtk.Label({label: 'Commands (quotation marks / backslashes need to be escaped) | Intervals in seconds:', visible: true}), 0, 2, 2, 1);
 
+    this.leftListBox = new Gtk.ListBox({visible: true});
+    this.leftListBox.connect("row-selected", this.enableRemoveCommandButton.bind(this));
     leftGrid.attach(this.leftListBox, 0, 3, 2, 1);
     this.populateCommandList(0);
 
     let leftButtonsHbox = new Gtk.Box({orientation: Gtk.Orientation.HORIZONTAL, spacing: 10, visible: true});
     let leftAddButton = new Gtk.Button({visible: true, label: 'Add'});
     leftAddButton.connect("clicked", this.addCommandToList.bind(this));
+    this.leftRemoveButton = new Gtk.Button({visible: true, label: 'Remove'});
     this.leftRemoveButton.set_sensitive(false);
-    leftRemoveButton.connect("clicked", this.removeCommandFromList.bind(this));
+    this.leftRemoveButton.connect("clicked", this.removeCommandFromList.bind(this));
     let leftSaveButton = new Gtk.Button({visible: true, label: 'Save'});
     leftSaveButton.connect("clicked", this.saveCommands.bind(this));
     leftButtonsHbox.pack_start(leftAddButton,false,true, 0);
@@ -273,6 +276,7 @@ function removeCommandFromList() {
         this.leftRemoveButton.set_sensitive(false);
         this.leftCommandsArray.splice(this.leftListBox.get_selected_row().get_index(), 1);
         this.populateCommandList(this.notebook.get_current_page());
+        this.leftRemoveButton.set_sensitive(true);
 
     } else if (this.notebook.get_current_page() === 1) {
 
