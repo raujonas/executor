@@ -1,7 +1,7 @@
 # Executor - Gnome Shell Extension
 Executes arbitrary shell commands periodically and displays the result in gnome status bar. 
 
-<img src="https://raw.githubusercontent.com/raujonas/executor/master/docs/result.png" alt="result" width="200">
+<img src="docs/result.png" alt="result" width="200">
 
 ## Install
 
@@ -15,7 +15,7 @@ OR checkout the repo to ~/.local/share/gnome-shell/extensions/ and rename the pr
 
 The commands and the interval for each command can be set for each location (left, center, right) separately in the settings view.
 
-<img src="https://raw.githubusercontent.com/raujonas/executor/master/docs/settings.png" alt="settings" width="500">
+<img src="docs/settings.png" alt="settings" width="500">
 
 ## Development
 
