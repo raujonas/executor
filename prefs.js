@@ -234,16 +234,19 @@ function addCommandToList() {
 
         this.leftCommandsArray.push({"command":"echo 'new command'","interval":1})
         this.populateCommandList(this.notebook.get_current_page());
+        this.leftRemoveButton.set_sensitive(false);
 
     } else if (this.notebook.get_current_page() === 1) {
 
         this.centerCommandsArray.push({"command":"echo 'new command'","interval":1})
         this.populateCommandList(this.notebook.get_current_page());
+        this.centerRemoveButton.set_sensitive(false);
 
     } else if (this.notebook.get_current_page() === 2) {
 
         this.rightCommandsArray.push({"command":"echo 'new command'","interval":1})
         this.populateCommandList(this.notebook.get_current_page());
+        this.rightRemoveButton.set_sensitive(false);
 
     }
 }
@@ -269,24 +272,21 @@ function removeCommandFromList() {
 
     if (this.notebook.get_current_page() === 0) {
 
-        this.leftRemoveButton.set_sensitive(false);
         this.leftCommandsArray.splice(this.leftListBox.get_selected_row().get_index(), 1);
-        this.populateCommandList(this.notebook.get_current_page());
-        this.leftRemoveButton.set_sensitive(true);
+        this.populateCommandList(this.notebook.get_current_page());     
+        this.leftRemoveButton.set_sensitive(false);
 
     } else if (this.notebook.get_current_page() === 1) {
 
-        this.centerRemoveButton.set_sensitive(false);
         this.centerCommandsArray.splice(this.centerListBox.get_selected_row().get_index(), 1);
         this.populateCommandList(this.notebook.get_current_page());
-        this.centerRemoveButton.set_sensitive(true);
+        this.centerRemoveButton.set_sensitive(false);
 
     } else if (this.notebook.get_current_page() === 2) {
 
-        this.rightRemoveButton.set_sensitive(false);
         this.rightCommandsArray.splice(this.rightListBox.get_selected_row().get_index(), 1);
-        this.populateCommandList(this.notebook.get_current_page());
-        this.rightRemoveButton.set_sensitive(true);
+        this.populateCommandList(this.notebook.get_current_page());        
+        this.rightRemoveButton.set_sensitive(false);
 
     }
 }
