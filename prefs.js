@@ -38,7 +38,12 @@ function buildPrefsWidget() {
     prefsWidget.attach(this.notebook, 0, 0, 1, 1);
 
     /* LEFT */
-    this.leftCommandsArray = JSON.parse(this.settings.get_value('left-commands-json').deep_unpack()).commands;
+    try {
+        this.leftCommandsArray = JSON.parse(this.settings.get_value('left-commands-json').deep_unpack()).commands;
+    } catch (e) {
+        log('Error in json file for location: ' + location.name);
+        this.settings.set_string('left-commands-json', '{"commands":[{"command":"echo Executor works!","interval":1}]}');
+    }
 
     let leftGrid = new Gtk.Grid({/*margin: 18,*/ column_spacing: 12, row_spacing: 12, visible: true, column_homogeneous: true, vexpand: true, hexpand: true});
 
@@ -80,7 +85,12 @@ function buildPrefsWidget() {
     this.notebook.append_page(pageLeft,new Gtk.Label({label: "Left", visible: true}));
 
     /* CENTER */
-    this.centerCommandsArray = JSON.parse(this.settings.get_value('center-commands-json').deep_unpack()).commands;
+    try {
+        this.centerCommandsArray = JSON.parse(this.settings.get_value('center-commands-json').deep_unpack()).commands;
+    } catch (e) {
+        log('Error in json file for location: ' + location.name);
+        this.settings.set_string('center-commands-json', '{"commands":[{"command":"echo Executor works!","interval":1}]}');
+    }
 
     let centerGrid = new Gtk.Grid({/*margin: 18,*/ column_spacing: 12, row_spacing: 12, visible: true, column_homogeneous: true, vexpand: true, hexpand: true});
 
@@ -122,7 +132,12 @@ function buildPrefsWidget() {
     this.notebook.append_page(pageCenter,new Gtk.Label({label: "Center", visible: true}));
 
     /* RIGHT */
-    this.rightCommandsArray = JSON.parse(this.settings.get_value('right-commands-json').deep_unpack()).commands;
+    try {
+        this.rightCommandsArray = JSON.parse(this.settings.get_value('right-commands-json').deep_unpack()).commands;
+    } catch (e) {
+        log('Error in json file for location: ' + location.name);
+        this.settings.set_string('right-commands-json', '{"commands":[{"command":"echo Executor works!","interval":1}]}');
+    }
 
     let rightGrid = new Gtk.Grid({/*margin: 18,*/ column_spacing: 12, row_spacing: 12, visible: true, column_homogeneous: true, vexpand: true, hexpand: true});
 
