@@ -19,7 +19,8 @@ let left = {
     "box": null,
     "stopped": null,
     "commandsSettings": {"commands": []},
-    "commandsOutput": []
+    "commandsOutput": [],
+    "lastIndex": null
 }
 
 let center = {
@@ -28,7 +29,8 @@ let center = {
     "box": null,
     "stopped": null,
     "commandsSettings": {"commands": []},
-    "commandsOutput": []
+    "commandsOutput": [],
+    "lastIndex": null
 }
 
 let right = {
@@ -37,7 +39,8 @@ let right = {
     "box": null,
     "stopped": null,
     "commandsSettings": {"commands": []},
-    "commandsOutput": []
+    "commandsOutput": [],
+    "lastIndex": null
 }
 
 let cancellable = null;
@@ -180,8 +183,15 @@ function onLeftStatusChanged() {
         }
         
         left.stopped = false;
-        Main.panel._leftBox.insert_child_at_index(left.box, settings.get_value('left-index').deep_unpack());
-        this.checkCommands(left, this.settings.get_value('left-commands-json').deep_unpack());
+        if (left.lastIndex === null) {
+            this.checkCommands(left, this.settings.get_value('left-commands-json').deep_unpack()); 
+            left.lastIndex = settings.get_value('left-index').deep_unpack();
+        } else if (settings.get_value('left-index').deep_unpack() !== left.lastIndex) {
+            left.lastIndex = settings.get_value('left-index').deep_unpack();
+        }  else {
+            this.checkCommands(left, this.settings.get_value('left-commands-json').deep_unpack()); 
+        }
+        Main.panel._leftBox.insert_child_at_index(left.box, left.lastIndex);
     } else {
         left.stopped = true;
         if (left.box.get_parent()) {
@@ -199,8 +209,15 @@ function onCenterStatusChanged() {
         }
 
         center.stopped = false;
+        if (center.lastIndex === null) {
+            this.checkCommands(center, this.settings.get_value('center-commands-json').deep_unpack()); 
+            center.lastIndex = settings.get_value('center-index').deep_unpack();
+        } else if (settings.get_value('center-index').deep_unpack() !== center.lastIndex) {
+            center.lastIndex = settings.get_value('center-index').deep_unpack();
+        }  else {
+            this.checkCommands(center, this.settings.get_value('center-commands-json').deep_unpack()); 
+        }
         Main.panel._centerBox.insert_child_at_index(center.box, settings.get_value('center-index').deep_unpack());
-        this.checkCommands(center, this.settings.get_value('center-commands-json').deep_unpack());
     } else {
         center.stopped = true;
         if (center.box.get_parent()) {
@@ -218,8 +235,15 @@ function onRightStatusChanged() {
         }
 
         right.stopped = false;
+        if (right.lastIndex === null) {
+            this.checkCommands(right, this.settings.get_value('right-commands-json').deep_unpack()); 
+            right.lastIndex = settings.get_value('right-index').deep_unpack();
+        } else if (settings.get_value('right-index').deep_unpack() !== right.lastIndex) {
+            right.lastIndex = settings.get_value('right-index').deep_unpack();
+        }  else {
+            this.checkCommands(right, this.settings.get_value('right-commands-json').deep_unpack()); 
+        }
         Main.panel._rightBox.insert_child_at_index(right.box, settings.get_value('right-index').deep_unpack());
-        this.checkCommands(right, this.settings.get_value('right-commands-json').deep_unpack());
     } else {
         right.stopped = true;
         if (right.box.get_parent()) {
