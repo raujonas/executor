@@ -50,7 +50,7 @@ function buildPrefsWidget() {
     leftIndex.set_size_request(125,0);
     leftTopHbox.pack_start(new Gtk.Label({label: 'Active:', use_markup: true, visible: true}),false,true, 0);
     leftTopHbox.pack_start(leftActive,false,true, 0);
-    leftTopHbox.pack_start(new Gtk.Label({label: 'Index:', visible: true, halign: Gtk.Align.END}),true,true, 0);
+    leftTopHbox.pack_start(new Gtk.Label({label: 'Index in status bar:', visible: true, halign: Gtk.Align.END}),true,true, 0);
     leftTopHbox.pack_start(leftIndex,false,true, 0);
 
     leftGrid.attach(new Gtk.Separator({visible: true, orientation: Gtk.Orientation.VERTICAL}), 0, 1, 2, 1);
@@ -92,7 +92,7 @@ function buildPrefsWidget() {
     centerIndex.set_size_request(125,0);
     centerTopHbox.pack_start(new Gtk.Label({label: 'Active:', use_markup: true, visible: true}),false,true, 0);
     centerTopHbox.pack_start(centerActive,false,true, 0);
-    centerTopHbox.pack_start(new Gtk.Label({label: 'Index:', visible: true, halign: Gtk.Align.END}),true,true, 0);
+    centerTopHbox.pack_start(new Gtk.Label({label: 'Index in status bar:', visible: true, halign: Gtk.Align.END}),true,true, 0);
     centerTopHbox.pack_start(centerIndex,false,true, 0);
 
     centerGrid.attach(new Gtk.Separator({visible: true, orientation: Gtk.Orientation.VERTICAL}), 0, 1, 2, 1);
@@ -134,7 +134,7 @@ function buildPrefsWidget() {
     rightIndex.set_size_request(125,0);
     rightTopHbox.pack_start(new Gtk.Label({label: 'Active:', use_markup: true, visible: true}),false,true, 0);
     rightTopHbox.pack_start(rightActive,false,true, 0);
-    rightTopHbox.pack_start(new Gtk.Label({label: 'Index:', visible: true, halign: Gtk.Align.END}),true,true, 0);
+    rightTopHbox.pack_start(new Gtk.Label({label: 'Index in status bar:', visible: true, halign: Gtk.Align.END}),true,true, 0);
     rightTopHbox.pack_start(rightIndex,false,true, 0);
 
     rightGrid.attach(new Gtk.Separator({visible: true, orientation: Gtk.Orientation.VERTICAL}), 0, 1, 2, 1);
