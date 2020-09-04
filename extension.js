@@ -248,6 +248,7 @@ function checkCommands(location, json) {
     if (location.commandsSettings.commands.length > 0) {
 
         location.commandsSettings.commands.forEach(function (command, index) {
+            log(command.uuid)
             if (!executeQueue.some(c => c.command === command.command && c.interval === command.interval
                 && c.index === index && c.locationName === location.name)) {
                 command.locationName = location.name;
@@ -350,15 +351,19 @@ function callback(command, stdout) {
     }
 
     if (command.locationName === 'left' && !left.stopped) {
-        if (!left.commandsSettings.commands.some(c => c.command === command.command && c.interval === command.interval)) {
+        if (!left.commandsSettings.commands.some(c => c.command === command.command && c.interval === command.interval && c.index === command.index)) {
             left.commandsOutput.splice(index, 1);
         } else {
             left.commandsOutput[command.index] = outputAsOneLine
+            
+            if (left.commandsOutput.length > left.commandsSettings.commands.length) {
+                left.commandsOutput.splice(left.commandsSettings.commands.length, left.commandsOutput.length - left.commandsSettings.commands.length);
+            }
 
             GLib.timeout_add_seconds(0, command.interval, () => {
                 if (cancellable && !cancellable.is_cancelled()) {
                     if(command.locationName === 'left' && !left.stopped) {
-                            if (!executeQueue.some(c => c.command === command.command && c.interval === command.interval
+                            if (!executeQueue.some(c => c.command === command.command && c.interval === command.interval 
                                 && c.index === command.index && c.locationName === command.locationName)) {
                                 executeQueue.push(command);
                             }
@@ -371,10 +376,14 @@ function callback(command, stdout) {
         
         this.setOutput(left);
     } else if (command.locationName === 'center' && !center.stopped) {
-        if (!center.commandsSettings.commands.some(c => c.command === command.command && c.interval === command.interval)) {
+        if (!center.commandsSettings.commands.some(c => c.command === command.command && c.interval === command.interval && c.index === command.index)) {
             center.commandsOutput.splice(index, 1);
         } else {
             center.commandsOutput[command.index] = outputAsOneLine
+
+            if (center.commandsOutput.length > center.commandsSettings.commands.length) {
+                center.commandsOutput.splice(center.commandsSettings.commands.length, center.commandsOutput.length - center.commandsSettings.commands.length);
+            }
 
             GLib.timeout_add_seconds(0, command.interval, () => {
                 if (cancellable && !cancellable.is_cancelled()) {
@@ -392,10 +401,14 @@ function callback(command, stdout) {
         
         this.setOutput(center);
     } else if (command.locationName === 'right' && !right.stopped) {
-        if (!right.commandsSettings.commands.some(c => c.command === command.command && c.interval === command.interval)) {
+        if (!right.commandsSettings.commands.some(c => c.command === command.command && c.interval === command.interval && c.index === command.index)) {
             right.commandsOutput.splice(index, 1);
         } else {
             right.commandsOutput[command.index] = outputAsOneLine
+
+            if (right.commandsOutput.length > right.commandsSettings.commands.length) {
+                right.commandsOutput.splice(right.commandsSettings.commands.length, right.commandsOutput.length - right.commandsSettings.commands.length);
+            }
 
             GLib.timeout_add_seconds(0, command.interval, () => {
                 if (cancellable && !cancellable.is_cancelled()) {

@@ -232,17 +232,17 @@ function addCommandToList() {
     
     if (this.notebook.get_current_page() === 0) {
 
-        this.leftCommandsArray.push({"command":"new command","interval":1})
+        this.leftCommandsArray.push({"command":"echo 'new command'","interval":1})
         this.populateCommandList(this.notebook.get_current_page());
 
     } else if (this.notebook.get_current_page() === 1) {
 
-        this.centerCommandsArray.push({"command":"new command","interval":1})
+        this.centerCommandsArray.push({"command":"echo 'new command'","interval":1})
         this.populateCommandList(this.notebook.get_current_page());
 
     } else if (this.notebook.get_current_page() === 2) {
 
-        this.rightCommandsArray.push({"command":"new command","interval":1})
+        this.rightCommandsArray.push({"command":"echo 'new command'","interval":1})
         this.populateCommandList(this.notebook.get_current_page());
 
     }
@@ -301,7 +301,10 @@ function saveCommands() {
         this.leftListBox.foreach((element) => count++);
 
         for (var i = 0; i < count; i++) {
-            this.leftCommandsArray.push({"command": this.leftListBox.get_row_at_index(i).get_child().get_children()[0].get_text(),"interval": this.leftListBox.get_row_at_index(i).get_child().get_children()[1].get_value()});
+            this.leftCommandsArray.push({
+                "command": this.leftListBox.get_row_at_index(i).get_child().get_children()[0].get_text(),
+                "interval": this.leftListBox.get_row_at_index(i).get_child().get_children()[1].get_value(),
+                "uuid": this.createUUID()});
             this.leftRemoveButton.set_sensitive(false);
         }
 
@@ -315,7 +318,9 @@ function saveCommands() {
         this.centerListBox.foreach((element) => count++);
 
         for (var i = 0; i < count; i++) {
-            this.centerCommandsArray.push({"command": this.centerListBox.get_row_at_index(i).get_child().get_children()[0].get_text(),"interval": this.centerListBox.get_row_at_index(i).get_child().get_children()[1].get_value()});
+            this.centerCommandsArray.push({"command": this.centerListBox.get_row_at_index(i).get_child().get_children()[0].get_text(),
+            "interval": this.centerListBox.get_row_at_index(i).get_child().get_children()[1].get_value(),
+            "uuid": this.createUUID()});
             this.centerRemoveButton.set_sensitive(false);
         }
 
@@ -330,13 +335,21 @@ function saveCommands() {
         this.rightListBox.foreach((element) => count++);
 
         for (var i = 0; i < count; i++) {
-            this.rightCommandsArray.push({"command": this.rightListBox.get_row_at_index(i).get_child().get_children()[0].get_text(),"interval": this.rightListBox.get_row_at_index(i).get_child().get_children()[1].get_value()});
+            this.rightCommandsArray.push({"command": this.rightListBox.get_row_at_index(i).get_child().get_children()[0].get_text(),
+            "interval": this.rightListBox.get_row_at_index(i).get_child().get_children()[1].get_value(),
+            "uuid": this.createUUID()});
             this.rightRemoveButton.set_sensitive(false);
         }
 
         this.settings.set_string('right-commands-json', '{"commands":' + JSON.stringify(this.rightCommandsArray) + '}');
-
-
     }
-
 }
+
+function createUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  }
+  
+  
