@@ -9,7 +9,7 @@ Get it here: <a href="https://extensions.gnome.org/extension/2932/executor/">htt
 
 OR download the <a href="https://github.com/raujonas/executor/releases/download/v1/executor@raujonas.github.io">zip of the latest release</a> and extract the content to ~/.local/share/gnome-shell/extensions/executor@raujonas.github.io
 
-OR checkout the repo to ~/.local/share/gnome-shell/extensions/ and rename the project folder to /executor@raujonas.github.io for the latest version
+OR for always **latest stable version**: checkout the repo (master branch) to ~/.local/share/gnome-shell/extensions/ and rename the project folder to /executor@raujonas.github.io for the latest version
 
 ## Configuration
 
