@@ -21,4 +21,5 @@ The commands and the interval for each command can be set for each location (lef
 
 Please feel free to contribute and suggest ideas or report bugs.
 
-Special thanks for testing and your valuable input and ideas to make this extensions even better: [@mrsnl](https://github.com/mrsnl), [@peterrus](https://github.com/peterrus)
+Special thanks for testing and your valuable input and ideas to make this extensions even better:\
+[@mrsnl](https://github.com/mrsnl) [@peterrus](https://github.com/peterrus)
