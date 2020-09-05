@@ -318,9 +318,10 @@ function saveCommands() {
         this.centerListBox.foreach((element) => count++);
 
         for (var i = 0; i < count; i++) {
-            this.centerCommandsArray.push({"command": this.centerListBox.get_row_at_index(i).get_child().get_children()[0].get_text(),
-            "interval": this.centerListBox.get_row_at_index(i).get_child().get_children()[1].get_value(),
-            "uuid": this.createUUID()});
+            this.centerCommandsArray.push({
+                "command": this.centerListBox.get_row_at_index(i).get_child().get_children()[0].get_text(),
+                "interval": this.centerListBox.get_row_at_index(i).get_child().get_children()[1].get_value(),
+                "uuid": this.createUUID()});
             this.centerRemoveButton.set_sensitive(false);
         }
 
@@ -335,9 +336,10 @@ function saveCommands() {
         this.rightListBox.foreach((element) => count++);
 
         for (var i = 0; i < count; i++) {
-            this.rightCommandsArray.push({"command": this.rightListBox.get_row_at_index(i).get_child().get_children()[0].get_text(),
-            "interval": this.rightListBox.get_row_at_index(i).get_child().get_children()[1].get_value(),
-            "uuid": this.createUUID()});
+            this.rightCommandsArray.push({
+                "command": this.rightListBox.get_row_at_index(i).get_child().get_children()[0].get_text(),
+                "interval": this.rightListBox.get_row_at_index(i).get_child().get_children()[1].get_value(),
+                "uuid": this.createUUID()});
             this.rightRemoveButton.set_sensitive(false);
         }
 

@@ -397,7 +397,7 @@ function callback(command, stdout) {
         
         this.setOutput(left);
     } else if (command.locationName === 'center' && !center.stopped) {
-        if (!center.commandsSettings.commands.some(c => c.uuid === command.uuidx)) {
+        if (!center.commandsSettings.commands.some(c => c.uuid === command.uuid)) {
             center.commandsOutput.splice(index, 1);
         } else {
             center.commandsOutput[command.index] = outputAsOneLine
