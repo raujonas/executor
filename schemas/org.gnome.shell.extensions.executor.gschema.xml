@@ -8,7 +8,7 @@
       <default>2</default>
     </key>
     <key name="left-commands-json" type="s">
-      <default>'{"commands":[{"command":"echo Executor works!","interval":1,"uuid":"5db62c34-ece2-432e-9373-b4ba93f65483"}]}'</default>
+      <default>'{"commands":[{"command":"echo Executor works!","interval":5,"uuid":"5db62c34-ece2-432e-9373-b4ba93f65483"}]}'</default>
     </key>
      <key name="center-active" type="b">
       <default>true</default>
@@ -17,7 +17,7 @@
       <default>2</default>
     </key>
     <key name="center-commands-json" type="s">
-      <default>'{"commands":[{"command":"echo Executor works!","interval":1,"uuid":"7ade000c-d6fc-4f44-9d05-a6693726a76c"}]}'</default>
+      <default>'{"commands":[{"command":"echo Executor works!","interval":5,"uuid":"7ade000c-d6fc-4f44-9d05-a6693726a76c"}]}'</default>
     </key>
     <key name="right-active" type="b">
       <default>true</default>
@@ -26,7 +26,7 @@
       <default>2</default>
     </key>
     <key name="right-commands-json" type="s">
-      <default>'{"commands":[{"command":"echo Executor works!","interval":1,"uuid":"3a38985c-128b-4533-80c3-d79f1d2940bd"}]}'</default>
+      <default>'{"commands":[{"command":"echo Executor works!","interval":5,"uuid":"3a38985c-128b-4533-80c3-d79f1d2940bd"}]}'</default>
     </key>
   </schema>
 </schemalist>
