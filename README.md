@@ -7,7 +7,7 @@
 # Executor - Gnome Shell Extension
 Executes arbitrary shell commands periodically and displays the result in gnome status bar. 
 
-<img src="docs/result.png" alt="result" width="200">
+<img src="docs/result.png" alt="result" width="967">
 
 ## Install
 
