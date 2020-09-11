@@ -287,6 +287,8 @@ function checkCommands(location, json) {
 
     } else {
         log('No commands specified');
+        location.commandsOutput = [];
+        this.setOutput(location);
     }
 }
 
