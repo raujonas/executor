@@ -23,6 +23,13 @@ The commands and the interval for each command can be set for each location (lef
 
 <img src="docs/settings.png" alt="settings" width="500">
 
+## Debugging
+
+If you have no output or other issues you can usually have a look into the log with 
+```console
+user@system:~$ journalctl /usr/bin/gnome-shell -f
+``` 
+
 ## Development
 
 Please feel free to contribute and suggest ideas or report bugs.
