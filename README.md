@@ -11,11 +11,11 @@ Executes arbitrary shell commands periodically and displays the result in gnome 
 
 ## Install
 
-Get it here: <a href="https://extensions.gnome.org/extension/2932/executor/">https://extensions.gnome.org/extension/2932/executor/</a> 
+[<img src="https://raw.githubusercontent.com/andyholmes/gnome-shell-extensions-badge/master/get-it-on-ego.svg?sanitize=true" alt="Get it on GNOME Extensions" height="100" width="220">](https://extensions.gnome.org/extension/2932/executor/)
 
 OR download the <a href="https://github.com/raujonas/executor/releases/latest">zip of the latest release</a> and extract the content to ~/.local/share/gnome-shell/extensions/executor@raujonas.github.io
 
-OR for always **latest stable version**: checkout the repo (master branch) to ~/.local/share/gnome-shell/extensions/ and rename the project folder to /executor@raujonas.github.io for the latest version
+OR for **latest stable version**: checkout the repo (master branch) to ~/.local/share/gnome-shell/extensions/ and rename the project folder to /executor@raujonas.github.io
 
 ## Configuration
 
