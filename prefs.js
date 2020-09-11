@@ -289,7 +289,7 @@ function saveCommands() {
                 "command": this.centerListBox.get_row_at_index(i).get_child().get_children()[0].get_text(),
                 "interval": this.centerListBox.get_row_at_index(i).get_child().get_children()[1].get_value(),
                 "uuid": this.createUUID()});
-            }
+        }
 
         this.settings.set_string('center-commands-json', '{"commands":' + JSON.stringify(this.centerCommandsArray) + '}');
 
