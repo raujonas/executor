@@ -1,10 +1,12 @@
 {
   "name": "Executor",
-  "description": "Executes arbitrary shell commands periodically and displays the result in gnome top bar",
+  "description": "Execute arbitrary shell commands periodically and independent from each other with an individual interval and display the output in gnome top bar.",
   "uuid": "executor@raujonas.github.io",
   "shell-version": [
-    "3.36"
+    "3.30.2",
+    "3.36",
+    "3.38"
   ],
   "url": "https://github.com/raujonas/executor",
-  "version": 4
+  "version": 5
 }

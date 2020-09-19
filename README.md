@@ -5,7 +5,9 @@
 ![GitHub last commit](https://img.shields.io/github/last-commit/raujonas/executor)
 
 # Executor - Gnome Shell Extension
-Executes arbitrary shell commands periodically and displays the result in gnome status bar. 
+<img src="resources/icons/icon.png" alt="result" width="50">
+
+Execute arbitrary shell commands periodically and independent from each other with an individual interval and display the output in gnome top bar.
 
 <img src="docs/result.png" alt="result" width="967">
 
