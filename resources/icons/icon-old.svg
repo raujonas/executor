@@ -15,10 +15,7 @@
    version="1.1"
    id="svg8"
    inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)"
-   sodipodi:docname="icon.svg"
-   inkscape:export-filename="/home/jonas/.local/share/gnome-shell/extensions/executor@raujonas.github.io/resources/icons/icon.png"
-   inkscape:export-xdpi="96"
-   inkscape:export-ydpi="96">
+   sodipodi:docname="icon.svg">
   <defs
      id="defs2" />
   <sodipodi:namedview
@@ -28,9 +25,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2"
-     inkscape:cx="204.95727"
-     inkscape:cy="253.97933"
+     inkscape:zoom="1.4"
+     inkscape:cx="227.66565"
+     inkscape:cy="223.96194"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -48,7 +45,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -59,12 +56,12 @@
      transform="translate(0,-164.70831)">
     <rect
        id="rect3723"
-       width="126.99998"
-       height="105.82423"
-       x="2.6458445"
-       y="178.03949"
-       style="fill:#ffffff;stroke:#000000;stroke-width:5.29168892;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       ry="9.8131046" />
+       width="132.29167"
+       height="105.83333"
+       x="1.1406043e-08"
+       y="177.93748"
+       style="stroke-width:0.26458332"
+       ry="9.8139477" />
     <rect
        id="rect3729"
        width="58.102306"
@@ -72,7 +69,7 @@
        x="149.77107"
        y="118.60368"
        ry="3.380163"
-       style="fill:#000000;stroke-width:0.25579631"
+       style="fill:#ffffff;stroke-width:0.25579631"
        transform="rotate(45)" />
     <rect
        id="rect3729-3"
@@ -81,7 +78,7 @@
        x="-176.70599"
        y="193.43916"
        ry="3.3801632"
-       style="fill:#000000;stroke-width:0.25579631"
+       style="fill:#ffffff;stroke-width:0.25579631"
        transform="rotate(-45)" />
     <rect
        id="rect3729-3-6"
@@ -90,33 +87,7 @@
        x="-119.0625"
        y="-270.54166"
        ry="3.3801632"
-       style="fill:#000000;stroke-width:0.24411464"
+       style="fill:#ffffff;stroke-width:0.24411464"
        transform="scale(-1)" />
-    <rect
-       style="fill:#ffffff;stroke:none;stroke-width:14.56540489;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       id="rect1157"
-       width="13.229166"
-       height="9.3342352"
-       x="104.16222"
-       y="175.3914"
-       ry="0" />
-    <rect
-       id="rect3729-36"
-       width="18.520834"
-       height="5.2916665"
-       x="184.15408"
-       y="49.130665"
-       ry="1.239187"
-       style="fill:#000000;stroke-width:0.08744349"
-       transform="rotate(45)" />
-    <rect
-       id="rect3729-36-5"
-       width="18.520834"
-       height="5.2916665"
-       x="-67.651505"
-       y="197.38324"
-       ry="1.239187"
-       style="fill:#000000;stroke-width:0.08744349"
-       transform="rotate(-45)" />
   </g>
 </svg>
