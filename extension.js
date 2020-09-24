@@ -76,24 +76,24 @@ function enable() {
     if (left.box.get_parent()) {
         left.box.get_parent().remove_child(left.box);
     }
-    left.output = new St.Label();
-    left.box.add(left.output, {y_fill: false, y_align: St.Align.MIDDLE});
+    left.output = new St.Label({y_expand: true, y_align: 2});
+    left.box.add_child(left.output);
     this.onLeftStatusChanged();
 
     center.box = new St.BoxLayout({ style_class: 'panel-button' });
     if (center.box.get_parent()) {
         center.box.get_parent().remove_child(center.box);
     }
-    center.output = new St.Label();
-    center.box.add(center.output, {y_fill: false, y_align: St.Align.MIDDLE});
+    center.output = new St.Label({y_expand: true, y_align: 2});
+    center.box.add_child(center.output);
     this.onCenterStatusChanged();
 
     right.box = new St.BoxLayout({ style_class: 'panel-button' });
     if (right.box.get_parent()) {
         right.box.get_parent().remove_child(right.box);
     }
-    right.output = new St.Label();
-    right.box.add(right.output, {y_fill: false, y_align: St.Align.MIDDLE});
+    right.output = new St.Label({y_expand: true, y_align: 2});
+    right.box.add_child(right.output);
     this.onRightStatusChanged();
 
     leftActiveChanged = this.settings.connect(
@@ -456,4 +456,3 @@ async function setOutput(location) {
     })
     location.output.set_text(string);
 }
-
