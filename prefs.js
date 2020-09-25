@@ -66,6 +66,7 @@ function buildPrefsWidget() {
     this.leftListBox.set_selection_mode(0);
     leftGrid.attach(this.leftListBox, 0, 3, 2, 1);
     this.populateCommandList(0);
+    leftGrid.attach(new Gtk.Separator({visible: true, orientation: Gtk.Orientation.VERTICAL}), 0, 4, 2, 1);
 
     let leftButtonsHbox = new Gtk.Box({orientation: Gtk.Orientation.HORIZONTAL, spacing: 10, visible: true});
     let leftAddButton = new Gtk.Button({visible: true});
@@ -89,7 +90,7 @@ function buildPrefsWidget() {
     leftButtonsHbox.pack_start(leftAddButton,false,true, 0);
     leftButtonsHbox.pack_end(leftSaveButton,false,true, 0);
     leftButtonsHbox.pack_end(leftCancelButton,false,true, 0);
-    leftGrid.attach(leftButtonsHbox, 0, 4, 2, 1);
+    leftGrid.attach(leftButtonsHbox, 0, 5, 2, 1);
     
     let pageLeft = new Gtk.Box({visible: true});
     pageLeft.border_width = 10;
@@ -125,6 +126,7 @@ function buildPrefsWidget() {
     this.centerListBox.set_selection_mode(0);
     centerGrid.attach(this.centerListBox, 0, 3, 2, 1);
     this.populateCommandList(1);
+    centerGrid.attach(new Gtk.Separator({visible: true, orientation: Gtk.Orientation.VERTICAL}), 0, 4, 2, 1);
 
     let centerButtonsHbox = new Gtk.Box({orientation: Gtk.Orientation.HORIZONTAL, spacing: 10, visible: true});
     let centerAddButton = new Gtk.Button({visible: true});
@@ -148,7 +150,7 @@ function buildPrefsWidget() {
     centerButtonsHbox.pack_start(centerAddButton,false,true, 0);
     centerButtonsHbox.pack_end(centerSaveButton,false,true, 0);
     centerButtonsHbox.pack_end(centerCancelButton,false,true, 0);
-    centerGrid.attach(centerButtonsHbox, 0, 4, 2, 1);
+    centerGrid.attach(centerButtonsHbox, 0, 5, 2, 1);
     
     let pageCenter = new Gtk.Box({visible: true});
     pageCenter.border_width = 10;
@@ -184,6 +186,7 @@ function buildPrefsWidget() {
     this.rightListBox.set_selection_mode(0);
     rightGrid.attach(this.rightListBox, 0, 3, 2, 1);
     this.populateCommandList(2);
+    rightGrid.attach(new Gtk.Separator({visible: true, orientation: Gtk.Orientation.VERTICAL}), 0, 4, 2, 1);
 
     let rightButtonsHbox = new Gtk.Box({orientation: Gtk.Orientation.HORIZONTAL, spacing: 10, visible: true});
     let rightAddButton = new Gtk.Button({visible: true});
@@ -207,7 +210,7 @@ function buildPrefsWidget() {
     rightButtonsHbox.pack_start(rightAddButton,false,true, 0);
     rightButtonsHbox.pack_end(rightSaveButton,false,true, 0);
     rightButtonsHbox.pack_end(rightCancelButton,false,true, 0);
-    rightGrid.attach(rightButtonsHbox, 0, 4, 2, 1);
+    rightGrid.attach(rightButtonsHbox, 0, 5, 2, 1);
     
     let pageRight = new Gtk.Box({visible: true});
     pageRight.border_width = 10;
@@ -252,14 +255,36 @@ function populateCommandList(page_number) {
 
 function prepareRow(c, index) {
     let row = new Gtk.ListBoxRow({visible: true});
-    let command = new Gtk.Entry({visible: true});
+
+    let command = new Gtk.Entry({visible: true, margin_right: 10});
     command.set_text(c.command);
-    let hbox = new Gtk.Box({orientation: Gtk.Orientation.HORIZONTAL, spacing: 10, visible: true});
+    let hbox = new Gtk.Box({orientation: Gtk.Orientation.HORIZONTAL, visible: true});
     row.add(hbox);
     hbox.pack_start(command,true,true, 0);
-    let interval = new Gtk.SpinButton({adjustment: new Gtk.Adjustment({lower: 0,upper: 86400,step_increment: 1}),visible: true});
+
+    let interval = new Gtk.SpinButton({adjustment: new Gtk.Adjustment({lower: 0,upper: 86400,step_increment: 1}), visible: true, margin_right: 10});
     interval.set_value(c.interval);
     hbox.pack_start(interval,false,true, 0);
+
+    let upButton = new Gtk.Button({visible: true, margin_right: 1});
+    let upButtonImage = new Gtk.Image({visible: true});
+    upButtonImage.set_from_stock(Gtk.STOCK_GO_UP , 20);
+    upButton.set_image(upButtonImage);
+    upButton.connect("clicked", () => {
+        this.moveCommandUp(index);
+    });
+
+    let downButton = new Gtk.Button({visible: true, margin_right: 1});
+    let downButtonImage = new Gtk.Image({visible: true});
+    downButtonImage.set_from_stock(Gtk.STOCK_GO_DOWN , 20);
+    downButton.set_image(downButtonImage);
+    downButton.connect("clicked", () => {
+        this.moveCommandDown(index);
+    });
+
+    hbox.pack_start(upButton,false,true, 0);
+    hbox.pack_start(downButton,false,true, 0);
+
     let remove = new Gtk.Button({visible: true});
     let removeImage = new Gtk.Image({visible: true});
     removeImage.set_from_stock(Gtk.STOCK_DELETE, 10);
@@ -311,6 +336,52 @@ function removeCommandFromList(index) {
         this.populateCommandList(this.notebook.get_current_page());        
 
     }
+}
+
+function moveCommandUp(index) {
+
+    if (this.notebook.get_current_page() === 0) {
+
+        this.arraymove(this.leftCommandsArray, index, index - 1)
+        this.populateCommandList(this.notebook.get_current_page());     
+
+    } else if (this.notebook.get_current_page() === 1) {
+
+        this.arraymove(this.centerCommandsArray, index, index - 1)
+        this.populateCommandList(this.notebook.get_current_page());
+
+    } else if (this.notebook.get_current_page() === 2) {
+
+        this.arraymove(this.rightCommandsArray, index, index - 1)
+        this.populateCommandList(this.notebook.get_current_page());        
+
+    }
+}
+
+function moveCommandDown(index) {
+
+    if (this.notebook.get_current_page() === 0) {
+
+        this.arraymove(this.leftCommandsArray, index, index + 1)
+        this.populateCommandList(this.notebook.get_current_page());     
+
+    } else if (this.notebook.get_current_page() === 1) {
+
+        this.arraymove(this.centerCommandsArray, index, index + 1)
+        this.populateCommandList(this.notebook.get_current_page());
+
+    } else if (this.notebook.get_current_page() === 2) {
+
+        this.arraymove(this.rightCommandsArray, index, index + 1)
+        this.populateCommandList(this.notebook.get_current_page());        
+
+    }
+}
+
+function arraymove(array, fromIndex, toIndex) {
+    var element = array[fromIndex];
+    array.splice(fromIndex, 1);
+    array.splice(toIndex, 0, element);
 }
 
 function saveCommands() {
