@@ -17,10 +17,13 @@ let settings = new Gio.Settings({
 });
 
 let leftCommandsArray = [];
+let leftCommandsArrayCopy = [];
 let leftListBox;
 let centerCommandsArray = [];
+let centerCommandsArrayCopy = [];
 let centerListBox;
 let rightCommandsArray = [];
+let rightCommandsArrayCopy = [];
 let rightListBox;
 
 let notebook;
@@ -37,6 +40,7 @@ function buildPrefsWidget() {
     /* LEFT */
     try {
         this.leftCommandsArray = JSON.parse(this.settings.get_value('left-commands-json').deep_unpack()).commands;
+        this.leftCommandsArrayCopy = JSON.parse(JSON.stringify(this.leftCommandsArray));
     } catch (e) {
         log('Error in json file for location: ' + location.name);
         this.settings.set_string('left-commands-json', '{"commands":[{"command":"echo Executor works!","interval":1}]}');
@@ -64,12 +68,27 @@ function buildPrefsWidget() {
     this.populateCommandList(0);
 
     let leftButtonsHbox = new Gtk.Box({orientation: Gtk.Orientation.HORIZONTAL, spacing: 10, visible: true});
-    let leftAddButton = new Gtk.Button({visible: true, label: 'Add'});
+    let leftAddButton = new Gtk.Button({visible: true});
+    let leftAddButtonImage = new Gtk.Image({visible: true});
+    leftAddButtonImage.set_from_stock(Gtk.STOCK_ADD , 20);
+    leftAddButton.set_image(leftAddButtonImage);
     leftAddButton.connect("clicked", this.addCommandToList.bind(this));
-    let leftSaveButton = new Gtk.Button({visible: true, label: 'Save'});
+    let leftSaveButton = new Gtk.Button({visible: true});
+    let leftSaveButtonImage = new Gtk.Image({visible: true});
+    leftSaveButtonImage.set_from_stock(Gtk.STOCK_SAVE , 20);
+    leftSaveButton.set_image(leftSaveButtonImage);
     leftSaveButton.connect("clicked", this.saveCommands.bind(this));
+    let leftCancelButton = new Gtk.Button({visible: true});
+    let leftCancelButtonImage = new Gtk.Image({visible: true});
+    leftCancelButtonImage.set_from_stock(Gtk.STOCK_REVERT_TO_SAVED , 20);
+    leftCancelButton.set_image(leftCancelButtonImage);
+    leftCancelButton.connect("clicked", () => {
+        this.leftCommandsArray = JSON.parse(JSON.stringify(this.leftCommandsArrayCopy));
+        this.populateCommandList(0);
+    });
     leftButtonsHbox.pack_start(leftAddButton,false,true, 0);
     leftButtonsHbox.pack_end(leftSaveButton,false,true, 0);
+    leftButtonsHbox.pack_end(leftCancelButton,false,true, 0);
     leftGrid.attach(leftButtonsHbox, 0, 4, 2, 1);
     
     let pageLeft = new Gtk.Box({visible: true});
@@ -80,6 +99,7 @@ function buildPrefsWidget() {
     /* CENTER */
     try {
         this.centerCommandsArray = JSON.parse(this.settings.get_value('center-commands-json').deep_unpack()).commands;
+        this.centerCommandsArrayCopy = JSON.parse(JSON.stringify(this.centerCommandsArray));
     } catch (e) {
         log('Error in json file for location: ' + location.name);
         this.settings.set_string('center-commands-json', '{"commands":[{"command":"echo Executor works!","interval":1}]}');
@@ -107,12 +127,27 @@ function buildPrefsWidget() {
     this.populateCommandList(1);
 
     let centerButtonsHbox = new Gtk.Box({orientation: Gtk.Orientation.HORIZONTAL, spacing: 10, visible: true});
-    let centerAddButton = new Gtk.Button({visible: true, label: 'Add'});
+    let centerAddButton = new Gtk.Button({visible: true});
+    let centerAddButtonImage = new Gtk.Image({visible: true});
+    centerAddButtonImage.set_from_stock(Gtk.STOCK_ADD , 20);
+    centerAddButton.set_image(centerAddButtonImage);
     centerAddButton.connect("clicked", this.addCommandToList.bind(this));
-    let centerSaveButton = new Gtk.Button({visible: true, label: 'Save'});
+    let centerSaveButton = new Gtk.Button({visible: true});
+    let centerSaveButtonImage = new Gtk.Image({visible: true});
+    centerSaveButtonImage.set_from_stock(Gtk.STOCK_SAVE , 20);
+    centerSaveButton.set_image(centerSaveButtonImage);
     centerSaveButton.connect("clicked", this.saveCommands.bind(this));
+    let centerCancelButton = new Gtk.Button({visible: true});
+    let centerCancelButtonImage = new Gtk.Image({visible: true});
+    centerCancelButtonImage.set_from_stock(Gtk.STOCK_REVERT_TO_SAVED , 20);
+    centerCancelButton.set_image(centerCancelButtonImage);
+    centerCancelButton.connect("clicked", () => {
+        this.centerCommandsArray = JSON.parse(JSON.stringify(this.centerCommandsArrayCopy));
+        this.populateCommandList(1);
+    });    
     centerButtonsHbox.pack_start(centerAddButton,false,true, 0);
     centerButtonsHbox.pack_end(centerSaveButton,false,true, 0);
+    centerButtonsHbox.pack_end(centerCancelButton,false,true, 0);
     centerGrid.attach(centerButtonsHbox, 0, 4, 2, 1);
     
     let pageCenter = new Gtk.Box({visible: true});
@@ -123,6 +158,7 @@ function buildPrefsWidget() {
     /* RIGHT */
     try {
         this.rightCommandsArray = JSON.parse(this.settings.get_value('right-commands-json').deep_unpack()).commands;
+        this.rightCommandsArrayCopy = JSON.parse(JSON.stringify(this.rightCommandsArray));
     } catch (e) {
         log('Error in json file for location: ' + location.name);
         this.settings.set_string('right-commands-json', '{"commands":[{"command":"echo Executor works!","interval":1}]}');
@@ -150,12 +186,27 @@ function buildPrefsWidget() {
     this.populateCommandList(2);
 
     let rightButtonsHbox = new Gtk.Box({orientation: Gtk.Orientation.HORIZONTAL, spacing: 10, visible: true});
-    let rightAddButton = new Gtk.Button({visible: true, label: 'Add'});
+    let rightAddButton = new Gtk.Button({visible: true});
+    let rightAddButtonImage = new Gtk.Image({visible: true});
+    rightAddButtonImage.set_from_stock(Gtk.STOCK_ADD , 20);
+    rightAddButton.set_image(rightAddButtonImage);
     rightAddButton.connect("clicked", this.addCommandToList.bind(this));
-    let rightSaveButton = new Gtk.Button({visible: true, label: 'Save'});
+    let rightSaveButton = new Gtk.Button({visible: true});
+    let rightSaveButtonImage = new Gtk.Image({visible: true});
+    rightSaveButtonImage.set_from_stock(Gtk.STOCK_SAVE , 20);
+    rightSaveButton.set_image(rightSaveButtonImage);
     rightSaveButton.connect("clicked", this.saveCommands.bind(this));
+    let rightCancelButton = new Gtk.Button({visible: true});
+    let rightCancelButtonImage = new Gtk.Image({visible: true});
+    rightCancelButtonImage.set_from_stock(Gtk.STOCK_REVERT_TO_SAVED , 20);
+    rightCancelButton.set_image(rightCancelButtonImage);
+    rightCancelButton.connect("clicked", () => {
+        this.rightCommandsArray = JSON.parse(JSON.stringify(this.rightCommandsArrayCopy));
+        this.populateCommandList(2);
+    });    
     rightButtonsHbox.pack_start(rightAddButton,false,true, 0);
     rightButtonsHbox.pack_end(rightSaveButton,false,true, 0);
+    rightButtonsHbox.pack_end(rightCancelButton,false,true, 0);
     rightGrid.attach(rightButtonsHbox, 0, 4, 2, 1);
     
     let pageRight = new Gtk.Box({visible: true});
@@ -209,7 +260,10 @@ function prepareRow(c, index) {
     let interval = new Gtk.SpinButton({adjustment: new Gtk.Adjustment({lower: 0,upper: 86400,step_increment: 1}),visible: true});
     interval.set_value(c.interval);
     hbox.pack_start(interval,false,true, 0);
-    let remove = new Gtk.Button({visible: true, label: 'Remove'});
+    let remove = new Gtk.Button({visible: true});
+    let removeImage = new Gtk.Image({visible: true});
+    removeImage.set_from_stock(Gtk.STOCK_DELETE, 10);
+    remove.set_image(removeImage);
     hbox.pack_start(remove,false,true, 0);
     remove.connect("clicked", () => {
         this.removeCommandFromList(index);
@@ -275,6 +329,8 @@ function saveCommands() {
                 "uuid": this.createUUID()});
         }
 
+        this.leftCommandsArrayCopy = JSON.parse(JSON.stringify(this.leftCommandsArray));
+
         this.settings.set_string('left-commands-json', '{"commands":' + JSON.stringify(this.leftCommandsArray) + '}');
 
     } else if (this.notebook.get_current_page() === 1) {
@@ -290,6 +346,8 @@ function saveCommands() {
                 "interval": this.centerListBox.get_row_at_index(i).get_child().get_children()[1].get_value(),
                 "uuid": this.createUUID()});
         }
+
+        this.centerCommandsArrayCopy = JSON.parse(JSON.stringify(this.centerCommandsArray));
 
         this.settings.set_string('center-commands-json', '{"commands":' + JSON.stringify(this.centerCommandsArray) + '}');
 
@@ -307,6 +365,8 @@ function saveCommands() {
                 "interval": this.rightListBox.get_row_at_index(i).get_child().get_children()[1].get_value(),
                 "uuid": this.createUUID()});
         }
+
+        this.rightCommandsArrayCopy = JSON.parse(JSON.stringify(this.rightCommandsArray));
 
         this.settings.set_string('right-commands-json', '{"commands":' + JSON.stringify(this.rightCommandsArray) + '}');
     }
