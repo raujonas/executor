@@ -52,6 +52,10 @@ function buildPrefsWidget() {
     leftGrid.attach(leftTopHbox, 0, 0, 2, 1);
 
     let leftActive = new Gtk.Switch({visible: true, halign: Gtk.Align.CENTER});
+    leftActive.set_active(this.settings.get_value('left-active').deep_unpack());
+    leftActive.connect("notify::active", () => {
+        this.activeClicked(leftActive.get_active());
+    });    
     let leftIndex = new Gtk.SpinButton({adjustment: new Gtk.Adjustment({lower: 0, upper: 10, step_increment: 1}), visible: true});
     leftIndex.set_size_request(125,0);
     leftTopHbox.pack_start(new Gtk.Label({label: 'Active:', use_markup: true, visible: true}),false,true, 0);
@@ -112,6 +116,10 @@ function buildPrefsWidget() {
     centerGrid.attach(centerTopHbox, 0, 0, 2, 1);
 
     let centerActive = new Gtk.Switch({visible: true, halign: Gtk.Align.CENTER});
+    centerActive.set_active(this.settings.get_value('center-active').deep_unpack());
+    centerActive.connect("notify::active", () => {
+        this.activeClicked(centerActive.get_active());
+    });    
     let centerIndex = new Gtk.SpinButton({adjustment: new Gtk.Adjustment({lower: 0, upper: 10, step_increment: 1}), visible: true});
     centerIndex.set_size_request(125,0);
     centerTopHbox.pack_start(new Gtk.Label({label: 'Active:', use_markup: true, visible: true}),false,true, 0);
@@ -172,6 +180,10 @@ function buildPrefsWidget() {
     rightGrid.attach(rightTopHbox, 0, 0, 2, 1);
 
     let rightActive = new Gtk.Switch({visible: true, halign: Gtk.Align.CENTER});
+    rightActive.set_active(this.settings.get_value('right-active').deep_unpack());
+    rightActive.connect("notify::active", () => {
+        this.activeClicked(rightActive.get_active());
+    });    
     let rightIndex = new Gtk.SpinButton({adjustment: new Gtk.Adjustment({lower: 0, upper: 10, step_increment: 1}), visible: true});
     rightIndex.set_size_request(125,0);
     rightTopHbox.pack_start(new Gtk.Label({label: 'Active:', use_markup: true, visible: true}),false,true, 0);
@@ -217,11 +229,11 @@ function buildPrefsWidget() {
     pageRight.add(rightGrid);
     this.notebook.append_page(pageRight,new Gtk.Label({label: "Right", visible: true}));
 
-    this.settings.bind('left-active', leftActive, 'active', Gio.SettingsBindFlags.DEFAULT);
+    //this.settings.bind('left-active', leftActive, 'active', Gio.SettingsBindFlags.DEFAULT);
     this.settings.bind('left-index', leftIndex, 'value', Gio.SettingsBindFlags.DEFAULT);
-    this.settings.bind('center-active', centerActive, 'active', Gio.SettingsBindFlags.DEFAULT);
+    //this.settings.bind('center-active', centerActive, 'active', Gio.SettingsBindFlags.DEFAULT);
     this.settings.bind('center-index', centerIndex, 'value', Gio.SettingsBindFlags.DEFAULT);
-    this.settings.bind('right-active', rightActive, 'active', Gio.SettingsBindFlags.DEFAULT);
+    //this.settings.bind('right-active', rightActive, 'active', Gio.SettingsBindFlags.DEFAULT);
     this.settings.bind('right-index', rightIndex, 'value', Gio.SettingsBindFlags.DEFAULT);
 
     return prefsWidget;
@@ -450,4 +462,24 @@ function createUUID() {
     });
   }
   
-  
+function activeClicked(isActive) {
+
+    if (isActive) {
+        this.saveCommands();
+    }
+
+    if (this.notebook.get_current_page() === 0) {
+
+        this.settings.set_boolean('left-active', isActive);
+
+    } else if (this.notebook.get_current_page() === 1) {
+
+        this.settings.set_boolean('center-active', isActive);
+
+    } else if (this.notebook.get_current_page() === 2) {
+
+        this.settings.set_boolean('right-active', isActive);
+
+    }
+
+}
