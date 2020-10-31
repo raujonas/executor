@@ -7,7 +7,7 @@
 # Executor - Gnome Shell Extension
 <img src="resources/icons/icon.png" alt="result" width="50">
 
-Execute arbitrary shell commands periodically and independent from each other with an individual interval and display the output in gnome top bar.
+Execute multiple shell commands periodically with separate intervals and display the output in gnome top bar.
 
 <img src="docs/result.png" alt="result" width="967">
 
@@ -24,6 +24,12 @@ OR for **latest stable version**: checkout the repo (master branch) to ~/.local/
 The commands and the interval for each command can be set for each location (left, center, right) separately in the settings view.
 
 <img src="docs/settings.png" alt="settings" width="500">
+
+## Use cases
+Let me know what you're use cases are and I will add them here.
+
+I for example use this extension for hardware monitoring:
+<img src="docs/use-case-1.png" alt="settings" width="500">
 
 ## Debugging
 

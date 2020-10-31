@@ -1,6 +1,6 @@
 {
   "name": "Executor",
-  "description": "Execute arbitrary shell commands periodically and independent from each other with an individual interval and display the output in gnome top bar.",
+  "description": "Execute multiple shell commands periodically with separate intervals and display the output in gnome top bar.",
   "uuid": "executor@raujonas.github.io",
   "shell-version": [
     "3.30.2",
