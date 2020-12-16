@@ -5,25 +5,77 @@
 ![GitHub last commit](https://img.shields.io/github/last-commit/raujonas/executor)
 
 # Executor - Gnome Shell Extension
-<img src="resources/icons/icon.png" alt="result" width="50">
+<img src="resources/icons/icon.png" alt="result" width="70">
 
 Execute multiple shell commands periodically with separate intervals and display the output in gnome top bar.
 
 <img src="docs/result.png" alt="result" width="967">
 
-## Install
+***
+
+## Installation
+
+### One click installation
 
 [<img src="https://raw.githubusercontent.com/andyholmes/gnome-shell-extensions-badge/master/get-it-on-ego.svg?sanitize=true" alt="Get it on GNOME Extensions" height="100" width="220">](https://extensions.gnome.org/extension/2932/executor/)
 
-OR download the <a href="https://github.com/raujonas/executor/releases/latest">zip of the latest release</a> and extract the content to ~/.local/share/gnome-shell/extensions/executor@raujonas.github.io
+### Manual installation
 
-OR for **latest stable version**: checkout the repo (master branch) to ~/.local/share/gnome-shell/extensions/ and rename the project folder to /executor@raujonas.github.io
+- Download the <a href="https://github.com/raujonas/executor/releases/latest">zip of the latest release</a> and extract the content to `~/.local/share/gnome-shell/extensions/executor@raujonas.github.io`
+
+- OR checkout the repo to ~/.local/share/gnome-shell/extensions/ and rename the project folder to `executor@raujonas.github.io`
+
+***
 
 ## Configuration
+
+### Basic
 
 The commands and the interval for each command can be set for each location (left, center, right) separately in the settings view.
 
 <img src="docs/settings.png" alt="settings" width="500">
+
+### Use of custom css
+
+Since version 6 it is possible to use custom css to style the output of your commands dynamically with css. You can add your custom css in `~/.local/share/gnome-shell/extensions/executor@raujonas.github.io/stylesheet.css`. For example:
+
+```css
+.red {
+    color: red;
+}
+
+.green {
+    color: rgb(107, 179, 0);
+}
+```
+
+**Note**: After making changes in `stylesheet.css` you have to restart your shell with `Alt + F2` and then enter `r`.
+
+To use the css dynamically in your commands, you can add it with the following syntax to your output: `<executor.css.red>`
+
+**Example**: The following command queries the current timestamp. If the output is a round number it should have the color red, if not then green.
+
+```console
+date +%s | awk '{if ($1 % 2 == 0) {print $1"<executor.css.red>"} else { print $1"<executor.css.green>"} }'
+```
+
+The output is either one of the following depending on the timestamp:
+
+<img src="docs/custom-css-red.png" alt="settings">
+
+<img src="docs/custom-css-green.png" alt="settings">
+
+***
+
+## Export settings
+
+If you want to export and import all settings at once you can use dconf.
+
+Export: `dconf dump /org/gnome/shell/extensions/executor/ > executor-settings.dconf`
+
+Import: `dconf load /org/gnome/shell/extensions/executor/ < executor-settings.dconf`
+
+***
 
 ## Use cases
 Let me know what you're use cases are and I will add them here.
@@ -31,12 +83,16 @@ Let me know what you're use cases are and I will add them here.
 I for example use this extension for hardware monitoring:
 <img src="docs/use-case-1.png" alt="settings" width="500">
 
+***
+
 ## Debugging
 
 If you have no output or other issues you can usually have a look into the log with 
 ```console
 user@system:~$ journalctl /usr/bin/gnome-shell -f
 ``` 
+
+***
 
 ## Development
 
