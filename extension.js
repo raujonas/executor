@@ -15,7 +15,7 @@ let rightActiveChanged, rightIndexChanged, rightCommandsJsonChanged;
 
 let left = {
     "name": "left",
-    "output": null,
+    "output": [],
     "box": null,
     "stopped": null,
     "commandsSettings": {"commands": []},
@@ -25,7 +25,7 @@ let left = {
 
 let center = {
     "name": "center",
-    "output": null,
+    "output": [],
     "box": null,
     "stopped": null,
     "commandsSettings": {"commands": []},
@@ -35,7 +35,7 @@ let center = {
 
 let right = {
     "name": "right",
-    "output": null,
+    "output": [],
     "box": null,
     "stopped": null,
     "commandsSettings": {"commands": []},
@@ -76,24 +76,18 @@ function enable() {
     if (left.box.get_parent()) {
         left.box.get_parent().remove_child(left.box);
     }
-    left.output = new St.Label({y_expand: true, y_align: 2});
-    left.box.add_child(left.output);
     this.onLeftStatusChanged();
 
     center.box = new St.BoxLayout({ style_class: 'panel-button' });
     if (center.box.get_parent()) {
         center.box.get_parent().remove_child(center.box);
     }
-    center.output = new St.Label({y_expand: true, y_align: 2});
-    center.box.add_child(center.output);
     this.onCenterStatusChanged();
 
     right.box = new St.BoxLayout({ style_class: 'panel-button' });
     if (right.box.get_parent()) {
         right.box.get_parent().remove_child(right.box);
     }
-    right.output = new St.Label({y_expand: true, y_align: 2});
-    right.box.add_child(right.output);
     this.onRightStatusChanged();
 
     leftActiveChanged = this.settings.connect(
@@ -158,12 +152,18 @@ function disable() {
     if (right.box.get_parent()) {
         right.box.get_parent().remove_child(right.box);
     }
+    left.box.remove_all_children();
     left.box = null;
+    center.box.remove_all_children();
     center.box = null;
+    right.box.remove_all_children();
     right.box = null;
     left.commandsOutput = [];
     center.commandsOutput = [];    
     right.commandsOutput = [];
+    left.output = [];  
+    center.output = [];  
+    right.output = [];  
 
     this.settings.disconnect(leftActiveChanged);
     this.settings.disconnect(leftIndexChanged);
@@ -174,6 +174,15 @@ function disable() {
     this.settings.disconnect(rightActiveChanged);
     this.settings.disconnect(rightIndexChanged);
     this.settings.disconnect(rightCommandsJsonChanged);
+}
+
+function initOutputLabels(location) {
+    location.box.remove_all_children();
+    location.commandsSettings.commands.forEach(function (command, index) {
+        location.output[index] = new St.Label({y_expand: true, y_align: 2});
+        location.box.add_child(location.output[index]);
+    }, this); 
+    
 }
 
 function onLeftStatusChanged() {
@@ -199,6 +208,8 @@ function onLeftStatusChanged() {
         }        
         this.removeOldCommands(left);
         left.commandsOutput = [];
+        left.output = [];  
+        left.box.remove_all_children();
     }
 }
 
@@ -225,6 +236,8 @@ function onCenterStatusChanged() {
         }
         this.removeOldCommands(center);
         center.commandsOutput = [];
+        center.output = [];
+        center.box.remove_all_children();
     }
 }
 
@@ -251,6 +264,8 @@ function onRightStatusChanged() {
         }
         this.removeOldCommands(right);
         right.commandsOutput = [];
+        right.output = [];
+        right.box.remove_all_children();
     }
 }
 
@@ -269,6 +284,8 @@ function checkCommands(location, json) {
         log('Error in json file for location: ' + location.name);
     }
 
+    this.initOutputLabels(location);
+
     if (location.commandsSettings.commands.length > 0) {
 
         location.commandsSettings.commands.forEach(function (command, index) {
@@ -283,12 +300,12 @@ function checkCommands(location, json) {
             location.commandsOutput = [];
         //}
 
-        this.setOutput(location);
+        this.resetOutput(location);
 
     } else {
         log('No commands specified: ' + location.name);
         location.commandsOutput = [];
-        this.setOutput(location);
+        this.resetOutput(location);
     }
 }
 
@@ -396,8 +413,8 @@ function callback(command, stdout) {
                 return GLib.SOURCE_REMOVE;
             });
         }
-        
-        this.setOutput(left);
+
+        this.setOutput(left, command.index);
     } else if (command.locationName === 'center' && !center.stopped) {
         if (!center.commandsSettings.commands.some(c => c.uuid === command.uuid)) {
             center.commandsOutput.splice(index, 1);
@@ -421,7 +438,7 @@ function callback(command, stdout) {
             });
         }
         
-        this.setOutput(center);
+        this.setOutput(center, command.index);
     } else if (command.locationName === 'right' && !right.stopped) {
         if (!right.commandsSettings.commands.some(c => c.uuid === command.uuid)) {
             right.commandsOutput.splice(index, 1);
@@ -445,14 +462,30 @@ function callback(command, stdout) {
             });
         }
         
-        this.setOutput(right);
+        this.setOutput(right, command.index);
     }
 }
 
-async function setOutput(location) {
-    let string = '';
-    location.commandsOutput.forEach(result => {
-        string = string + " " + result;
+function resetOutput(location) {
+    location.output.forEach(output => {
+        output.set_text('');
     })
-    location.output.set_text(string);
+}
+
+async function setOutput(location, index) {
+    let executorRegex = new RegExp(/(<executor\..*\..*>)+/g);
+    let executorSettingsArray = location.commandsOutput[index].match(executorRegex);
+
+    location.output[index].set_text(location.commandsOutput[index]);
+    location.output[index].set_style_class_name("");
+    
+    executorSettingsArray.forEach(setting => {
+        location.commandsOutput[index] = location.commandsOutput[index].replace(setting, "");
+        let settingDivided = setting.substring(1, setting.length - 1).split(".");
+        if (settingDivided[1] == "css") {
+            location.output[index].add_style_class_name(settingDivided[2])
+        }
+    })
+
+    location.output[index].set_text(location.commandsOutput[index]);
 }
