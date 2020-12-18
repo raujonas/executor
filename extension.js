@@ -473,7 +473,7 @@ function resetOutput(location) {
 }
 
 async function setOutput(location, index) {
-    let executorRegex = new RegExp(/(<executor\..*\..*>)+/g);
+    let executorRegex = new RegExp(/(<executor\..*?\..*?>)/g);
     let executorSettingsArray = location.commandsOutput[index].match(executorRegex);
 
     location.output[index].set_text(location.commandsOutput[index]);
