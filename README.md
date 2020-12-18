@@ -38,10 +38,15 @@ The commands and the interval for each command can be set for each location (lef
 ### Use of custom css
 
 Since version 6 it is possible to use custom css to style the output of your commands dynamically with css. There are two ways to do this:
-- (Prefered option) Create the file `~/.config/executor@raujonas.github.io/custom.css` and add your custom css there. This file will be imported into the extension. **This way your custom css will NOT be overwritten by extension updates**.
-- You can add your custom css in `~/.local/share/gnome-shell/extensions/executor@raujonas.github.io/custom.css`. **Your custom css will be overwritten by extension updates in this case**. Make sure to save if before updating.
+- (Preferred option) Create the file `~/.config/executor@raujonas.github.io/custom.css` and add your custom css there. This file will be imported into the extension. **This way your custom css will NOT be overwritten by extension updates**. You can use the following commands to create the file:
+```console
+user@system:~$ mkdir /home/$USER/.config/executor@raujonas.github.io
 
-For example:
+user@system:~$ touch /home/$USER/.config/executor@raujonas.github.io/custom.css
+```
+- (Non durable option) You can add your custom css in `~/.local/share/gnome-shell/extensions/executor@raujonas.github.io/custom.css`. **Your custom css will be overwritten by extension updates in this case**. Make sure to save if before updating.
+
+Example `custom.css` file:
 
 ```css
 .red {
@@ -59,7 +64,7 @@ For example:
 
 **Note**: After making changes in your css you have to restart your shell with `Alt + F2` and then enter `r`.
 
-To use the css dynamically in your commands, you can add it with the following syntax to your output: **`<executor.css.red>`**. This will add the specified css class to your output, in this case `red`.
+**Usage**: To use the css dynamically in your commands, you can add it with the following syntax to your output: **`<executor.css.red>`**. This will add the specified css class to your output, in this case `red`.
 
 **Example**: The following command queries the current timestamp. If the output is a round number it should have the color red, if not then green.
 
