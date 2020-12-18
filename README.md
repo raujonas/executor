@@ -37,11 +37,19 @@ The commands and the interval for each command can be set for each location (lef
 
 ### Use of custom css
 
-Since version 6 it is possible to use custom css to style the output of your commands dynamically with css. You can add your custom css in `~/.local/share/gnome-shell/extensions/executor@raujonas.github.io/stylesheet.css`. For example:
+Since version 6 it is possible to use custom css to style the output of your commands dynamically with css. There are two ways to do this:
+- (Prefered option) Create the file `~/.config/executor@raujonas.github.io/custom.css` and add your custom css there. This file will be imported into the extension. **This way your custom css will NOT be overwritten by extension updates**.
+- You can add your custom css in `~/.local/share/gnome-shell/extensions/executor@raujonas.github.io/custom.css`. **Your custom css will be overwritten by extension updates in this case**. Make sure to save if before updating.
+
+For example:
 
 ```css
 .red {
     color: red;
+}
+
+.yellow {
+    color: yellow
 }
 
 .green {
@@ -49,9 +57,9 @@ Since version 6 it is possible to use custom css to style the output of your com
 }
 ```
 
-**Note**: After making changes in `stylesheet.css` you have to restart your shell with `Alt + F2` and then enter `r`.
+**Note**: After making changes in your css you have to restart your shell with `Alt + F2` and then enter `r`.
 
-To use the css dynamically in your commands, you can add it with the following syntax to your output: `<executor.css.red>`
+To use the css dynamically in your commands, you can add it with the following syntax to your output: **`<executor.css.red>`**. This will add the specified css class to your output, in this case `red`.
 
 **Example**: The following command queries the current timestamp. If the output is a round number it should have the color red, if not then green.
 

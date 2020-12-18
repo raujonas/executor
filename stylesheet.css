@@ -1,1 +1,4 @@
-/* Add your custom css in this file */
+@import url("custom.css");
+@import url("../../../../../.config/executor@raujonas.github.io/custom.css");
+
+/* This file will hold executor related css if needed someday*/
