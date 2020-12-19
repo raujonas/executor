@@ -21,7 +21,7 @@ Execute multiple shell commands periodically with separate intervals and display
 
 ### Manual installation
 
-- Download the file <a href="https://github.com/raujonas/executor/releases/latest">executor@raujonas.github.io</a> of the latest release and extract the content to `~/.local/share/gnome-shell/extensions/executor@raujonas.github.io`.
+- Download the file `executor@raujonas.github.io` <a href="https://github.com/raujonas/executor/releases/latest">from the latest release</a>  and extract the content to `~/.local/share/gnome-shell/extensions/executor@raujonas.github.io`.
 
 - OR checkout the repo to `~/.local/share/gnome-shell/extensions/executor@raujonas.github.io`.
     ```
