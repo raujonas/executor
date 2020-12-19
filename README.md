@@ -21,9 +21,13 @@ Execute multiple shell commands periodically with separate intervals and display
 
 ### Manual installation
 
-- Download the <a href="https://github.com/raujonas/executor/releases/latest">zip of the latest release</a> and extract the content to `~/.local/share/gnome-shell/extensions/executor@raujonas.github.io`
+- Download the file <a href="https://github.com/raujonas/executor/releases/latest">executor@raujonas.github.io</a> of the latest release and extract the content to `~/.local/share/gnome-shell/extensions/executor@raujonas.github.io`.
 
-- OR checkout the repo to ~/.local/share/gnome-shell/extensions/ and rename the project folder to `executor@raujonas.github.io`
+- OR checkout the repo to `~/.local/share/gnome-shell/extensions/executor@raujonas.github.io`.
+    ```
+    git clone https://github.com/raujonas/executor.git ~/.local/share/gnome-shell/extensions/executor@raujonas.github.io/
+    ```
+With both options you have to restart gnome shell afterwards (`Alt + F2` and then enter `r`).
 
 ***
 
@@ -39,12 +43,12 @@ The commands and the interval for each command can be set for each location (lef
 
 Since version 6 it is possible to use custom css to style the output of your commands dynamically with css. There are two ways to do this:
 - (Preferred option) Create the file `~/.config/executor@raujonas.github.io/custom.css` and add your custom css there. This file will be imported into the extension. **This way your custom css will NOT be overwritten by extension updates**. You can use the following commands to create the file:
-```console
-user@system:~$ mkdir /home/$USER/.config/executor@raujonas.github.io
+    ```console
+    mkdir /home/$USER/.config/executor@raujonas.github.io
 
-user@system:~$ touch /home/$USER/.config/executor@raujonas.github.io/custom.css
-```
-- (Non durable option) You can add your custom css in `~/.local/share/gnome-shell/extensions/executor@raujonas.github.io/custom.css`. **Your custom css will be overwritten by extension updates in this case**. Make sure to save if before updating.
+    touch /home/$USER/.config/executor@raujonas.github.io/custom.css
+    ```
+- (Non durable option) You can add your custom css in `~/.local/share/gnome-shell/extensions/executor@raujonas.github.io/custom.css`. **Your custom css will be overwritten by extension updates in this case**. Make sure to save it somewhere before updating.
 
 Example `custom.css` file:
 
@@ -62,7 +66,7 @@ Example `custom.css` file:
 }
 ```
 
-**Note**: After making changes in your css you have to restart your shell with `Alt + F2` and then enter `r`.
+**Note**: After making changes in your css you have to restart your shell (`Alt + F2` and then enter `r`).
 
 **Usage**: To use the css dynamically in your commands, you can add it with the following syntax to your output: **`<executor.css.red>`**. This will add the specified css class to your output, in this case `red`.
 
@@ -80,7 +84,7 @@ The output is either one of the following depending on the timestamp:
 
 ***
 
-## Export settings
+## Export and import settings
 
 If you want to export and import all settings at once you can use dconf.
 
@@ -100,9 +104,9 @@ I for example use this extension for hardware monitoring:
 
 ## Debugging
 
-If you have no output or other issues you can usually have a look into the log with 
+If you have no output or other issues you can have a look into the log:
 ```console
-user@system:~$ journalctl /usr/bin/gnome-shell -f
+journalctl /usr/bin/gnome-shell -f
 ``` 
 
 ***
