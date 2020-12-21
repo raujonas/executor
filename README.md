@@ -64,6 +64,15 @@ Example `custom.css` file:
 .green {
     color: rgb(107, 179, 0);
 }
+
+.huge-font {
+    font: 20px "Comic Sans";
+}
+
+.italic {
+    font: 17px "Arial";
+    font-style: italic;
+}
 ```
 
 **Note**: After making changes in your css you have to restart your shell (`Alt + F2` and then enter `r`).
@@ -81,6 +90,10 @@ The output is either one of the following depending on the timestamp:
 <img src="docs/custom-css-red.png" alt="settings">
 
 <img src="docs/custom-css-green.png" alt="settings">
+
+You can also combine multiple css classes:
+
+<img src="docs/custom-css-multiple.png" alt="settings" width="700">
 
 ***
 

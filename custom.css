@@ -14,4 +14,13 @@ Example:
     color: rgb(107, 179, 0);
 }
 
+.huge-font {
+    font: 20px "Comic Sans";
+}
+
+.italic {
+    font: 17px "Arial";
+    font-style: italic;
+}
+
 */
