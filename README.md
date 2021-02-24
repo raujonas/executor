@@ -1,4 +1,4 @@
-![Maintenance](https://img.shields.io/maintenance/yes/2020)
+![Maintenance](https://img.shields.io/maintenance/yes/2021)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/raujonas/executor)
 ![GitHub Release Date](https://img.shields.io/github/release-date/raujonas/executor)
 ![GitHub commits since latest release (by date)](https://img.shields.io/github/commits-since/raujonas/executor/latest)
