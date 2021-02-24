@@ -5,8 +5,9 @@
   "shell-version": [
     "3.30.2",
     "3.36",
-    "3.38"
+    "3.38",
+    "40"
   ],
   "url": "https://github.com/raujonas/executor",
-  "version": 6
+  "version": 7
 }

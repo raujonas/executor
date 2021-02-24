@@ -3,24 +3,24 @@
 Example:
 
 .red {
-    color: red;
+  color: red;
 }
 
 .yellow {
-    color: yellow
+  color: yellow;
 }
 
 .green {
-    color: rgb(107, 179, 0);
+  color: rgb(107, 179, 0);
 }
 
 .huge-font {
-    font: 20px "Comic Sans";
+  font: 20px "Comic Sans";
 }
 
 .italic {
-    font: 17px "Arial";
-    font-style: italic;
+  font: 17px "Arial";
+  font-style: italic;
 }
 
 */

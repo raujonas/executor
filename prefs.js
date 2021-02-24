@@ -6,228 +6,235 @@ const Gtk = imports.gi.Gtk;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 
+const Config = imports.misc.config;
+const [major] = Config.PACKAGE_VERSION.split('.');
+const shellVersion = Number.parseInt(major);
+
 let gschema = Gio.SettingsSchemaSource.new_from_directory(
-    Me.dir.get_child('schemas').get_path(),
-    Gio.SettingsSchemaSource.get_default(),
-    false
+  Me.dir.get_child('schemas').get_path(),
+  Gio.SettingsSchemaSource.get_default(),
+  false
 );
 
-let settings = new Gio.Settings({
-    settings_schema: gschema.lookup('org.gnome.shell.extensions.executor', true)
+var settings = new Gio.Settings({
+  settings_schema: gschema.lookup('org.gnome.shell.extensions.executor', true)
 });
 
-let leftCommandsArray = [];
-let leftCommandsArrayCopy = [];
-let leftListBox;
-let centerCommandsArray = [];
-let centerCommandsArrayCopy = [];
-let centerListBox;
-let rightCommandsArray = [];
-let rightCommandsArrayCopy = [];
-let rightListBox;
+var leftCommandsArray = [];
+var leftCommandsArrayCopy = [];
+var leftListBox;
+var centerCommandsArray = [];
+var centerCommandsArrayCopy = [];
+var centerListBox;
+var rightCommandsArray = [];
+var rightCommandsArrayCopy = [];
+var rightListBox;
 
-let notebook;
+var notebook;
 
 function init() {
 }
 
-function buildPrefsWidget() {    
-    let prefsWidget = new Gtk.Grid({/*margin: 18, column_spacing: 12, row_spacing: 12,*/ visible: true, column_homogeneous: true});
+function buildPrefsWidget() {
 
-    this.notebook = new Gtk.Notebook({visible: true});
+  if (shellVersion < 40) {
+
+    let prefsWidget = new Gtk.Grid({ visible: true, column_homogeneous: true });
+
+    this.notebook = new Gtk.Notebook({ visible: true });
     prefsWidget.attach(this.notebook, 0, 0, 1, 1);
 
     /* LEFT */
     try {
-        this.leftCommandsArray = JSON.parse(this.settings.get_value('left-commands-json').deep_unpack()).commands;
-        this.leftCommandsArrayCopy = JSON.parse(JSON.stringify(this.leftCommandsArray));
+      this.leftCommandsArray = JSON.parse(this.settings.get_value('left-commands-json').deep_unpack()).commands;
+      this.leftCommandsArrayCopy = JSON.parse(JSON.stringify(this.leftCommandsArray));
     } catch (e) {
-        log('Error in json file for location: ' + location.name);
-        this.settings.set_string('left-commands-json', '{"commands":[{"command":"echo Executor works!","interval":1}]}');
+      log('Error in json file for location: ' + location.name);
+      this.settings.set_string('left-commands-json', '{"commands":[{"command":"echo Executor works!","interval":1}]}');
     }
 
-    let leftGrid = new Gtk.Grid({/*margin: 18,*/ column_spacing: 12, row_spacing: 12, visible: true, column_homogeneous: true, vexpand: true, hexpand: true});
+    let leftGrid = new Gtk.Grid({ column_spacing: 12, row_spacing: 12, visible: true, column_homogeneous: true, vexpand: true, hexpand: true });
 
-    let leftTopHbox = new Gtk.Box({orientation: Gtk.Orientation.HORIZONTAL, spacing: 20, visible: true});
+    let leftTopHbox = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 20, visible: true });
     leftGrid.attach(leftTopHbox, 0, 0, 2, 1);
 
-    let leftActive = new Gtk.Switch({visible: true, halign: Gtk.Align.CENTER});
+    let leftActive = new Gtk.Switch({ visible: true, halign: Gtk.Align.CENTER });
     leftActive.set_active(this.settings.get_value('left-active').deep_unpack());
     leftActive.connect("notify::active", () => {
-        this.activeClicked(leftActive.get_active());
-    });    
-    let leftIndex = new Gtk.SpinButton({adjustment: new Gtk.Adjustment({lower: 0, upper: 10, step_increment: 1}), visible: true});
-    leftIndex.set_size_request(125,0);
-    leftTopHbox.pack_start(new Gtk.Label({label: 'Active:', use_markup: true, visible: true}),false,true, 0);
-    leftTopHbox.pack_start(leftActive,false,true, 0);
-    leftTopHbox.pack_start(new Gtk.Label({label: 'Index in status bar:', visible: true, halign: Gtk.Align.END}),true,true, 0);
-    leftTopHbox.pack_start(leftIndex,false,true, 0);
+      this.activeClicked(leftActive.get_active());
+    });
+    let leftIndex = new Gtk.SpinButton({ adjustment: new Gtk.Adjustment({ lower: 0, upper: 10, step_increment: 1 }), visible: true });
+    leftIndex.set_size_request(125, 0);
+    leftTopHbox.pack_start(new Gtk.Label({ label: 'Active:', use_markup: true, visible: true }), false, true, 0);
+    leftTopHbox.pack_start(leftActive, false, true, 0);
+    leftTopHbox.pack_start(new Gtk.Label({ label: 'Index in status bar:', visible: true, halign: Gtk.Align.END }), true, true, 0);
+    leftTopHbox.pack_start(leftIndex, false, true, 0);
 
-    leftGrid.attach(new Gtk.Separator({visible: true, orientation: Gtk.Orientation.VERTICAL}), 0, 1, 2, 1);
-    leftGrid.attach(new Gtk.Label({label: 'Command    |    Interval in seconds:', visible: true}), 0, 2, 2, 1);
+    leftGrid.attach(new Gtk.Separator({ visible: true, orientation: Gtk.Orientation.VERTICAL }), 0, 1, 2, 1);
+    leftGrid.attach(new Gtk.Label({ label: 'Command    |    Interval in seconds:', visible: true }), 0, 2, 2, 1);
 
-    this.leftListBox = new Gtk.ListBox({visible: true});
+    this.leftListBox = new Gtk.ListBox({ visible: true });
     this.leftListBox.set_selection_mode(0);
     leftGrid.attach(this.leftListBox, 0, 3, 2, 1);
     this.populateCommandList(0);
-    leftGrid.attach(new Gtk.Separator({visible: true, orientation: Gtk.Orientation.VERTICAL}), 0, 4, 2, 1);
+    leftGrid.attach(new Gtk.Separator({ visible: true, orientation: Gtk.Orientation.VERTICAL }), 0, 4, 2, 1);
 
-    let leftButtonsHbox = new Gtk.Box({orientation: Gtk.Orientation.HORIZONTAL, spacing: 10, visible: true});
-    let leftAddButton = new Gtk.Button({visible: true});
-    let leftAddButtonImage = new Gtk.Image({visible: true});
-    leftAddButtonImage.set_from_stock(Gtk.STOCK_ADD , 20);
+    let leftButtonsHbox = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 10, visible: true });
+    let leftAddButton = new Gtk.Button({ visible: true });
+    let leftAddButtonImage = new Gtk.Image({ visible: true });
+    leftAddButtonImage.set_from_icon_name(Gtk.STOCK_ADD, Gtk.ICON_SIZE_BUTTON);
     leftAddButton.set_image(leftAddButtonImage);
     leftAddButton.connect("clicked", this.addCommandToList.bind(this));
-    let leftSaveButton = new Gtk.Button({visible: true});
-    let leftSaveButtonImage = new Gtk.Image({visible: true});
-    leftSaveButtonImage.set_from_stock(Gtk.STOCK_SAVE , 20);
+    let leftSaveButton = new Gtk.Button({ visible: true });
+    let leftSaveButtonImage = new Gtk.Image({ visible: true });
+    leftSaveButtonImage.set_from_icon_name(Gtk.STOCK_SAVE, Gtk.ICON_SIZE_BUTTON);
     leftSaveButton.set_image(leftSaveButtonImage);
     leftSaveButton.connect("clicked", this.saveCommands.bind(this));
-    let leftCancelButton = new Gtk.Button({visible: true});
-    let leftCancelButtonImage = new Gtk.Image({visible: true});
-    leftCancelButtonImage.set_from_stock(Gtk.STOCK_REVERT_TO_SAVED , 20);
+    let leftCancelButton = new Gtk.Button({ visible: true });
+    let leftCancelButtonImage = new Gtk.Image({ visible: true });
+    leftCancelButtonImage.set_from_icon_name(Gtk.STOCK_REVERT_TO_SAVED, Gtk.ICON_SIZE_BUTTON);
     leftCancelButton.set_image(leftCancelButtonImage);
     leftCancelButton.connect("clicked", () => {
-        this.leftCommandsArray = JSON.parse(JSON.stringify(this.leftCommandsArrayCopy));
-        this.populateCommandList(0);
+      this.leftCommandsArray = JSON.parse(JSON.stringify(this.leftCommandsArrayCopy));
+      this.populateCommandList(0);
     });
-    leftButtonsHbox.pack_start(leftAddButton,false,true, 0);
-    leftButtonsHbox.pack_end(leftSaveButton,false,true, 0);
-    leftButtonsHbox.pack_end(leftCancelButton,false,true, 0);
+    leftButtonsHbox.pack_start(leftAddButton, false, true, 0);
+    leftButtonsHbox.pack_end(leftSaveButton, false, true, 0);
+    leftButtonsHbox.pack_end(leftCancelButton, false, true, 0);
     leftGrid.attach(leftButtonsHbox, 0, 5, 2, 1);
-    
-    let pageLeft = new Gtk.Box({visible: true});
+
+    let pageLeft = new Gtk.Box({ visible: true });
     pageLeft.border_width = 10;
     pageLeft.add(leftGrid);
-    this.notebook.append_page(pageLeft,new Gtk.Label({label: "Left", visible: true}));
+    this.notebook.append_page(pageLeft, new Gtk.Label({ label: "Left", visible: true }));
 
     /* CENTER */
     try {
-        this.centerCommandsArray = JSON.parse(this.settings.get_value('center-commands-json').deep_unpack()).commands;
-        this.centerCommandsArrayCopy = JSON.parse(JSON.stringify(this.centerCommandsArray));
+      this.centerCommandsArray = JSON.parse(this.settings.get_value('center-commands-json').deep_unpack()).commands;
+      this.centerCommandsArrayCopy = JSON.parse(JSON.stringify(this.centerCommandsArray));
     } catch (e) {
-        log('Error in json file for location: ' + location.name);
-        this.settings.set_string('center-commands-json', '{"commands":[{"command":"echo Executor works!","interval":1}]}');
+      log('Error in json file for location: ' + location.name);
+      this.settings.set_string('center-commands-json', '{"commands":[{"command":"echo Executor works!","interval":1}]}');
     }
 
-    let centerGrid = new Gtk.Grid({/*margin: 18,*/ column_spacing: 12, row_spacing: 12, visible: true, column_homogeneous: true, vexpand: true, hexpand: true});
+    let centerGrid = new Gtk.Grid({ column_spacing: 12, row_spacing: 12, visible: true, column_homogeneous: true, vexpand: true, hexpand: true });
 
-    let centerTopHbox = new Gtk.Box({orientation: Gtk.Orientation.HORIZONTAL, spacing: 20, visible: true});
+    let centerTopHbox = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 20, visible: true });
     centerGrid.attach(centerTopHbox, 0, 0, 2, 1);
 
-    let centerActive = new Gtk.Switch({visible: true, halign: Gtk.Align.CENTER});
+    let centerActive = new Gtk.Switch({ visible: true, halign: Gtk.Align.CENTER });
     centerActive.set_active(this.settings.get_value('center-active').deep_unpack());
     centerActive.connect("notify::active", () => {
-        this.activeClicked(centerActive.get_active());
-    });    
-    let centerIndex = new Gtk.SpinButton({adjustment: new Gtk.Adjustment({lower: 0, upper: 10, step_increment: 1}), visible: true});
-    centerIndex.set_size_request(125,0);
-    centerTopHbox.pack_start(new Gtk.Label({label: 'Active:', use_markup: true, visible: true}),false,true, 0);
-    centerTopHbox.pack_start(centerActive,false,true, 0);
-    centerTopHbox.pack_start(new Gtk.Label({label: 'Index in status bar:', visible: true, halign: Gtk.Align.END}),true,true, 0);
-    centerTopHbox.pack_start(centerIndex,false,true, 0);
+      this.activeClicked(centerActive.get_active());
+    });
+    let centerIndex = new Gtk.SpinButton({ adjustment: new Gtk.Adjustment({ lower: 0, upper: 10, step_increment: 1 }), visible: true });
+    centerIndex.set_size_request(125, 0);
+    centerTopHbox.pack_start(new Gtk.Label({ label: 'Active:', use_markup: true, visible: true }), false, true, 0);
+    centerTopHbox.pack_start(centerActive, false, true, 0);
+    centerTopHbox.pack_start(new Gtk.Label({ label: 'Index in status bar:', visible: true, halign: Gtk.Align.END }), true, true, 0);
+    centerTopHbox.pack_start(centerIndex, false, true, 0);
 
-    centerGrid.attach(new Gtk.Separator({visible: true, orientation: Gtk.Orientation.VERTICAL}), 0, 1, 2, 1);
-    centerGrid.attach(new Gtk.Label({label: 'Command    |    Interval in seconds:', visible: true}), 0, 2, 2, 1);
+    centerGrid.attach(new Gtk.Separator({ visible: true, orientation: Gtk.Orientation.VERTICAL }), 0, 1, 2, 1);
+    centerGrid.attach(new Gtk.Label({ label: 'Command    |    Interval in seconds:', visible: true }), 0, 2, 2, 1);
 
-    this.centerListBox = new Gtk.ListBox({visible: true});
+    this.centerListBox = new Gtk.ListBox({ visible: true });
     this.centerListBox.set_selection_mode(0);
     centerGrid.attach(this.centerListBox, 0, 3, 2, 1);
     this.populateCommandList(1);
-    centerGrid.attach(new Gtk.Separator({visible: true, orientation: Gtk.Orientation.VERTICAL}), 0, 4, 2, 1);
+    centerGrid.attach(new Gtk.Separator({ visible: true, orientation: Gtk.Orientation.VERTICAL }), 0, 4, 2, 1);
 
-    let centerButtonsHbox = new Gtk.Box({orientation: Gtk.Orientation.HORIZONTAL, spacing: 10, visible: true});
-    let centerAddButton = new Gtk.Button({visible: true});
-    let centerAddButtonImage = new Gtk.Image({visible: true});
-    centerAddButtonImage.set_from_stock(Gtk.STOCK_ADD , 20);
+    let centerButtonsHbox = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 10, visible: true });
+    let centerAddButton = new Gtk.Button({ visible: true });
+    let centerAddButtonImage = new Gtk.Image({ visible: true });
+    centerAddButtonImage.set_from_icon_name(Gtk.STOCK_ADD, Gtk.ICON_SIZE_BUTTON);
     centerAddButton.set_image(centerAddButtonImage);
     centerAddButton.connect("clicked", this.addCommandToList.bind(this));
-    let centerSaveButton = new Gtk.Button({visible: true});
-    let centerSaveButtonImage = new Gtk.Image({visible: true});
-    centerSaveButtonImage.set_from_stock(Gtk.STOCK_SAVE , 20);
+    let centerSaveButton = new Gtk.Button({ visible: true });
+    let centerSaveButtonImage = new Gtk.Image({ visible: true });
+    centerSaveButtonImage.set_from_icon_name(Gtk.STOCK_SAVE, Gtk.ICON_SIZE_BUTTON);
     centerSaveButton.set_image(centerSaveButtonImage);
     centerSaveButton.connect("clicked", this.saveCommands.bind(this));
-    let centerCancelButton = new Gtk.Button({visible: true});
-    let centerCancelButtonImage = new Gtk.Image({visible: true});
-    centerCancelButtonImage.set_from_stock(Gtk.STOCK_REVERT_TO_SAVED , 20);
+    let centerCancelButton = new Gtk.Button({ visible: true });
+    let centerCancelButtonImage = new Gtk.Image({ visible: true });
+    centerCancelButtonImage.set_from_icon_name(Gtk.STOCK_REVERT_TO_SAVED, Gtk.ICON_SIZE_BUTTON);
     centerCancelButton.set_image(centerCancelButtonImage);
     centerCancelButton.connect("clicked", () => {
-        this.centerCommandsArray = JSON.parse(JSON.stringify(this.centerCommandsArrayCopy));
-        this.populateCommandList(1);
-    });    
-    centerButtonsHbox.pack_start(centerAddButton,false,true, 0);
-    centerButtonsHbox.pack_end(centerSaveButton,false,true, 0);
-    centerButtonsHbox.pack_end(centerCancelButton,false,true, 0);
+      this.centerCommandsArray = JSON.parse(JSON.stringify(this.centerCommandsArrayCopy));
+      this.populateCommandList(1);
+    });
+    centerButtonsHbox.pack_start(centerAddButton, false, true, 0);
+    centerButtonsHbox.pack_end(centerSaveButton, false, true, 0);
+    centerButtonsHbox.pack_end(centerCancelButton, false, true, 0);
     centerGrid.attach(centerButtonsHbox, 0, 5, 2, 1);
-    
-    let pageCenter = new Gtk.Box({visible: true});
+
+    let pageCenter = new Gtk.Box({ visible: true });
     pageCenter.border_width = 10;
     pageCenter.add(centerGrid);
-    this.notebook.append_page(pageCenter,new Gtk.Label({label: "Center", visible: true}));
+    this.notebook.append_page(pageCenter, new Gtk.Label({ label: "Center", visible: true }));
 
     /* RIGHT */
     try {
-        this.rightCommandsArray = JSON.parse(this.settings.get_value('right-commands-json').deep_unpack()).commands;
-        this.rightCommandsArrayCopy = JSON.parse(JSON.stringify(this.rightCommandsArray));
+      this.rightCommandsArray = JSON.parse(this.settings.get_value('right-commands-json').deep_unpack()).commands;
+      this.rightCommandsArrayCopy = JSON.parse(JSON.stringify(this.rightCommandsArray));
     } catch (e) {
-        log('Error in json file for location: ' + location.name);
-        this.settings.set_string('right-commands-json', '{"commands":[{"command":"echo Executor works!","interval":1}]}');
+      log('Error in json file for location: ' + location.name);
+      this.settings.set_string('right-commands-json', '{"commands":[{"command":"echo Executor works!","interval":1}]}');
     }
 
-    let rightGrid = new Gtk.Grid({/*margin: 18,*/ column_spacing: 12, row_spacing: 12, visible: true, column_homogeneous: true, vexpand: true, hexpand: true});
+    let rightGrid = new Gtk.Grid({ column_spacing: 12, row_spacing: 12, visible: true, column_homogeneous: true, vexpand: true, hexpand: true });
 
-    let rightTopHbox = new Gtk.Box({orientation: Gtk.Orientation.HORIZONTAL, spacing: 20, visible: true});
+    let rightTopHbox = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 20, visible: true });
     rightGrid.attach(rightTopHbox, 0, 0, 2, 1);
 
-    let rightActive = new Gtk.Switch({visible: true, halign: Gtk.Align.CENTER});
+    let rightActive = new Gtk.Switch({ visible: true, halign: Gtk.Align.CENTER });
     rightActive.set_active(this.settings.get_value('right-active').deep_unpack());
     rightActive.connect("notify::active", () => {
-        this.activeClicked(rightActive.get_active());
-    });    
-    let rightIndex = new Gtk.SpinButton({adjustment: new Gtk.Adjustment({lower: 0, upper: 10, step_increment: 1}), visible: true});
-    rightIndex.set_size_request(125,0);
-    rightTopHbox.pack_start(new Gtk.Label({label: 'Active:', use_markup: true, visible: true}),false,true, 0);
-    rightTopHbox.pack_start(rightActive,false,true, 0);
-    rightTopHbox.pack_start(new Gtk.Label({label: 'Index in status bar:', visible: true, halign: Gtk.Align.END}),true,true, 0);
-    rightTopHbox.pack_start(rightIndex,false,true, 0);
+      this.activeClicked(rightActive.get_active());
+    });
+    let rightIndex = new Gtk.SpinButton({ adjustment: new Gtk.Adjustment({ lower: 0, upper: 10, step_increment: 1 }), visible: true });
+    rightIndex.set_size_request(125, 0);
+    rightTopHbox.pack_start(new Gtk.Label({ label: 'Active:', use_markup: true, visible: true }), false, true, 0);
+    rightTopHbox.pack_start(rightActive, false, true, 0);
+    rightTopHbox.pack_start(new Gtk.Label({ label: 'Index in status bar:', visible: true, halign: Gtk.Align.END }), true, true, 0);
+    rightTopHbox.pack_start(rightIndex, false, true, 0);
 
-    rightGrid.attach(new Gtk.Separator({visible: true, orientation: Gtk.Orientation.VERTICAL}), 0, 1, 2, 1);
-    rightGrid.attach(new Gtk.Label({label: 'Command    |    Interval in seconds:', visible: true}), 0, 2, 2, 1);
+    rightGrid.attach(new Gtk.Separator({ visible: true, orientation: Gtk.Orientation.VERTICAL }), 0, 1, 2, 1);
+    rightGrid.attach(new Gtk.Label({ label: 'Command    |    Interval in seconds:', visible: true }), 0, 2, 2, 1);
 
-    this.rightListBox = new Gtk.ListBox({visible: true});
+    this.rightListBox = new Gtk.ListBox({ visible: true });
     this.rightListBox.set_selection_mode(0);
     rightGrid.attach(this.rightListBox, 0, 3, 2, 1);
     this.populateCommandList(2);
-    rightGrid.attach(new Gtk.Separator({visible: true, orientation: Gtk.Orientation.VERTICAL}), 0, 4, 2, 1);
+    rightGrid.attach(new Gtk.Separator({ visible: true, orientation: Gtk.Orientation.VERTICAL }), 0, 4, 2, 1);
 
-    let rightButtonsHbox = new Gtk.Box({orientation: Gtk.Orientation.HORIZONTAL, spacing: 10, visible: true});
-    let rightAddButton = new Gtk.Button({visible: true});
-    let rightAddButtonImage = new Gtk.Image({visible: true});
-    rightAddButtonImage.set_from_stock(Gtk.STOCK_ADD , 20);
+    let rightButtonsHbox = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 10, visible: true });
+    let rightAddButton = new Gtk.Button({ visible: true });
+    let rightAddButtonImage = new Gtk.Image({ visible: true });
+    rightAddButtonImage.set_from_icon_name(Gtk.STOCK_ADD, Gtk.ICON_SIZE_BUTTON);
     rightAddButton.set_image(rightAddButtonImage);
     rightAddButton.connect("clicked", this.addCommandToList.bind(this));
-    let rightSaveButton = new Gtk.Button({visible: true});
-    let rightSaveButtonImage = new Gtk.Image({visible: true});
-    rightSaveButtonImage.set_from_stock(Gtk.STOCK_SAVE , 20);
+    let rightSaveButton = new Gtk.Button({ visible: true });
+    let rightSaveButtonImage = new Gtk.Image({ visible: true });
+    rightSaveButtonImage.set_from_icon_name(Gtk.STOCK_SAVE, Gtk.ICON_SIZE_BUTTON);
     rightSaveButton.set_image(rightSaveButtonImage);
     rightSaveButton.connect("clicked", this.saveCommands.bind(this));
-    let rightCancelButton = new Gtk.Button({visible: true});
-    let rightCancelButtonImage = new Gtk.Image({visible: true});
-    rightCancelButtonImage.set_from_stock(Gtk.STOCK_REVERT_TO_SAVED , 20);
+    let rightCancelButton = new Gtk.Button({ visible: true });
+    let rightCancelButtonImage = new Gtk.Image({ visible: true });
+    rightCancelButtonImage.set_from_icon_name(Gtk.STOCK_REVERT_TO_SAVED, Gtk.ICON_SIZE_BUTTON);
     rightCancelButton.set_image(rightCancelButtonImage);
     rightCancelButton.connect("clicked", () => {
-        this.rightCommandsArray = JSON.parse(JSON.stringify(this.rightCommandsArrayCopy));
-        this.populateCommandList(2);
-    });    
-    rightButtonsHbox.pack_start(rightAddButton,false,true, 0);
-    rightButtonsHbox.pack_end(rightSaveButton,false,true, 0);
-    rightButtonsHbox.pack_end(rightCancelButton,false,true, 0);
+      this.rightCommandsArray = JSON.parse(JSON.stringify(this.rightCommandsArrayCopy));
+      this.populateCommandList(2);
+    });
+    rightButtonsHbox.pack_start(rightAddButton, false, true, 0);
+    rightButtonsHbox.pack_end(rightSaveButton, false, true, 0);
+    rightButtonsHbox.pack_end(rightCancelButton, false, true, 0);
     rightGrid.attach(rightButtonsHbox, 0, 5, 2, 1);
-    
-    let pageRight = new Gtk.Box({visible: true});
+
+    let pageRight = new Gtk.Box({ visible: true });
     pageRight.border_width = 10;
     pageRight.add(rightGrid);
-    this.notebook.append_page(pageRight,new Gtk.Label({label: "Right", visible: true}));
+    this.notebook.append_page(pageRight, new Gtk.Label({ label: "Right", visible: true }));
 
     //this.settings.bind('left-active', leftActive, 'active', Gio.SettingsBindFlags.DEFAULT);
     this.settings.bind('left-index', leftIndex, 'value', Gio.SettingsBindFlags.DEFAULT);
@@ -237,249 +244,630 @@ function buildPrefsWidget() {
     this.settings.bind('right-index', rightIndex, 'value', Gio.SettingsBindFlags.DEFAULT);
 
     return prefsWidget;
+
+  } else {
+
+    let prefsWidget = new Gtk.Grid({ visible: true, column_homogeneous: true });
+
+    this.notebook = new Gtk.Notebook({ visible: true });
+    prefsWidget.attach(this.notebook, 0, 0, 1, 1);
+
+    /* LEFT */
+    try {
+      this.leftCommandsArray = JSON.parse(this.settings.get_value('left-commands-json').deep_unpack()).commands;
+      this.leftCommandsArrayCopy = JSON.parse(JSON.stringify(this.leftCommandsArray));
+    } catch (e) {
+      log('Error in json file for location: ' + location.name);
+      this.settings.set_string('left-commands-json', '{"commands":[{"command":"echo Executor works!","interval":1}]}');
+    }
+
+    let leftGrid = new Gtk.Grid({ column_spacing: 12, row_spacing: 12, visible: true, column_homogeneous: true, vexpand: true, hexpand: true });
+
+    let leftTopHbox = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 20, visible: true });
+    leftGrid.attach(leftTopHbox, 0, 0, 2, 1);
+
+    let leftActive = new Gtk.Switch({ visible: true, halign: Gtk.Align.CENTER });
+    leftActive.set_active(this.settings.get_value('left-active').deep_unpack());
+    leftActive.connect("notify::active", () => {
+      this.activeClicked(leftActive.get_active());
+    });
+    let leftIndex = new Gtk.SpinButton({ adjustment: new Gtk.Adjustment({ lower: 0, upper: 10, step_increment: 1 }), visible: true });
+    leftIndex.set_size_request(125, 0);
+    leftTopHbox.append(new Gtk.Label({ label: 'Active:', use_markup: true, visible: true }));
+    leftTopHbox.append(leftActive);
+    leftTopHbox.append(new Gtk.Label({ label: 'Index in status bar:', visible: true, halign: Gtk.Align.END, hexpand: true }));
+    leftTopHbox.append(leftIndex);
+
+    leftGrid.attach(new Gtk.Separator({ visible: true, orientation: Gtk.Orientation.VERTICAL }), 0, 1, 2, 1);
+    leftGrid.attach(new Gtk.Label({ label: 'Command    |    Interval in seconds:', visible: true }), 0, 2, 2, 1);
+
+    this.leftListBox = new Gtk.ListBox({ visible: true });
+    this.leftListBox.set_selection_mode(0);
+    leftGrid.attach(this.leftListBox, 0, 3, 2, 1);
+    this.populateCommandList(0);
+    leftGrid.attach(new Gtk.Separator({ visible: true, orientation: Gtk.Orientation.VERTICAL }), 0, 4, 2, 1);
+
+    let leftButtonsHbox = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 10, visible: true });
+    let leftAddButton = new Gtk.Button({ visible: true, halign: Gtk.Align.START, hexpand: true });
+    leftAddButton.set_icon_name("list-add");
+    leftAddButton.connect("clicked", this.addCommandToList.bind(this));
+    let leftSaveButton = new Gtk.Button({ visible: true });
+    leftSaveButton.set_icon_name("document-save");
+    leftSaveButton.connect("clicked", this.saveCommands.bind(this));
+    let leftCancelButton = new Gtk.Button({ visible: true });
+    leftCancelButton.set_icon_name("document-revert");
+    leftCancelButton.connect("clicked", () => {
+      this.leftCommandsArray = JSON.parse(JSON.stringify(this.leftCommandsArrayCopy));
+      this.populateCommandList(0);
+    });
+    leftButtonsHbox.prepend(leftAddButton);
+    leftButtonsHbox.append(leftCancelButton);
+    leftButtonsHbox.append(leftSaveButton);
+    leftGrid.attach(leftButtonsHbox, 0, 5, 2, 1);
+
+    let pageLeft = new Gtk.Box({ visible: true, margin_top: 10, margin_end: 10, margin_bottom: 10, margin_start: 10 });
+    pageLeft.border_width = 10;
+    pageLeft.append(leftGrid);
+    this.notebook.append_page(pageLeft, new Gtk.Label({ label: "Left", visible: true }));
+
+    /* CENTER */
+    try {
+      this.centerCommandsArray = JSON.parse(this.settings.get_value('center-commands-json').deep_unpack()).commands;
+      this.centerCommandsArrayCopy = JSON.parse(JSON.stringify(this.centerCommandsArray));
+    } catch (e) {
+      log('Error in json file for location: ' + location.name);
+      this.settings.set_string('center-commands-json', '{"commands":[{"command":"echo Executor works!","interval":1}]}');
+    }
+
+    let centerGrid = new Gtk.Grid({ column_spacing: 12, row_spacing: 12, visible: true, column_homogeneous: true, vexpand: true, hexpand: true });
+
+    let centerTopHbox = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 20, visible: true });
+    centerGrid.attach(centerTopHbox, 0, 0, 2, 1);
+
+    let centerActive = new Gtk.Switch({ visible: true, halign: Gtk.Align.CENTER });
+    centerActive.set_active(this.settings.get_value('center-active').deep_unpack());
+    centerActive.connect("notify::active", () => {
+      this.activeClicked(centerActive.get_active());
+    });
+    let centerIndex = new Gtk.SpinButton({ adjustment: new Gtk.Adjustment({ lower: 0, upper: 10, step_increment: 1 }), visible: true });
+    centerIndex.set_size_request(125, 0);
+    centerTopHbox.append(new Gtk.Label({ label: 'Active:', use_markup: true, visible: true }));
+    centerTopHbox.append(centerActive);
+    centerTopHbox.append(new Gtk.Label({ label: 'Index in status bar:', visible: true, halign: Gtk.Align.END, hexpand: true }));
+    centerTopHbox.append(centerIndex);
+
+    centerGrid.attach(new Gtk.Separator({ visible: true, orientation: Gtk.Orientation.VERTICAL }), 0, 1, 2, 1);
+    centerGrid.attach(new Gtk.Label({ label: 'Command    |    Interval in seconds:', visible: true }), 0, 2, 2, 1);
+
+    this.centerListBox = new Gtk.ListBox({ visible: true });
+    this.centerListBox.set_selection_mode(0);
+    centerGrid.attach(this.centerListBox, 0, 3, 2, 1);
+    this.populateCommandList(1);
+    centerGrid.attach(new Gtk.Separator({ visible: true, orientation: Gtk.Orientation.VERTICAL }), 0, 4, 2, 1);
+
+    let centerButtonsHbox = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 10, visible: true });
+    let centerAddButton = new Gtk.Button({ visible: true, halign: Gtk.Align.START, hexpand: true });
+    centerAddButton.set_icon_name("list-add");
+    centerAddButton.connect("clicked", this.addCommandToList.bind(this));
+    let centerSaveButton = new Gtk.Button({ visible: true });
+    centerSaveButton.set_icon_name("document-save");
+    centerSaveButton.connect("clicked", this.saveCommands.bind(this));
+    let centerCancelButton = new Gtk.Button({ visible: true });
+    centerCancelButton.set_icon_name("document-revert");
+    centerCancelButton.connect("clicked", () => {
+      this.centerCommandsArray = JSON.parse(JSON.stringify(this.centerCommandsArrayCopy));
+      this.populateCommandList(1);
+    });
+    centerButtonsHbox.prepend(centerAddButton);
+    centerButtonsHbox.append(centerCancelButton);
+    centerButtonsHbox.append(centerSaveButton);
+    centerGrid.attach(centerButtonsHbox, 0, 5, 2, 1);
+
+    let pageCenter = new Gtk.Box({ visible: true, margin_top: 10, margin_end: 10, margin_bottom: 10, margin_start: 10 });
+    pageCenter.border_width = 10;
+    pageCenter.append(centerGrid);
+    this.notebook.append_page(pageCenter, new Gtk.Label({ label: "Center", visible: true }));
+
+    /* RIGHT */
+    try {
+      this.rightCommandsArray = JSON.parse(this.settings.get_value('right-commands-json').deep_unpack()).commands;
+      this.rightCommandsArrayCopy = JSON.parse(JSON.stringify(this.rightCommandsArray));
+    } catch (e) {
+      log('Error in json file for location: ' + location.name);
+      this.settings.set_string('right-commands-json', '{"commands":[{"command":"echo Executor works!","interval":1}]}');
+    }
+
+    let rightGrid = new Gtk.Grid({ column_spacing: 12, row_spacing: 12, visible: true, column_homogeneous: true, vexpand: true, hexpand: true });
+
+    let rightTopHbox = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 20, visible: true });
+    rightGrid.attach(rightTopHbox, 0, 0, 2, 1);
+
+    let rightActive = new Gtk.Switch({ visible: true, halign: Gtk.Align.CENTER });
+    rightActive.set_active(this.settings.get_value('right-active').deep_unpack());
+    rightActive.connect("notify::active", () => {
+      this.activeClicked(rightActive.get_active());
+    });
+    let rightIndex = new Gtk.SpinButton({ adjustment: new Gtk.Adjustment({ lower: 0, upper: 10, step_increment: 1 }), visible: true });
+    rightIndex.set_size_request(125, 0);
+    rightTopHbox.append(new Gtk.Label({ label: 'Active:', use_markup: true, visible: true }));
+    rightTopHbox.append(rightActive);
+    rightTopHbox.append(new Gtk.Label({ label: 'Index in status bar:', visible: true, halign: Gtk.Align.END, hexpand: true }));
+    rightTopHbox.append(rightIndex);
+
+    rightGrid.attach(new Gtk.Separator({ visible: true, orientation: Gtk.Orientation.VERTICAL }), 0, 1, 2, 1);
+    rightGrid.attach(new Gtk.Label({ label: 'Command    |    Interval in seconds:', visible: true }), 0, 2, 2, 1);
+
+    this.rightListBox = new Gtk.ListBox({ visible: true });
+    this.rightListBox.set_selection_mode(0);
+    rightGrid.attach(this.rightListBox, 0, 3, 2, 1);
+    this.populateCommandList(2);
+    rightGrid.attach(new Gtk.Separator({ visible: true, orientation: Gtk.Orientation.VERTICAL }), 0, 4, 2, 1);
+
+    let rightButtonsHbox = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 10, visible: true });
+    let rightAddButton = new Gtk.Button({ visible: true, halign: Gtk.Align.START, hexpand: true });
+    rightAddButton.set_icon_name("list-add");
+    rightAddButton.connect("clicked", this.addCommandToList.bind(this));
+    let rightSaveButton = new Gtk.Button({ visible: true });
+    rightSaveButton.set_icon_name("document-save");
+    rightSaveButton.connect("clicked", this.saveCommands.bind(this));
+    let rightCancelButton = new Gtk.Button({ visible: true });
+    rightCancelButton.set_icon_name("document-revert");
+    rightCancelButton.connect("clicked", () => {
+      this.rightCommandsArray = JSON.parse(JSON.stringify(this.rightCommandsArrayCopy));
+      this.populateCommandList(2);
+    });
+    rightButtonsHbox.prepend(rightAddButton);
+    rightButtonsHbox.append(rightCancelButton);
+    rightButtonsHbox.append(rightSaveButton);
+    rightGrid.attach(rightButtonsHbox, 0, 5, 2, 1);
+
+    let pageRight = new Gtk.Box({ visible: true, margin_top: 10, margin_end: 10, margin_bottom: 10, margin_start: 10 });
+    pageRight.border_width = 10;
+    pageRight.append(rightGrid);
+    this.notebook.append_page(pageRight, new Gtk.Label({ label: "Right", visible: true }));
+
+    //this.settings.bind('left-active', leftActive, 'active', Gio.SettingsBindFlags.DEFAULT);
+    this.settings.bind('left-index', leftIndex, 'value', Gio.SettingsBindFlags.DEFAULT);
+    //this.settings.bind('center-active', centerActive, 'active', Gio.SettingsBindFlags.DEFAULT);
+    this.settings.bind('center-index', centerIndex, 'value', Gio.SettingsBindFlags.DEFAULT);
+    //this.settings.bind('right-active', rightActive, 'active', Gio.SettingsBindFlags.DEFAULT);
+    this.settings.bind('right-index', rightIndex, 'value', Gio.SettingsBindFlags.DEFAULT);
+
+    return prefsWidget;
+  }
 }
 
 function populateCommandList(page_number) {
 
+  if (shellVersion < 40) {
+
     if (page_number === 0) {
 
-        this.leftListBox.foreach((element) => this.leftListBox.remove(element));
-        this.leftCommandsArray.forEach((c, index) => {
-            this.leftListBox.add(this.prepareRow(c, index));
-        })
+      this.leftListBox.foreach((element) => this.leftListBox.remove(element));
+      this.leftCommandsArray.forEach((c, index) => {
+        this.leftListBox.add(this.prepareRow(c, index));
+      })
 
     } else if (page_number === 1) {
 
-        this.centerListBox.foreach((element) => this.centerListBox.remove(element));
-        this.centerCommandsArray.forEach((c, index) => {
-            this.centerListBox.add(this.prepareRow(c, index));
-        })
+      this.centerListBox.foreach((element) => this.centerListBox.remove(element));
+      this.centerCommandsArray.forEach((c, index) => {
+        this.centerListBox.add(this.prepareRow(c, index));
+      })
 
     } else if (page_number === 2) {
 
-        this.rightListBox.foreach((element) => this.rightListBox.remove(element));
-        this.rightCommandsArray.forEach((c, index) => {
-            this.rightListBox.add(this.prepareRow(c, index));
-        })
+      this.rightListBox.foreach((element) => this.rightListBox.remove(element));
+      this.rightCommandsArray.forEach((c, index) => {
+        this.rightListBox.add(this.prepareRow(c, index));
+      })
 
     }
+
+  } else {
+
+    if (page_number === 0) {
+
+      let child = this.leftListBox.get_first_child();
+
+      while (child != null) {
+        let next = child.get_next_sibling();
+        this.leftListBox.remove(child);
+        child = next;
+      }
+
+      this.leftCommandsArray.forEach((c, index) => {
+        this.leftListBox.append(this.prepareRow(c, index));
+      })
+
+    } else if (page_number === 1) {
+
+      let child = this.centerListBox.get_first_child();
+
+      while (child != null) {
+        let next = child.get_next_sibling();
+        this.centerListBox.remove(child);
+        child = next;
+      }
+
+      this.centerCommandsArray.forEach((c, index) => {
+        this.centerListBox.append(this.prepareRow(c, index));
+      })
+
+    } else if (page_number === 2) {
+
+      let child = this.rightListBox.get_first_child();
+
+      while (child != null) {
+        let next = child.get_next_sibling();
+        this.rightListBox.remove(child);
+        child = next;
+      }
+
+      this.rightCommandsArray.forEach((c, index) => {
+        this.rightListBox.append(this.prepareRow(c, index));
+      })
+
+    }
+  }
 }
 
 function prepareRow(c, index) {
-    let row = new Gtk.ListBoxRow({visible: true});
 
-    let command = new Gtk.Entry({visible: true, margin_right: 10});
+  if (shellVersion < 40) {
+
+    let row = new Gtk.ListBoxRow({ visible: true });
+
+    let command = new Gtk.Entry({ visible: true, margin_right: 10 });
     command.set_text(c.command);
-    let hbox = new Gtk.Box({orientation: Gtk.Orientation.HORIZONTAL, visible: true});
+    let hbox = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, visible: true });
     row.add(hbox);
-    hbox.pack_start(command,true,true, 0);
+    hbox.pack_start(command, true, true, 0);
 
-    let interval = new Gtk.SpinButton({adjustment: new Gtk.Adjustment({lower: 0,upper: 86400,step_increment: 1}), visible: true, margin_right: 10});
+    let interval = new Gtk.SpinButton({ adjustment: new Gtk.Adjustment({ lower: 0, upper: 86400, step_increment: 1 }), visible: true, margin_right: 10 });
     interval.set_value(c.interval);
-    hbox.pack_start(interval,false,true, 0);
+    hbox.pack_start(interval, false, true, 0);
 
-    let upButton = new Gtk.Button({visible: true, margin_right: 1});
-    let upButtonImage = new Gtk.Image({visible: true});
-    upButtonImage.set_from_stock(Gtk.STOCK_GO_UP , 20);
+    let upButton = new Gtk.Button({ visible: true, margin_right: 1 });
+    let upButtonImage = new Gtk.Image({ visible: true });
+    upButtonImage.set_from_icon_name(Gtk.STOCK_GO_UP, Gtk.ICON_SIZE_BUTTON);
     upButton.set_image(upButtonImage);
     upButton.connect("clicked", () => {
-        this.moveCommandUp(index);
+      this.moveCommandUp(index);
     });
 
-    let downButton = new Gtk.Button({visible: true, margin_right: 1});
-    let downButtonImage = new Gtk.Image({visible: true});
-    downButtonImage.set_from_stock(Gtk.STOCK_GO_DOWN , 20);
+    let downButton = new Gtk.Button({ visible: true, margin_right: 1 });
+    let downButtonImage = new Gtk.Image({ visible: true });
+    downButtonImage.set_from_icon_name(Gtk.STOCK_GO_DOWN, Gtk.ICON_SIZE_BUTTON);
     downButton.set_image(downButtonImage);
     downButton.connect("clicked", () => {
-        this.moveCommandDown(index);
+      this.moveCommandDown(index);
     });
 
-    hbox.pack_start(upButton,false,true, 0);
-    hbox.pack_start(downButton,false,true, 0);
+    hbox.pack_start(upButton, false, true, 0);
+    hbox.pack_start(downButton, false, true, 0);
 
-    let remove = new Gtk.Button({visible: true});
-    let removeImage = new Gtk.Image({visible: true});
-    removeImage.set_from_stock(Gtk.STOCK_DELETE, 10);
+    let remove = new Gtk.Button({ visible: true });
+    let removeImage = new Gtk.Image({ visible: true });
+    removeImage.set_from_icon_name(Gtk.STOCK_DELETE, Gtk.ICON_SIZE_BUTTON);
     remove.set_image(removeImage);
-    hbox.pack_start(remove,false,true, 0);
+    hbox.pack_start(remove, false, true, 0);
     remove.connect("clicked", () => {
-        this.removeCommandFromList(index);
-        this.leftRemoveButton.set_sensitive(false)
+      remove.set_sensitive(false)
+      this.removeCommandFromList(index);
     });
 
     return row;
+
+  } else {
+
+    let row = new Gtk.ListBoxRow({ visible: true });
+
+    let command = new Gtk.Entry({ visible: true, margin_end: 10, hexpand: true });
+    command.set_text(c.command);
+    let hbox = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, visible: true });
+    row.set_child(hbox);
+    hbox.append(command);
+
+    let interval = new Gtk.SpinButton({ adjustment: new Gtk.Adjustment({ lower: 0, upper: 86400, step_increment: 1 }), visible: true, margin_end: 10 });
+    interval.set_value(c.interval);
+    hbox.append(interval);
+
+    let upButton = new Gtk.Button({ visible: true, margin_end: 1 });
+    upButton.set_icon_name("go-up");
+    upButton.connect("clicked", () => {
+      this.moveCommandUp(index);
+    });
+
+    let downButton = new Gtk.Button({ visible: true, margin_end: 1 });
+    downButton.set_icon_name("go-down");
+    downButton.connect("clicked", () => {
+      this.moveCommandDown(index);
+    });
+
+    hbox.append(upButton);
+    hbox.append(downButton);
+
+    let removeButton = new Gtk.Button({ visible: true });
+    removeButton.set_icon_name("edit-delete");
+    hbox.append(removeButton);
+    removeButton.connect("clicked", () => {
+      removeButton.set_sensitive(false);
+      this.removeCommandFromList(index);
+    });
+
+    return row;
+  }
 }
 
 function addCommandToList() {
-    
-    if (this.notebook.get_current_page() === 0) {
 
-        this.leftCommandsArray.push({"command":"echo 'new command'","interval":1})
-        this.populateCommandList(this.notebook.get_current_page());
+  if (this.notebook.get_current_page() === 0) {
 
-    } else if (this.notebook.get_current_page() === 1) {
+    this.leftCommandsArray.push({ "command": "echo 'new command'", "interval": 1 })
+    this.populateCommandList(this.notebook.get_current_page());
 
-        this.centerCommandsArray.push({"command":"echo 'new command'","interval":1})
-        this.populateCommandList(this.notebook.get_current_page());
+  } else if (this.notebook.get_current_page() === 1) {
 
-    } else if (this.notebook.get_current_page() === 2) {
+    this.centerCommandsArray.push({ "command": "echo 'new command'", "interval": 1 })
+    this.populateCommandList(this.notebook.get_current_page());
 
-        this.rightCommandsArray.push({"command":"echo 'new command'","interval":1})
-        this.populateCommandList(this.notebook.get_current_page());
+  } else if (this.notebook.get_current_page() === 2) {
 
-    }
+    this.rightCommandsArray.push({ "command": "echo 'new command'", "interval": 1 })
+    this.populateCommandList(this.notebook.get_current_page());
+
+  }
 }
 
 function removeCommandFromList(index) {
 
-    if (this.notebook.get_current_page() === 0) {
+  if (this.notebook.get_current_page() === 0) {
 
-        this.leftCommandsArray.splice(index, 1);
-        this.populateCommandList(this.notebook.get_current_page());     
+    this.leftCommandsArray.splice(index, 1);
+    this.populateCommandList(this.notebook.get_current_page());
 
-    } else if (this.notebook.get_current_page() === 1) {
+  } else if (this.notebook.get_current_page() === 1) {
 
-        this.centerCommandsArray.splice(index, 1);
-        this.populateCommandList(this.notebook.get_current_page());
+    this.centerCommandsArray.splice(index, 1);
+    this.populateCommandList(this.notebook.get_current_page());
 
-    } else if (this.notebook.get_current_page() === 2) {
+  } else if (this.notebook.get_current_page() === 2) {
 
-        this.rightCommandsArray.splice(index, 1);
-        this.populateCommandList(this.notebook.get_current_page());        
+    this.rightCommandsArray.splice(index, 1);
+    this.populateCommandList(this.notebook.get_current_page());
 
-    }
+  }
 }
 
 function moveCommandUp(index) {
 
-    if (this.notebook.get_current_page() === 0) {
+  if (this.notebook.get_current_page() === 0) {
 
-        this.arraymove(this.leftCommandsArray, index, index - 1)
-        this.populateCommandList(this.notebook.get_current_page());     
+    this.arraymove(this.leftCommandsArray, index, index - 1)
+    this.populateCommandList(this.notebook.get_current_page());
 
-    } else if (this.notebook.get_current_page() === 1) {
+  } else if (this.notebook.get_current_page() === 1) {
 
-        this.arraymove(this.centerCommandsArray, index, index - 1)
-        this.populateCommandList(this.notebook.get_current_page());
+    this.arraymove(this.centerCommandsArray, index, index - 1)
+    this.populateCommandList(this.notebook.get_current_page());
 
-    } else if (this.notebook.get_current_page() === 2) {
+  } else if (this.notebook.get_current_page() === 2) {
 
-        this.arraymove(this.rightCommandsArray, index, index - 1)
-        this.populateCommandList(this.notebook.get_current_page());        
+    this.arraymove(this.rightCommandsArray, index, index - 1)
+    this.populateCommandList(this.notebook.get_current_page());
 
-    }
+  }
 }
 
 function moveCommandDown(index) {
 
-    if (this.notebook.get_current_page() === 0) {
+  if (this.notebook.get_current_page() === 0) {
 
-        this.arraymove(this.leftCommandsArray, index, index + 1)
-        this.populateCommandList(this.notebook.get_current_page());     
+    this.arraymove(this.leftCommandsArray, index, index + 1)
+    this.populateCommandList(this.notebook.get_current_page());
 
-    } else if (this.notebook.get_current_page() === 1) {
+  } else if (this.notebook.get_current_page() === 1) {
 
-        this.arraymove(this.centerCommandsArray, index, index + 1)
-        this.populateCommandList(this.notebook.get_current_page());
+    this.arraymove(this.centerCommandsArray, index, index + 1)
+    this.populateCommandList(this.notebook.get_current_page());
 
-    } else if (this.notebook.get_current_page() === 2) {
+  } else if (this.notebook.get_current_page() === 2) {
 
-        this.arraymove(this.rightCommandsArray, index, index + 1)
-        this.populateCommandList(this.notebook.get_current_page());        
+    this.arraymove(this.rightCommandsArray, index, index + 1)
+    this.populateCommandList(this.notebook.get_current_page());
 
-    }
+  }
 }
 
 function arraymove(array, fromIndex, toIndex) {
-    var element = array[fromIndex];
-    array.splice(fromIndex, 1);
-    array.splice(toIndex, 0, element);
+  var element = array[fromIndex];
+  array.splice(fromIndex, 1);
+  array.splice(toIndex, 0, element);
 }
 
 function saveCommands() {
 
+  if (shellVersion < 40) {
+
     if (this.notebook.get_current_page() === 0) {
 
-        this.leftCommandsArray.splice(0, this.leftCommandsArray.length);
+      this.leftCommandsArray.splice(0, this.leftCommandsArray.length);
 
-        let count = 0;
-        this.leftListBox.foreach((element) => count++);
+      let count = 0;
+      this.leftListBox.foreach((element) => count++);
 
-        for (var i = 0; i < count; i++) {
-            this.leftCommandsArray.push({
-                "command": this.leftListBox.get_row_at_index(i).get_child().get_children()[0].get_text(),
-                "interval": this.leftListBox.get_row_at_index(i).get_child().get_children()[1].get_value(),
-                "uuid": this.createUUID()});
-        }
+      for (var i = 0; i < count; i++) {
+        this.leftCommandsArray.push({
+          "command": this.leftListBox.get_row_at_index(i).get_child().get_children()[0].get_text(),
+          "interval": this.leftListBox.get_row_at_index(i).get_child().get_children()[1].get_value(),
+          "uuid": this.createUUID()
+        });
+      }
 
-        this.leftCommandsArrayCopy = JSON.parse(JSON.stringify(this.leftCommandsArray));
+      this.leftCommandsArrayCopy = JSON.parse(JSON.stringify(this.leftCommandsArray));
 
-        this.settings.set_string('left-commands-json', '{"commands":' + JSON.stringify(this.leftCommandsArray) + '}');
+      this.settings.set_string('left-commands-json', '{"commands":' + JSON.stringify(this.leftCommandsArray) + '}');
 
     } else if (this.notebook.get_current_page() === 1) {
 
-        this.centerCommandsArray.splice(0, this.centerCommandsArray.length);
+      this.centerCommandsArray.splice(0, this.centerCommandsArray.length);
 
-        let count = 0;
-        this.centerListBox.foreach((element) => count++);
+      let count = 0;
+      this.centerListBox.foreach((element) => count++);
 
-        for (var i = 0; i < count; i++) {
-            this.centerCommandsArray.push({
-                "command": this.centerListBox.get_row_at_index(i).get_child().get_children()[0].get_text(),
-                "interval": this.centerListBox.get_row_at_index(i).get_child().get_children()[1].get_value(),
-                "uuid": this.createUUID()});
-        }
+      for (var i = 0; i < count; i++) {
+        this.centerCommandsArray.push({
+          "command": this.centerListBox.get_row_at_index(i).get_child().get_children()[0].get_text(),
+          "interval": this.centerListBox.get_row_at_index(i).get_child().get_children()[1].get_value(),
+          "uuid": this.createUUID()
+        });
+      }
 
-        this.centerCommandsArrayCopy = JSON.parse(JSON.stringify(this.centerCommandsArray));
+      this.centerCommandsArrayCopy = JSON.parse(JSON.stringify(this.centerCommandsArray));
 
-        this.settings.set_string('center-commands-json', '{"commands":' + JSON.stringify(this.centerCommandsArray) + '}');
+      this.settings.set_string('center-commands-json', '{"commands":' + JSON.stringify(this.centerCommandsArray) + '}');
 
 
     } else if (this.notebook.get_current_page() === 2) {
 
-        this.rightCommandsArray.splice(0, this.rightCommandsArray.length);
+      this.rightCommandsArray.splice(0, this.rightCommandsArray.length);
 
-        let count = 0;
-        this.rightListBox.foreach((element) => count++);
+      let count = 0;
+      this.rightListBox.foreach((element) => count++);
 
-        for (var i = 0; i < count; i++) {
-            this.rightCommandsArray.push({
-                "command": this.rightListBox.get_row_at_index(i).get_child().get_children()[0].get_text(),
-                "interval": this.rightListBox.get_row_at_index(i).get_child().get_children()[1].get_value(),
-                "uuid": this.createUUID()});
-        }
+      for (var i = 0; i < count; i++) {
+        this.rightCommandsArray.push({
+          "command": this.rightListBox.get_row_at_index(i).get_child().get_children()[0].get_text(),
+          "interval": this.rightListBox.get_row_at_index(i).get_child().get_children()[1].get_value(),
+          "uuid": this.createUUID()
+        });
+      }
 
-        this.rightCommandsArrayCopy = JSON.parse(JSON.stringify(this.rightCommandsArray));
+      this.rightCommandsArrayCopy = JSON.parse(JSON.stringify(this.rightCommandsArray));
 
-        this.settings.set_string('right-commands-json', '{"commands":' + JSON.stringify(this.rightCommandsArray) + '}');
+      this.settings.set_string('right-commands-json', '{"commands":' + JSON.stringify(this.rightCommandsArray) + '}');
     }
+
+  } else {
+
+    if (this.notebook.get_current_page() === 0) {
+
+      this.leftCommandsArray.splice(0, this.leftCommandsArray.length);
+
+      let count = 0;
+
+      let child = this.leftListBox.get_first_child();
+
+      while (child != null) {
+        let next = child.get_next_sibling();
+        count++;
+        child = next;
+      }
+
+      for (var i = 0; i < count; i++) {
+
+        let command = this.leftListBox.get_row_at_index(i).get_child().get_first_child();
+        let interval = command.get_next_sibling();
+
+        this.leftCommandsArray.push({
+          "command": command.get_text(),
+          "interval": interval.get_value(),
+          "uuid": this.createUUID()
+        });
+      }
+
+      this.leftCommandsArrayCopy = JSON.parse(JSON.stringify(this.leftCommandsArray));
+
+      this.settings.set_string('left-commands-json', '{"commands":' + JSON.stringify(this.leftCommandsArray) + '}');
+
+    } else if (this.notebook.get_current_page() === 1) {
+
+      this.centerCommandsArray.splice(0, this.centerCommandsArray.length);
+
+      let count = 0;
+
+      let child = this.centerListBox.get_first_child();
+
+      while (child != null) {
+        let next = child.get_next_sibling();
+        count++;
+        child = next;
+      }
+
+      for (var i = 0; i < count; i++) {
+        let command = this.centerListBox.get_row_at_index(i).get_child().get_first_child();
+        let interval = command.get_next_sibling();
+
+        this.centerCommandsArray.push({
+          "command": command.get_text(),
+          "interval": interval.get_value(),
+          "uuid": this.createUUID()
+        });
+      }
+
+      this.centerCommandsArrayCopy = JSON.parse(JSON.stringify(this.centerCommandsArray));
+
+      this.settings.set_string('center-commands-json', '{"commands":' + JSON.stringify(this.centerCommandsArray) + '}');
+
+
+    } else if (this.notebook.get_current_page() === 2) {
+
+      this.rightCommandsArray.splice(0, this.rightCommandsArray.length);
+
+      let count = 0;
+
+      let child = this.rightListBox.get_first_child();
+
+      while (child != null) {
+        let next = child.get_next_sibling();
+        count++;
+        child = next;
+      }
+
+      for (var i = 0; i < count; i++) {
+        let command = this.rightListBox.get_row_at_index(i).get_child().get_first_child();
+        let interval = command.get_next_sibling();
+
+        this.rightCommandsArray.push({
+          "command": command.get_text(),
+          "interval": interval.get_value(),
+          "uuid": this.createUUID()
+        });
+      }
+
+      this.rightCommandsArrayCopy = JSON.parse(JSON.stringify(this.rightCommandsArray));
+
+      this.settings.set_string('right-commands-json', '{"commands":' + JSON.stringify(this.rightCommandsArray) + '}');
+    }
+  }
 }
 
 function createUUID() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-      var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-      return v.toString(16);
-    });
-  }
-  
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
+
 function activeClicked(isActive) {
 
-    if (isActive) {
-        this.saveCommands();
-    }
+  if (isActive) {
+    this.saveCommands();
+  }
 
-    if (this.notebook.get_current_page() === 0) {
+  if (this.notebook.get_current_page() === 0) {
 
-        this.settings.set_boolean('left-active', isActive);
+    this.settings.set_boolean('left-active', isActive);
 
-    } else if (this.notebook.get_current_page() === 1) {
+  } else if (this.notebook.get_current_page() === 1) {
 
-        this.settings.set_boolean('center-active', isActive);
+    this.settings.set_boolean('center-active', isActive);
 
-    } else if (this.notebook.get_current_page() === 2) {
+  } else if (this.notebook.get_current_page() === 2) {
 
-        this.settings.set_boolean('right-active', isActive);
+    this.settings.set_boolean('right-active', isActive);
 
-    }
+  }
 
 }
