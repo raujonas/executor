@@ -58,10 +58,10 @@ function buildPrefsWidget() {
     });    
     let leftIndex = new Gtk.SpinButton({adjustment: new Gtk.Adjustment({lower: 0, upper: 10, step_increment: 1}), visible: true});
     leftIndex.set_size_request(125,0);
-    leftTopHbox.pack_start(new Gtk.Label({label: 'Active:', use_markup: true, visible: true}),false,true, 0);
-    leftTopHbox.pack_start(leftActive,false,true, 0);
-    leftTopHbox.pack_start(new Gtk.Label({label: 'Index in status bar:', visible: true, halign: Gtk.Align.END}),true,true, 0);
-    leftTopHbox.pack_start(leftIndex,false,true, 0);
+    leftTopHbox.append(new Gtk.Label({label: 'Active:', use_markup: true, visible: true}),false,true, 0);
+    leftTopHbox.append(leftActive,false,true, 0);
+    leftTopHbox.append(new Gtk.Label({label: 'Index in status bar:', visible: true, halign: Gtk.Align.END}),true,true, 0);
+    leftTopHbox.append(leftIndex,false,true, 0);
 
     leftGrid.attach(new Gtk.Separator({visible: true, orientation: Gtk.Orientation.VERTICAL}), 0, 1, 2, 1);
     leftGrid.attach(new Gtk.Label({label: 'Command    |    Interval in seconds:', visible: true}), 0, 2, 2, 1);
@@ -74,31 +74,25 @@ function buildPrefsWidget() {
 
     let leftButtonsHbox = new Gtk.Box({orientation: Gtk.Orientation.HORIZONTAL, spacing: 10, visible: true});
     let leftAddButton = new Gtk.Button({visible: true});
-    let leftAddButtonImage = new Gtk.Image({visible: true});
-    leftAddButtonImage.set_from_stock(Gtk.STOCK_ADD , 20);
-    leftAddButton.set_image(leftAddButtonImage);
+    leftAddButton.set_icon_name("list-add");
     leftAddButton.connect("clicked", this.addCommandToList.bind(this));
     let leftSaveButton = new Gtk.Button({visible: true});
-    let leftSaveButtonImage = new Gtk.Image({visible: true});
-    leftSaveButtonImage.set_from_stock(Gtk.STOCK_SAVE , 20);
-    leftSaveButton.set_image(leftSaveButtonImage);
+    leftSaveButton.set_icon_name("document-save");
     leftSaveButton.connect("clicked", this.saveCommands.bind(this));
     let leftCancelButton = new Gtk.Button({visible: true});
-    let leftCancelButtonImage = new Gtk.Image({visible: true});
-    leftCancelButtonImage.set_from_stock(Gtk.STOCK_REVERT_TO_SAVED , 20);
-    leftCancelButton.set_image(leftCancelButtonImage);
+    leftCancelButton.set_icon_name("document-revert");
     leftCancelButton.connect("clicked", () => {
         this.leftCommandsArray = JSON.parse(JSON.stringify(this.leftCommandsArrayCopy));
         this.populateCommandList(0);
     });
-    leftButtonsHbox.pack_start(leftAddButton,false,true, 0);
-    leftButtonsHbox.pack_end(leftSaveButton,false,true, 0);
-    leftButtonsHbox.pack_end(leftCancelButton,false,true, 0);
+    leftButtonsHbox.prepend(leftAddButton,false,true, 0);
+    leftButtonsHbox.append(leftSaveButton,false,true, 0);
+    leftButtonsHbox.append(leftCancelButton,false,true, 0);
     leftGrid.attach(leftButtonsHbox, 0, 5, 2, 1);
     
     let pageLeft = new Gtk.Box({visible: true});
     pageLeft.border_width = 10;
-    pageLeft.add(leftGrid);
+    pageLeft.append(leftGrid);
     this.notebook.append_page(pageLeft,new Gtk.Label({label: "Left", visible: true}));
 
     /* CENTER */
@@ -122,10 +116,10 @@ function buildPrefsWidget() {
     });    
     let centerIndex = new Gtk.SpinButton({adjustment: new Gtk.Adjustment({lower: 0, upper: 10, step_increment: 1}), visible: true});
     centerIndex.set_size_request(125,0);
-    centerTopHbox.pack_start(new Gtk.Label({label: 'Active:', use_markup: true, visible: true}),false,true, 0);
-    centerTopHbox.pack_start(centerActive,false,true, 0);
-    centerTopHbox.pack_start(new Gtk.Label({label: 'Index in status bar:', visible: true, halign: Gtk.Align.END}),true,true, 0);
-    centerTopHbox.pack_start(centerIndex,false,true, 0);
+    centerTopHbox.append(new Gtk.Label({label: 'Active:', use_markup: true, visible: true}),false,true, 0);
+    centerTopHbox.append(centerActive,false,true, 0);
+    centerTopHbox.append(new Gtk.Label({label: 'Index in status bar:', visible: true, halign: Gtk.Align.END}),true,true, 0);
+    centerTopHbox.append(centerIndex,false,true, 0);
 
     centerGrid.attach(new Gtk.Separator({visible: true, orientation: Gtk.Orientation.VERTICAL}), 0, 1, 2, 1);
     centerGrid.attach(new Gtk.Label({label: 'Command    |    Interval in seconds:', visible: true}), 0, 2, 2, 1);
@@ -138,31 +132,25 @@ function buildPrefsWidget() {
 
     let centerButtonsHbox = new Gtk.Box({orientation: Gtk.Orientation.HORIZONTAL, spacing: 10, visible: true});
     let centerAddButton = new Gtk.Button({visible: true});
-    let centerAddButtonImage = new Gtk.Image({visible: true});
-    centerAddButtonImage.set_from_stock(Gtk.STOCK_ADD , 20);
-    centerAddButton.set_image(centerAddButtonImage);
+    centerAddButton.set_icon_name("list-add");
     centerAddButton.connect("clicked", this.addCommandToList.bind(this));
     let centerSaveButton = new Gtk.Button({visible: true});
-    let centerSaveButtonImage = new Gtk.Image({visible: true});
-    centerSaveButtonImage.set_from_stock(Gtk.STOCK_SAVE , 20);
-    centerSaveButton.set_image(centerSaveButtonImage);
+    centerSaveButton.set_icon_name("document-save");
     centerSaveButton.connect("clicked", this.saveCommands.bind(this));
     let centerCancelButton = new Gtk.Button({visible: true});
-    let centerCancelButtonImage = new Gtk.Image({visible: true});
-    centerCancelButtonImage.set_from_stock(Gtk.STOCK_REVERT_TO_SAVED , 20);
-    centerCancelButton.set_image(centerCancelButtonImage);
+    centerCancelButton.set_icon_name("document-revert");
     centerCancelButton.connect("clicked", () => {
         this.centerCommandsArray = JSON.parse(JSON.stringify(this.centerCommandsArrayCopy));
         this.populateCommandList(1);
     });    
-    centerButtonsHbox.pack_start(centerAddButton,false,true, 0);
-    centerButtonsHbox.pack_end(centerSaveButton,false,true, 0);
-    centerButtonsHbox.pack_end(centerCancelButton,false,true, 0);
+    centerButtonsHbox.prepend(centerAddButton,false,true, 0);
+    centerButtonsHbox.append(centerSaveButton,false,true, 0);
+    centerButtonsHbox.append(centerCancelButton,false,true, 0);
     centerGrid.attach(centerButtonsHbox, 0, 5, 2, 1);
     
     let pageCenter = new Gtk.Box({visible: true});
     pageCenter.border_width = 10;
-    pageCenter.add(centerGrid);
+    pageCenter.append(centerGrid);
     this.notebook.append_page(pageCenter,new Gtk.Label({label: "Center", visible: true}));
 
     /* RIGHT */
@@ -186,10 +174,10 @@ function buildPrefsWidget() {
     });    
     let rightIndex = new Gtk.SpinButton({adjustment: new Gtk.Adjustment({lower: 0, upper: 10, step_increment: 1}), visible: true});
     rightIndex.set_size_request(125,0);
-    rightTopHbox.pack_start(new Gtk.Label({label: 'Active:', use_markup: true, visible: true}),false,true, 0);
-    rightTopHbox.pack_start(rightActive,false,true, 0);
-    rightTopHbox.pack_start(new Gtk.Label({label: 'Index in status bar:', visible: true, halign: Gtk.Align.END}),true,true, 0);
-    rightTopHbox.pack_start(rightIndex,false,true, 0);
+    rightTopHbox.append(new Gtk.Label({label: 'Active:', use_markup: true, visible: true}),false,true, 0);
+    rightTopHbox.append(rightActive,false,true, 0);
+    rightTopHbox.append(new Gtk.Label({label: 'Index in status bar:', visible: true, halign: Gtk.Align.END}),true,true, 0);
+    rightTopHbox.append(rightIndex,false,true, 0);
 
     rightGrid.attach(new Gtk.Separator({visible: true, orientation: Gtk.Orientation.VERTICAL}), 0, 1, 2, 1);
     rightGrid.attach(new Gtk.Label({label: 'Command    |    Interval in seconds:', visible: true}), 0, 2, 2, 1);
@@ -202,31 +190,25 @@ function buildPrefsWidget() {
 
     let rightButtonsHbox = new Gtk.Box({orientation: Gtk.Orientation.HORIZONTAL, spacing: 10, visible: true});
     let rightAddButton = new Gtk.Button({visible: true});
-    let rightAddButtonImage = new Gtk.Image({visible: true});
-    rightAddButtonImage.set_from_stock(Gtk.STOCK_ADD , 20);
-    rightAddButton.set_image(rightAddButtonImage);
+    rightAddButton.set_icon_name("list-add");
     rightAddButton.connect("clicked", this.addCommandToList.bind(this));
     let rightSaveButton = new Gtk.Button({visible: true});
-    let rightSaveButtonImage = new Gtk.Image({visible: true});
-    rightSaveButtonImage.set_from_stock(Gtk.STOCK_SAVE , 20);
-    rightSaveButton.set_image(rightSaveButtonImage);
+    rightSaveButton.set_icon_name("document-save");
     rightSaveButton.connect("clicked", this.saveCommands.bind(this));
     let rightCancelButton = new Gtk.Button({visible: true});
-    let rightCancelButtonImage = new Gtk.Image({visible: true});
-    rightCancelButtonImage.set_from_stock(Gtk.STOCK_REVERT_TO_SAVED , 20);
-    rightCancelButton.set_image(rightCancelButtonImage);
+    rightCancelButton.set_icon_name("document-revert");
     rightCancelButton.connect("clicked", () => {
         this.rightCommandsArray = JSON.parse(JSON.stringify(this.rightCommandsArrayCopy));
         this.populateCommandList(2);
     });    
-    rightButtonsHbox.pack_start(rightAddButton,false,true, 0);
-    rightButtonsHbox.pack_end(rightSaveButton,false,true, 0);
-    rightButtonsHbox.pack_end(rightCancelButton,false,true, 0);
+    rightButtonsHbox.prepend(rightAddButton,false,true, 0);
+    rightButtonsHbox.append(rightSaveButton,false,true, 0);
+    rightButtonsHbox.append(rightCancelButton,false,true, 0);
     rightGrid.attach(rightButtonsHbox, 0, 5, 2, 1);
     
     let pageRight = new Gtk.Box({visible: true});
     pageRight.border_width = 10;
-    pageRight.add(rightGrid);
+    pageRight.append(rightGrid);
     this.notebook.append_page(pageRight,new Gtk.Label({label: "Right", visible: true}));
 
     //this.settings.bind('left-active', leftActive, 'active', Gio.SettingsBindFlags.DEFAULT);
@@ -242,24 +224,42 @@ function buildPrefsWidget() {
 function populateCommandList(page_number) {
 
     if (page_number === 0) {
+    
+        let child = this.leftListBox.get_first_child();
+	    while (child != null) {
+            let next = child.get_next_sibling();
+            this.leftListBox.remove(child);
+            child = next;
+        }
 
-        this.leftListBox.foreach((element) => this.leftListBox.remove(element));
         this.leftCommandsArray.forEach((c, index) => {
-            this.leftListBox.add(this.prepareRow(c, index));
+            this.leftListBox.append(this.prepareRow(c, index));
         })
 
     } else if (page_number === 1) {
 
-        this.centerListBox.foreach((element) => this.centerListBox.remove(element));
+	    let child = this.centerListBox.get_first_child();
+	    while (child != null) {
+            let next = child.get_next_sibling();
+            this.centerListBox.remove(child);
+            child = next;
+        }
+
         this.centerCommandsArray.forEach((c, index) => {
-            this.centerListBox.add(this.prepareRow(c, index));
+            this.centerListBox.append(this.prepareRow(c, index));
         })
 
     } else if (page_number === 2) {
 
-        this.rightListBox.foreach((element) => this.rightListBox.remove(element));
+        let child = this.rightListBox.get_first_child();
+	    while (child != null) {
+            let next = child.get_next_sibling();
+            this.rightListBox.remove(child);
+            child = next;
+        }
+    	
         this.rightCommandsArray.forEach((c, index) => {
-            this.rightListBox.add(this.prepareRow(c, index));
+            this.rightListBox.append(this.prepareRow(c, index));
         })
 
     }
@@ -268,41 +268,35 @@ function populateCommandList(page_number) {
 function prepareRow(c, index) {
     let row = new Gtk.ListBoxRow({visible: true});
 
-    let command = new Gtk.Entry({visible: true, margin_right: 10});
+    let command = new Gtk.Entry({visible: true, margin_end: 10});
     command.set_text(c.command);
     let hbox = new Gtk.Box({orientation: Gtk.Orientation.HORIZONTAL, visible: true});
-    row.add(hbox);
-    hbox.pack_start(command,true,true, 0);
+    row.set_child(hbox);
+    hbox.append(command,true,true, 0);
 
-    let interval = new Gtk.SpinButton({adjustment: new Gtk.Adjustment({lower: 0,upper: 86400,step_increment: 1}), visible: true, margin_right: 10});
+    let interval = new Gtk.SpinButton({adjustment: new Gtk.Adjustment({lower: 0,upper: 86400,step_increment: 1}), visible: true, margin_end: 10});
     interval.set_value(c.interval);
-    hbox.pack_start(interval,false,true, 0);
+    hbox.append(interval,false,true, 0);
 
-    let upButton = new Gtk.Button({visible: true, margin_right: 1});
-    let upButtonImage = new Gtk.Image({visible: true});
-    upButtonImage.set_from_stock(Gtk.STOCK_GO_UP , 20);
-    upButton.set_image(upButtonImage);
+    let upButton = new Gtk.Button({visible: true, margin_end: 1});
+    upButton.set_icon_name("go-up");
     upButton.connect("clicked", () => {
         this.moveCommandUp(index);
     });
 
-    let downButton = new Gtk.Button({visible: true, margin_right: 1});
-    let downButtonImage = new Gtk.Image({visible: true});
-    downButtonImage.set_from_stock(Gtk.STOCK_GO_DOWN , 20);
-    downButton.set_image(downButtonImage);
+    let downButton = new Gtk.Button({visible: true, margin_end: 1});
+    downButton.set_icon_name("go-down");
     downButton.connect("clicked", () => {
         this.moveCommandDown(index);
     });
 
-    hbox.pack_start(upButton,false,true, 0);
-    hbox.pack_start(downButton,false,true, 0);
+    hbox.append(upButton,false,true, 0);
+    hbox.append(downButton,false,true, 0);
 
-    let remove = new Gtk.Button({visible: true});
-    let removeImage = new Gtk.Image({visible: true});
-    removeImage.set_from_stock(Gtk.STOCK_DELETE, 10);
-    remove.set_image(removeImage);
-    hbox.pack_start(remove,false,true, 0);
-    remove.connect("clicked", () => {
+    let removeButton = new Gtk.Button({visible: true});
+    removeButton.set_icon_name("edit-delete");
+    hbox.append(removeButton,false,true, 0);
+    removeButton.connect("clicked", () => {
         this.removeCommandFromList(index);
         this.leftRemoveButton.set_sensitive(false)
     });
@@ -403,12 +397,22 @@ function saveCommands() {
         this.leftCommandsArray.splice(0, this.leftCommandsArray.length);
 
         let count = 0;
-        this.leftListBox.foreach((element) => count++);
-
+        
+        let child = this.leftListBox.get_first_child();
+	    while (child != null) {
+            let next = child.get_next_sibling();
+            count++;
+            child = next;
+        }
+       
         for (var i = 0; i < count; i++) {
+        
+            let command = this.leftListBox.get_row_at_index(i).get_child().get_first_child();
+            let interval = command.get_next_sibling();
+                    
             this.leftCommandsArray.push({
-                "command": this.leftListBox.get_row_at_index(i).get_child().get_children()[0].get_text(),
-                "interval": this.leftListBox.get_row_at_index(i).get_child().get_children()[1].get_value(),
+                "command": command.get_text(),
+                "interval": interval.get_value(),
                 "uuid": this.createUUID()});
         }
 
@@ -421,12 +425,21 @@ function saveCommands() {
         this.centerCommandsArray.splice(0, this.centerCommandsArray.length);
 
         let count = 0;
-        this.centerListBox.foreach((element) => count++);
+        
+        let child = this.centerListBox.get_first_child();
+	    while (child != null) {
+            let next = child.get_next_sibling();
+            count++;
+            child = next;
+        }
 
         for (var i = 0; i < count; i++) {
+            let command = this.centerListBox.get_row_at_index(i).get_child().get_first_child();
+            let interval = command.get_next_sibling();
+                    
             this.centerCommandsArray.push({
-                "command": this.centerListBox.get_row_at_index(i).get_child().get_children()[0].get_text(),
-                "interval": this.centerListBox.get_row_at_index(i).get_child().get_children()[1].get_value(),
+                "command": command.get_text(),
+                "interval": interval.get_value(),
                 "uuid": this.createUUID()});
         }
 
@@ -440,12 +453,21 @@ function saveCommands() {
         this.rightCommandsArray.splice(0, this.rightCommandsArray.length);
 
         let count = 0;
-        this.rightListBox.foreach((element) => count++);
+        
+        let child = this.rightListBox.get_first_child();
+	    while (child != null) {
+            let next = child.get_next_sibling();
+            count++;
+            child = next;
+        }
 
         for (var i = 0; i < count; i++) {
+            let command = this.rightListBox.get_row_at_index(i).get_child().get_first_child();
+            let interval = command.get_next_sibling();
+                    
             this.rightCommandsArray.push({
-                "command": this.rightListBox.get_row_at_index(i).get_child().get_children()[0].get_text(),
-                "interval": this.rightListBox.get_row_at_index(i).get_child().get_children()[1].get_value(),
+                "command": command.get_text(),
+                "interval": interval.get_value(),
                 "uuid": this.createUUID()});
         }
 
