@@ -12,21 +12,21 @@ let gschema = Gio.SettingsSchemaSource.new_from_directory(
     false
 );
 
-let settings = new Gio.Settings({
+var settings = new Gio.Settings({
     settings_schema: gschema.lookup('org.gnome.shell.extensions.executor', true)
 });
 
-let leftCommandsArray = [];
-let leftCommandsArrayCopy = [];
-let leftListBox;
-let centerCommandsArray = [];
-let centerCommandsArrayCopy = [];
-let centerListBox;
-let rightCommandsArray = [];
-let rightCommandsArrayCopy = [];
-let rightListBox;
+var leftCommandsArray = [];
+var leftCommandsArrayCopy = [];
+var leftListBox;
+var centerCommandsArray = [];
+var centerCommandsArrayCopy = [];
+var centerListBox;
+var rightCommandsArray = [];
+var rightCommandsArrayCopy = [];
+var rightListBox;
 
-let notebook;
+var notebook;
 
 function init() {
 }
@@ -58,10 +58,10 @@ function buildPrefsWidget() {
     });    
     let leftIndex = new Gtk.SpinButton({adjustment: new Gtk.Adjustment({lower: 0, upper: 10, step_increment: 1}), visible: true});
     leftIndex.set_size_request(125,0);
-    leftTopHbox.append(new Gtk.Label({label: 'Active:', use_markup: true, visible: true}),false,true, 0);
-    leftTopHbox.append(leftActive,false,true, 0);
-    leftTopHbox.append(new Gtk.Label({label: 'Index in status bar:', visible: true, halign: Gtk.Align.END, hexpand: true}),true,true, 0);
-    leftTopHbox.append(leftIndex,false,true, 0);
+    leftTopHbox.append(new Gtk.Label({label: 'Active:', use_markup: true, visible: true}));
+    leftTopHbox.append(leftActive);
+    leftTopHbox.append(new Gtk.Label({label: 'Index in status bar:', visible: true, halign: Gtk.Align.END, hexpand: true}));
+    leftTopHbox.append(leftIndex);
 
     leftGrid.attach(new Gtk.Separator({visible: true, orientation: Gtk.Orientation.VERTICAL}), 0, 1, 2, 1);
     leftGrid.attach(new Gtk.Label({label: 'Command    |    Interval in seconds:', visible: true}), 0, 2, 2, 1);
@@ -85,9 +85,9 @@ function buildPrefsWidget() {
         this.leftCommandsArray = JSON.parse(JSON.stringify(this.leftCommandsArrayCopy));
         this.populateCommandList(0);
     });
-    leftButtonsHbox.prepend(leftAddButton,false,true, 0);
-    leftButtonsHbox.append(leftSaveButton,false,true, 0);
-    leftButtonsHbox.append(leftCancelButton,false,true, 0);
+    leftButtonsHbox.prepend(leftAddButton);
+    leftButtonsHbox.append(leftSaveButton);
+    leftButtonsHbox.append(leftCancelButton);
     leftGrid.attach(leftButtonsHbox, 0, 5, 2, 1);
     
     let pageLeft = new Gtk.Box({visible: true, margin_top: 10, margin_end: 10, margin_bottom: 10, margin_start: 10});
@@ -116,10 +116,10 @@ function buildPrefsWidget() {
     });    
     let centerIndex = new Gtk.SpinButton({adjustment: new Gtk.Adjustment({lower: 0, upper: 10, step_increment: 1}), visible: true});
     centerIndex.set_size_request(125,0);
-    centerTopHbox.append(new Gtk.Label({label: 'Active:', use_markup: true, visible: true}),false,true, 0);
-    centerTopHbox.append(centerActive,false,true, 0);
-    centerTopHbox.append(new Gtk.Label({label: 'Index in status bar:', visible: true, halign: Gtk.Align.END, hexpand: true}),true,true, 0);
-    centerTopHbox.append(centerIndex,false,true, 0);
+    centerTopHbox.append(new Gtk.Label({label: 'Active:', use_markup: true, visible: true}));
+    centerTopHbox.append(centerActive);
+    centerTopHbox.append(new Gtk.Label({label: 'Index in status bar:', visible: true, halign: Gtk.Align.END, hexpand: true}));
+    centerTopHbox.append(centerIndex);
 
     centerGrid.attach(new Gtk.Separator({visible: true, orientation: Gtk.Orientation.VERTICAL}), 0, 1, 2, 1);
     centerGrid.attach(new Gtk.Label({label: 'Command    |    Interval in seconds:', visible: true}), 0, 2, 2, 1);
@@ -143,9 +143,9 @@ function buildPrefsWidget() {
         this.centerCommandsArray = JSON.parse(JSON.stringify(this.centerCommandsArrayCopy));
         this.populateCommandList(1);
     });    
-    centerButtonsHbox.prepend(centerAddButton,false,true, 0);
-    centerButtonsHbox.append(centerSaveButton,false,true, 0);
-    centerButtonsHbox.append(centerCancelButton,false,true, 0);
+    centerButtonsHbox.prepend(centerAddButton);
+    centerButtonsHbox.append(centerSaveButton);
+    centerButtonsHbox.append(centerCancelButton);
     centerGrid.attach(centerButtonsHbox, 0, 5, 2, 1);
     
     let pageCenter = new Gtk.Box({visible: true, margin_top: 10, margin_end: 10, margin_bottom: 10, margin_start: 10});
@@ -174,10 +174,10 @@ function buildPrefsWidget() {
     });    
     let rightIndex = new Gtk.SpinButton({adjustment: new Gtk.Adjustment({lower: 0, upper: 10, step_increment: 1}), visible: true});
     rightIndex.set_size_request(125,0);
-    rightTopHbox.append(new Gtk.Label({label: 'Active:', use_markup: true, visible: true}),false,true, 0);
-    rightTopHbox.append(rightActive,false,true, 0);
-    rightTopHbox.append(new Gtk.Label({label: 'Index in status bar:', visible: true, halign: Gtk.Align.END, hexpand: true}),true,true, 0);
-    rightTopHbox.append(rightIndex,false,true, 0);
+    rightTopHbox.append(new Gtk.Label({label: 'Active:', use_markup: true, visible: true}));
+    rightTopHbox.append(rightActive);
+    rightTopHbox.append(new Gtk.Label({label: 'Index in status bar:', visible: true, halign: Gtk.Align.END, hexpand: true}));
+    rightTopHbox.append(rightIndex);
 
     rightGrid.attach(new Gtk.Separator({visible: true, orientation: Gtk.Orientation.VERTICAL}), 0, 1, 2, 1);
     rightGrid.attach(new Gtk.Label({label: 'Command    |    Interval in seconds:', visible: true}), 0, 2, 2, 1);
@@ -201,9 +201,9 @@ function buildPrefsWidget() {
         this.rightCommandsArray = JSON.parse(JSON.stringify(this.rightCommandsArrayCopy));
         this.populateCommandList(2);
     });    
-    rightButtonsHbox.prepend(rightAddButton,false,true, 0);
-    rightButtonsHbox.append(rightSaveButton,false,true, 0);
-    rightButtonsHbox.append(rightCancelButton,false,true, 0);
+    rightButtonsHbox.prepend(rightAddButton);
+    rightButtonsHbox.append(rightSaveButton);
+    rightButtonsHbox.append(rightCancelButton);
     rightGrid.attach(rightButtonsHbox, 0, 5, 2, 1);
     
     let pageRight = new Gtk.Box({visible: true, margin_top: 10, margin_end: 10, margin_bottom: 10, margin_start: 10});
@@ -272,11 +272,11 @@ function prepareRow(c, index) {
     command.set_text(c.command);
     let hbox = new Gtk.Box({orientation: Gtk.Orientation.HORIZONTAL, visible: true});
     row.set_child(hbox);
-    hbox.append(command,true,true, 0);
+    hbox.append(command);
 
     let interval = new Gtk.SpinButton({adjustment: new Gtk.Adjustment({lower: 0,upper: 86400,step_increment: 1}), visible: true, margin_end: 10});
     interval.set_value(c.interval);
-    hbox.append(interval,false,true, 0);
+    hbox.append(interval);
 
     let upButton = new Gtk.Button({visible: true, margin_end: 1});
     upButton.set_icon_name("go-up");
@@ -290,15 +290,15 @@ function prepareRow(c, index) {
         this.moveCommandDown(index);
     });
 
-    hbox.append(upButton,false,true, 0);
-    hbox.append(downButton,false,true, 0);
+    hbox.append(upButton);
+    hbox.append(downButton);
 
     let removeButton = new Gtk.Button({visible: true});
     removeButton.set_icon_name("edit-delete");
-    hbox.append(removeButton,false,true, 0);
+    hbox.append(removeButton);
     removeButton.connect("clicked", () => {
         this.removeCommandFromList(index);
-        this.leftRemoveButton.set_sensitive(false)
+        removeButton.set_sensitive(false);
     });
 
     return row;
