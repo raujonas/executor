@@ -32,7 +32,7 @@ function init() {
 }
 
 function buildPrefsWidget() {    
-    let prefsWidget = new Gtk.Grid({/*margin: 18, column_spacing: 12, row_spacing: 12,*/ visible: true, column_homogeneous: true});
+    let prefsWidget = new Gtk.Grid({visible: true, column_homogeneous: true});
 
     this.notebook = new Gtk.Notebook({visible: true});
     prefsWidget.attach(this.notebook, 0, 0, 1, 1);
@@ -46,7 +46,7 @@ function buildPrefsWidget() {
         this.settings.set_string('left-commands-json', '{"commands":[{"command":"echo Executor works!","interval":1}]}');
     }
 
-    let leftGrid = new Gtk.Grid({/*margin: 18,*/ column_spacing: 12, row_spacing: 12, visible: true, column_homogeneous: true, vexpand: true, hexpand: true});
+    let leftGrid = new Gtk.Grid({column_spacing: 12, row_spacing: 12, visible: true, column_homogeneous: true, vexpand: true, hexpand: true});
 
     let leftTopHbox = new Gtk.Box({orientation: Gtk.Orientation.HORIZONTAL, spacing: 20, visible: true});
     leftGrid.attach(leftTopHbox, 0, 0, 2, 1);
@@ -60,7 +60,7 @@ function buildPrefsWidget() {
     leftIndex.set_size_request(125,0);
     leftTopHbox.append(new Gtk.Label({label: 'Active:', use_markup: true, visible: true}),false,true, 0);
     leftTopHbox.append(leftActive,false,true, 0);
-    leftTopHbox.append(new Gtk.Label({label: 'Index in status bar:', visible: true, halign: Gtk.Align.END}),true,true, 0);
+    leftTopHbox.append(new Gtk.Label({label: 'Index in status bar:', visible: true, halign: Gtk.Align.END, hexpand: true}),true,true, 0);
     leftTopHbox.append(leftIndex,false,true, 0);
 
     leftGrid.attach(new Gtk.Separator({visible: true, orientation: Gtk.Orientation.VERTICAL}), 0, 1, 2, 1);
@@ -73,7 +73,7 @@ function buildPrefsWidget() {
     leftGrid.attach(new Gtk.Separator({visible: true, orientation: Gtk.Orientation.VERTICAL}), 0, 4, 2, 1);
 
     let leftButtonsHbox = new Gtk.Box({orientation: Gtk.Orientation.HORIZONTAL, spacing: 10, visible: true});
-    let leftAddButton = new Gtk.Button({visible: true});
+    let leftAddButton = new Gtk.Button({visible: true, halign: Gtk.Align.START, hexpand: true});
     leftAddButton.set_icon_name("list-add");
     leftAddButton.connect("clicked", this.addCommandToList.bind(this));
     let leftSaveButton = new Gtk.Button({visible: true});
@@ -90,7 +90,7 @@ function buildPrefsWidget() {
     leftButtonsHbox.append(leftCancelButton,false,true, 0);
     leftGrid.attach(leftButtonsHbox, 0, 5, 2, 1);
     
-    let pageLeft = new Gtk.Box({visible: true});
+    let pageLeft = new Gtk.Box({visible: true, margin_top: 10, margin_end: 10, margin_bottom: 10, margin_start: 10});
     pageLeft.border_width = 10;
     pageLeft.append(leftGrid);
     this.notebook.append_page(pageLeft,new Gtk.Label({label: "Left", visible: true}));
@@ -104,7 +104,7 @@ function buildPrefsWidget() {
         this.settings.set_string('center-commands-json', '{"commands":[{"command":"echo Executor works!","interval":1}]}');
     }
 
-    let centerGrid = new Gtk.Grid({/*margin: 18,*/ column_spacing: 12, row_spacing: 12, visible: true, column_homogeneous: true, vexpand: true, hexpand: true});
+    let centerGrid = new Gtk.Grid({column_spacing: 12, row_spacing: 12, visible: true, column_homogeneous: true, vexpand: true, hexpand: true});
 
     let centerTopHbox = new Gtk.Box({orientation: Gtk.Orientation.HORIZONTAL, spacing: 20, visible: true});
     centerGrid.attach(centerTopHbox, 0, 0, 2, 1);
@@ -118,7 +118,7 @@ function buildPrefsWidget() {
     centerIndex.set_size_request(125,0);
     centerTopHbox.append(new Gtk.Label({label: 'Active:', use_markup: true, visible: true}),false,true, 0);
     centerTopHbox.append(centerActive,false,true, 0);
-    centerTopHbox.append(new Gtk.Label({label: 'Index in status bar:', visible: true, halign: Gtk.Align.END}),true,true, 0);
+    centerTopHbox.append(new Gtk.Label({label: 'Index in status bar:', visible: true, halign: Gtk.Align.END, hexpand: true}),true,true, 0);
     centerTopHbox.append(centerIndex,false,true, 0);
 
     centerGrid.attach(new Gtk.Separator({visible: true, orientation: Gtk.Orientation.VERTICAL}), 0, 1, 2, 1);
@@ -131,7 +131,7 @@ function buildPrefsWidget() {
     centerGrid.attach(new Gtk.Separator({visible: true, orientation: Gtk.Orientation.VERTICAL}), 0, 4, 2, 1);
 
     let centerButtonsHbox = new Gtk.Box({orientation: Gtk.Orientation.HORIZONTAL, spacing: 10, visible: true});
-    let centerAddButton = new Gtk.Button({visible: true});
+    let centerAddButton = new Gtk.Button({visible: true, halign: Gtk.Align.START, hexpand: true});
     centerAddButton.set_icon_name("list-add");
     centerAddButton.connect("clicked", this.addCommandToList.bind(this));
     let centerSaveButton = new Gtk.Button({visible: true});
@@ -148,7 +148,7 @@ function buildPrefsWidget() {
     centerButtonsHbox.append(centerCancelButton,false,true, 0);
     centerGrid.attach(centerButtonsHbox, 0, 5, 2, 1);
     
-    let pageCenter = new Gtk.Box({visible: true});
+    let pageCenter = new Gtk.Box({visible: true, margin_top: 10, margin_end: 10, margin_bottom: 10, margin_start: 10});
     pageCenter.border_width = 10;
     pageCenter.append(centerGrid);
     this.notebook.append_page(pageCenter,new Gtk.Label({label: "Center", visible: true}));
@@ -162,7 +162,7 @@ function buildPrefsWidget() {
         this.settings.set_string('right-commands-json', '{"commands":[{"command":"echo Executor works!","interval":1}]}');
     }
 
-    let rightGrid = new Gtk.Grid({/*margin: 18,*/ column_spacing: 12, row_spacing: 12, visible: true, column_homogeneous: true, vexpand: true, hexpand: true});
+    let rightGrid = new Gtk.Grid({column_spacing: 12, row_spacing: 12, visible: true, column_homogeneous: true, vexpand: true, hexpand: true});
 
     let rightTopHbox = new Gtk.Box({orientation: Gtk.Orientation.HORIZONTAL, spacing: 20, visible: true});
     rightGrid.attach(rightTopHbox, 0, 0, 2, 1);
@@ -176,7 +176,7 @@ function buildPrefsWidget() {
     rightIndex.set_size_request(125,0);
     rightTopHbox.append(new Gtk.Label({label: 'Active:', use_markup: true, visible: true}),false,true, 0);
     rightTopHbox.append(rightActive,false,true, 0);
-    rightTopHbox.append(new Gtk.Label({label: 'Index in status bar:', visible: true, halign: Gtk.Align.END}),true,true, 0);
+    rightTopHbox.append(new Gtk.Label({label: 'Index in status bar:', visible: true, halign: Gtk.Align.END, hexpand: true}),true,true, 0);
     rightTopHbox.append(rightIndex,false,true, 0);
 
     rightGrid.attach(new Gtk.Separator({visible: true, orientation: Gtk.Orientation.VERTICAL}), 0, 1, 2, 1);
@@ -189,7 +189,7 @@ function buildPrefsWidget() {
     rightGrid.attach(new Gtk.Separator({visible: true, orientation: Gtk.Orientation.VERTICAL}), 0, 4, 2, 1);
 
     let rightButtonsHbox = new Gtk.Box({orientation: Gtk.Orientation.HORIZONTAL, spacing: 10, visible: true});
-    let rightAddButton = new Gtk.Button({visible: true});
+    let rightAddButton = new Gtk.Button({visible: true, halign: Gtk.Align.START, hexpand: true});
     rightAddButton.set_icon_name("list-add");
     rightAddButton.connect("clicked", this.addCommandToList.bind(this));
     let rightSaveButton = new Gtk.Button({visible: true});
@@ -206,7 +206,7 @@ function buildPrefsWidget() {
     rightButtonsHbox.append(rightCancelButton,false,true, 0);
     rightGrid.attach(rightButtonsHbox, 0, 5, 2, 1);
     
-    let pageRight = new Gtk.Box({visible: true});
+    let pageRight = new Gtk.Box({visible: true, margin_top: 10, margin_end: 10, margin_bottom: 10, margin_start: 10});
     pageRight.border_width = 10;
     pageRight.append(rightGrid);
     this.notebook.append_page(pageRight,new Gtk.Label({label: "Right", visible: true}));
@@ -268,7 +268,7 @@ function populateCommandList(page_number) {
 function prepareRow(c, index) {
     let row = new Gtk.ListBoxRow({visible: true});
 
-    let command = new Gtk.Entry({visible: true, margin_end: 10});
+    let command = new Gtk.Entry({visible: true, margin_end: 10, hexpand: true});
     command.set_text(c.command);
     let hbox = new Gtk.Box({orientation: Gtk.Orientation.HORIZONTAL, visible: true});
     row.set_child(hbox);
