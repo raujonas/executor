@@ -3,6 +3,7 @@
 ![GitHub Release Date](https://img.shields.io/github/release-date/raujonas/executor)
 ![GitHub commits since latest release (by date)](https://img.shields.io/github/commits-since/raujonas/executor/latest)
 ![GitHub last commit](https://img.shields.io/github/last-commit/raujonas/executor)
+![GitHub Repo stars](https://img.shields.io/github/stars/raujonas/executor?style=social)
 
 # Executor - Gnome Shell Extension
 <img src="resources/icons/icon.png" alt="result" width="70">
