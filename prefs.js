@@ -301,8 +301,8 @@ function buildPrefsWidget() {
             this.populateCommandList(0);
         });
         leftButtonsHbox.prepend(leftAddButton);
-        leftButtonsHbox.append(leftSaveButton);
         leftButtonsHbox.append(leftCancelButton);
+        leftButtonsHbox.append(leftSaveButton);
         leftGrid.attach(leftButtonsHbox, 0, 5, 2, 1);
         
         let pageLeft = new Gtk.Box({visible: true, margin_top: 10, margin_end: 10, margin_bottom: 10, margin_start: 10});
@@ -359,8 +359,8 @@ function buildPrefsWidget() {
             this.populateCommandList(1);
         });    
         centerButtonsHbox.prepend(centerAddButton);
-        centerButtonsHbox.append(centerSaveButton);
         centerButtonsHbox.append(centerCancelButton);
+        centerButtonsHbox.append(centerSaveButton);
         centerGrid.attach(centerButtonsHbox, 0, 5, 2, 1);
         
         let pageCenter = new Gtk.Box({visible: true, margin_top: 10, margin_end: 10, margin_bottom: 10, margin_start: 10});
@@ -417,8 +417,8 @@ function buildPrefsWidget() {
             this.populateCommandList(2);
         });    
         rightButtonsHbox.prepend(rightAddButton);
-        rightButtonsHbox.append(rightSaveButton);
         rightButtonsHbox.append(rightCancelButton);
+        rightButtonsHbox.append(rightSaveButton);
         rightGrid.attach(rightButtonsHbox, 0, 5, 2, 1);
         
         let pageRight = new Gtk.Box({visible: true, margin_top: 10, margin_end: 10, margin_bottom: 10, margin_start: 10});
