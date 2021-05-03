@@ -82,17 +82,17 @@ function buildPrefsWidget() {
         let leftButtonsHbox = new Gtk.Box({orientation: Gtk.Orientation.HORIZONTAL, spacing: 10, visible: true});
         let leftAddButton = new Gtk.Button({visible: true});
         let leftAddButtonImage = new Gtk.Image({visible: true});
-        leftAddButtonImage.set_from_stock(Gtk.STOCK_ADD , 20);
+        leftAddButtonImage.set_from_icon_name(Gtk.STOCK_ADD , Gtk.ICON_SIZE_BUTTON);
         leftAddButton.set_image(leftAddButtonImage);
         leftAddButton.connect("clicked", this.addCommandToList.bind(this));
         let leftSaveButton = new Gtk.Button({visible: true});
         let leftSaveButtonImage = new Gtk.Image({visible: true});
-        leftSaveButtonImage.set_from_stock(Gtk.STOCK_SAVE , 20);
+        leftSaveButtonImage.set_from_icon_name(Gtk.STOCK_SAVE , Gtk.ICON_SIZE_BUTTON);
         leftSaveButton.set_image(leftSaveButtonImage);
         leftSaveButton.connect("clicked", this.saveCommands.bind(this));
         let leftCancelButton = new Gtk.Button({visible: true});
         let leftCancelButtonImage = new Gtk.Image({visible: true});
-        leftCancelButtonImage.set_from_stock(Gtk.STOCK_REVERT_TO_SAVED , 20);
+        leftCancelButtonImage.set_from_icon_name(Gtk.STOCK_REVERT_TO_SAVED , Gtk.ICON_SIZE_BUTTON);
         leftCancelButton.set_image(leftCancelButtonImage);
         leftCancelButton.connect("clicked", () => {
             this.leftCommandsArray = JSON.parse(JSON.stringify(this.leftCommandsArrayCopy));
@@ -146,17 +146,17 @@ function buildPrefsWidget() {
         let centerButtonsHbox = new Gtk.Box({orientation: Gtk.Orientation.HORIZONTAL, spacing: 10, visible: true});
         let centerAddButton = new Gtk.Button({visible: true});
         let centerAddButtonImage = new Gtk.Image({visible: true});
-        centerAddButtonImage.set_from_stock(Gtk.STOCK_ADD , 20);
+        centerAddButtonImage.set_from_icon_name(Gtk.STOCK_ADD , Gtk.ICON_SIZE_BUTTON);
         centerAddButton.set_image(centerAddButtonImage);
         centerAddButton.connect("clicked", this.addCommandToList.bind(this));
         let centerSaveButton = new Gtk.Button({visible: true});
         let centerSaveButtonImage = new Gtk.Image({visible: true});
-        centerSaveButtonImage.set_from_stock(Gtk.STOCK_SAVE , 20);
+        centerSaveButtonImage.set_from_icon_name(Gtk.STOCK_SAVE , Gtk.ICON_SIZE_BUTTON);
         centerSaveButton.set_image(centerSaveButtonImage);
         centerSaveButton.connect("clicked", this.saveCommands.bind(this));
         let centerCancelButton = new Gtk.Button({visible: true});
         let centerCancelButtonImage = new Gtk.Image({visible: true});
-        centerCancelButtonImage.set_from_stock(Gtk.STOCK_REVERT_TO_SAVED , 20);
+        centerCancelButtonImage.set_from_icon_name(Gtk.STOCK_REVERT_TO_SAVED , Gtk.ICON_SIZE_BUTTON);
         centerCancelButton.set_image(centerCancelButtonImage);
         centerCancelButton.connect("clicked", () => {
             this.centerCommandsArray = JSON.parse(JSON.stringify(this.centerCommandsArrayCopy));
@@ -210,17 +210,17 @@ function buildPrefsWidget() {
         let rightButtonsHbox = new Gtk.Box({orientation: Gtk.Orientation.HORIZONTAL, spacing: 10, visible: true});
         let rightAddButton = new Gtk.Button({visible: true});
         let rightAddButtonImage = new Gtk.Image({visible: true});
-        rightAddButtonImage.set_from_stock(Gtk.STOCK_ADD , 20);
+        rightAddButtonImage.set_from_icon_name(Gtk.STOCK_ADD , Gtk.ICON_SIZE_BUTTON);
         rightAddButton.set_image(rightAddButtonImage);
         rightAddButton.connect("clicked", this.addCommandToList.bind(this));
         let rightSaveButton = new Gtk.Button({visible: true});
         let rightSaveButtonImage = new Gtk.Image({visible: true});
-        rightSaveButtonImage.set_from_stock(Gtk.STOCK_SAVE , 20);
+        rightSaveButtonImage.set_from_icon_name(Gtk.STOCK_SAVE , Gtk.ICON_SIZE_BUTTON);
         rightSaveButton.set_image(rightSaveButtonImage);
         rightSaveButton.connect("clicked", this.saveCommands.bind(this));
         let rightCancelButton = new Gtk.Button({visible: true});
         let rightCancelButtonImage = new Gtk.Image({visible: true});
-        rightCancelButtonImage.set_from_stock(Gtk.STOCK_REVERT_TO_SAVED , 20);
+        rightCancelButtonImage.set_from_icon_name(Gtk.STOCK_REVERT_TO_SAVED , Gtk.ICON_SIZE_BUTTON);
         rightCancelButton.set_image(rightCancelButtonImage);
         rightCancelButton.connect("clicked", () => {
             this.rightCommandsArray = JSON.parse(JSON.stringify(this.rightCommandsArrayCopy));
@@ -527,7 +527,7 @@ function prepareRow(c, index) {
 
         let upButton = new Gtk.Button({visible: true, margin_right: 1});
         let upButtonImage = new Gtk.Image({visible: true});
-        upButtonImage.set_from_stock(Gtk.STOCK_GO_UP , 20);
+        upButtonImage.set_from_icon_name(Gtk.STOCK_GO_UP , Gtk.ICON_SIZE_BUTTON);
         upButton.set_image(upButtonImage);
         upButton.connect("clicked", () => {
             this.moveCommandUp(index);
@@ -535,7 +535,7 @@ function prepareRow(c, index) {
 
         let downButton = new Gtk.Button({visible: true, margin_right: 1});
         let downButtonImage = new Gtk.Image({visible: true});
-        downButtonImage.set_from_stock(Gtk.STOCK_GO_DOWN , 20);
+        downButtonImage.set_from_icon_name(Gtk.STOCK_GO_DOWN , Gtk.ICON_SIZE_BUTTON);
         downButton.set_image(downButtonImage);
         downButton.connect("clicked", () => {
             this.moveCommandDown(index);
@@ -546,7 +546,7 @@ function prepareRow(c, index) {
 
         let remove = new Gtk.Button({visible: true});
         let removeImage = new Gtk.Image({visible: true});
-        removeImage.set_from_stock(Gtk.STOCK_DELETE, 10);
+        removeImage.set_from_icon_name(Gtk.STOCK_DELETE, Gtk.ICON_SIZE_BUTTON);
         remove.set_image(removeImage);
         hbox.pack_start(remove,false,true, 0);
         remove.connect("clicked", () => {
