@@ -550,8 +550,8 @@ function prepareRow(c, index) {
         remove.set_image(removeImage);
         hbox.pack_start(remove,false,true, 0);
         remove.connect("clicked", () => {
+            remove.set_sensitive(false)
             this.removeCommandFromList(index);
-            this.leftRemoveButton.set_sensitive(false)
         });
 
         return row;
@@ -589,8 +589,8 @@ function prepareRow(c, index) {
         removeButton.set_icon_name("edit-delete");
         hbox.append(removeButton);
         removeButton.connect("clicked", () => {
-            this.removeCommandFromList(index);
             removeButton.set_sensitive(false);
+            this.removeCommandFromList(index);
         });
 
         return row;
