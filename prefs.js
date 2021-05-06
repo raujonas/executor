@@ -103,29 +103,29 @@ function buildPrefsWidget() {
 
         let addButton = new Gtk.Button({visible: true, halign: Gtk.Align.START, hexpand: true,
                                         tooltip_text: _('Add new command')});
-        let saveButton = new Gtk.Button({visible: true, halign: Gtk.Align.END, hexpand: false,
-                                        tooltip_text: _('Save commands')});
         let cancelButton = new Gtk.Button({visible: true, halign: Gtk.Align.END, hexpand: false,
                                         tooltip_text: _('Revert to last saved commands')});
+        let saveButton = new Gtk.Button({visible: true, halign: Gtk.Align.END, hexpand: false,
+                                        tooltip_text: _('Save commands')});
 
         if (shellVersion < 40) {
             addButton.set_image(new Gtk.Image({icon_name: 'list-add-symbolic'})); // 'gtk-add'
+            cancelButton.set_image(new Gtk.Image({icon_name: 'document-revert-symbolic'})); // 'gtk-revert-to-saved            
             saveButton.set_image(new Gtk.Image({icon_name: 'document-save-symbolic'})); // 'gtk-save'
-            cancelButton.set_image(new Gtk.Image({icon_name: 'document-revert-symbolic'})); // 'gtk-revert-to-saved'
         } else {
             addButton.set_icon_name('list-add-symbolic');
-            saveButton.set_icon_name('document-save-symbolic');
             cancelButton.set_icon_name('document-revert-symbolic');
+            saveButton.set_icon_name('document-save-symbolic');
         }
         addButton.connect("clicked", this.addCommandToList.bind(this));
-        saveButton.connect("clicked", this.saveCommands.bind(this));
         cancelButton.connect("clicked", () => {
             this.commandsArray[position] = JSON.parse(JSON.stringify(this.commandsArrayCopy[position]));
             this.populateCommandList(position);
         });
+        saveButton.connect("clicked", this.saveCommands.bind(this));
         buttonsHbox[add](addButton);
-        buttonsHbox[add](saveButton);
         buttonsHbox[add](cancelButton);
+        buttonsHbox[add](saveButton);
         grid.attach(buttonsHbox, 0, 5, 2, 1);
         
         let pos = POSTRANS[position]
