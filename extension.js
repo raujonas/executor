@@ -9,43 +9,17 @@ const Me = ExtensionUtils.getCurrentExtension();
 let gschema;
 var settings;
 
-let leftActiveChanged, leftIndexChanged, leftCommandsJsonChanged;
-let centerActiveChanged, centerIndexChanged, centerCommandsJsonChanged;
-let rightActiveChanged, rightIndexChanged, rightCommandsJsonChanged;
-
-let left = {
-  "name": "left",
-  "output": [],
-  "box": null,
-  "stopped": null,
-  "commandsSettings": { "commands": [] },
-  "commandsOutput": [],
-  "lastIndex": null
-}
-
-let center = {
-  "name": "center",
-  "output": [],
-  "box": null,
-  "stopped": null,
-  "commandsSettings": { "commands": [] },
-  "commandsOutput": [],
-  "lastIndex": null
-}
-
-let right = {
-  "name": "right",
-  "output": [],
-  "box": null,
-  "stopped": null,
-  "commandsSettings": { "commands": [] },
-  "commandsOutput": [],
-  "lastIndex": null
-}
+var locations = {};
 
 let cancellable = null;
 let executeQueue = [];
 let resultEvent;
+
+const POSITIONS = {
+  0: 'left',
+  1: 'center',
+  2: 'right'
+};
 
 function init() {
   //nothing todo here
@@ -58,10 +32,6 @@ function enable() {
 
   log('Executor enabled');
 
-  left.stopped = false;
-  center.stopped = false;
-  right.stopped = false;
-
   gschema = Gio.SettingsSchemaSource.new_from_directory(
     Me.dir.get_child('schemas').get_path(),
     Gio.SettingsSchemaSource.get_default(),
@@ -72,108 +42,71 @@ function enable() {
     settings_schema: gschema.lookup('org.gnome.shell.extensions.executor', true)
   });
 
-  left.box = new St.BoxLayout({ style_class: 'panel-button' });
-  if (left.box.get_parent()) {
-    left.box.get_parent().remove_child(left.box);
+  for (let position = 0; position < 3; position++) {
+    this.locations[position] = {
+      "name": POSITIONS[position],
+      "output": [],
+      "box": null,
+      "stopped": null,
+      "commandsSettings": { "commands": [] },
+      "commandsOutput": [],
+      "lastIndex": null,
+      "activeChanged": null,
+      "indexChanged": null,
+      "commandsJsonChanged": null
+    }
+
+    this.locations[position].stopped = false;
+
+    this.locations[position].box = new St.BoxLayout({ style_class: 'panel-button' });
+    if (this.locations[position].box.get_parent()) {
+      this.locations[position].box.get_parent().remove_child(this.locations[position].box);
+    }
+
+    this.onStatusChanged(this.locations[position]);
+
+    this.locations[position].activeChanged = this.settings.connect(
+      'changed::' + POSITIONS[position] + '-active', () => {
+        this.onStatusChanged(this.locations[position])
+      }
+    );
+
+    this.locations[position].indexChanged = this.settings.connect(
+      'changed::' + POSITIONS[position] + '-index', () => {
+        this.onStatusChanged(this.locations[position])
+      }
+    );
+
+    this.locations[position].commandsJsonChanged = this.settings.connect(
+      'changed::' + POSITIONS[position] + '-commands-json', () => {
+        this.onStatusChanged(this.locations[position])
+      }
+    );
   }
-  this.onLeftStatusChanged();
-
-  center.box = new St.BoxLayout({ style_class: 'panel-button' });
-  if (center.box.get_parent()) {
-    center.box.get_parent().remove_child(center.box);
-  }
-  this.onCenterStatusChanged();
-
-  right.box = new St.BoxLayout({ style_class: 'panel-button' });
-  if (right.box.get_parent()) {
-    right.box.get_parent().remove_child(right.box);
-  }
-  this.onRightStatusChanged();
-
-  leftActiveChanged = this.settings.connect(
-    'changed::left-active',
-    this.onLeftStatusChanged.bind(this)
-  );
-
-  leftIndexChanged = this.settings.connect(
-    'changed::left-index',
-    this.onLeftStatusChanged.bind(this)
-  );
-
-  leftCommandsJsonChanged = this.settings.connect(
-    'changed::left-commands-json',
-    this.onLeftStatusChanged.bind(this)
-  );
-
-  centerActiveChanged = this.settings.connect(
-    'changed::center-active',
-    this.onCenterStatusChanged.bind(this)
-  );
-
-  centerIndexChanged = this.settings.connect(
-    'changed::center-index',
-    this.onCenterStatusChanged.bind(this)
-  );
-
-  centerCommandsJsonChanged = this.settings.connect(
-    'changed::center-commands-json',
-    this.onCenterStatusChanged.bind(this)
-  );
-
-  rightActiveChanged = this.settings.connect(
-    'changed::right-active',
-    this.onRightStatusChanged.bind(this)
-  );
-
-  rightIndexChanged = this.settings.connect(
-    'changed::right-index',
-    this.onRightStatusChanged.bind(this)
-  );
-
-  rightCommandsJsonChanged = this.settings.connect(
-    'changed::right-commands-json',
-    this.onRightStatusChanged.bind(this)
-  );
 
   this.checkQueue();
 }
 
 function disable() {
-  left.stopped = true;
-  center.stopped = true;
-  right.stopped = true;
-  log("Executor stopped");
-  if (left.box.get_parent()) {
-    left.box.get_parent().remove_child(left.box);
-  }
-  if (center.box.get_parent()) {
-    center.box.get_parent().remove_child(center.box);
-  }
-  if (right.box.get_parent()) {
-    right.box.get_parent().remove_child(right.box);
-  }
-  left.box.remove_all_children();
-  left.box = null;
-  center.box.remove_all_children();
-  center.box = null;
-  right.box.remove_all_children();
-  right.box = null;
-  left.commandsOutput = [];
-  center.commandsOutput = [];
-  right.commandsOutput = [];
-  left.output = [];
-  center.output = [];
-  right.output = [];
+  for (let position = 0; position < 3; position++) {
+    this.locations[position].stopped = true;
 
-  this.settings.disconnect(leftActiveChanged);
-  this.settings.disconnect(leftIndexChanged);
-  this.settings.disconnect(leftCommandsJsonChanged);
-  this.settings.disconnect(centerActiveChanged);
-  this.settings.disconnect(centerIndexChanged);
-  this.settings.disconnect(centerCommandsJsonChanged);
-  this.settings.disconnect(rightActiveChanged);
-  this.settings.disconnect(rightIndexChanged);
-  this.settings.disconnect(rightCommandsJsonChanged);
+    if (this.locations[position].box.get_parent()) {
+      this.locations[position].box.get_parent().remove_child(this.locations[position].box);
+    }
+
+    this.locations[position].box.remove_all_children();
+    this.locations[position].box = null;
+
+    this.locations[position].commandsOutput = [];
+    this.locations[position].output = [];
+
+    this.settings.disconnect(this.locations[position].activeChanged);
+    this.settings.disconnect(this.locations[position].indexChanged);
+    this.settings.disconnect(this.locations[position].commandsJsonChanged);
+  }
+
+  log("Executor stopped");
 }
 
 function initOutputLabels(location) {
@@ -185,87 +118,39 @@ function initOutputLabels(location) {
 
 }
 
-function onLeftStatusChanged() {
-  if (this.settings.get_value('left-active').deep_unpack()) {
-    if (left.box.get_parent()) {
-      left.box.get_parent().remove_child(left.box);
+function onStatusChanged(location) {
+  if (this.settings.get_value(location.name + '-active').deep_unpack()) {
+    if (location.box.get_parent()) {
+      location.box.get_parent().remove_child(location.box);
     }
 
-    left.stopped = false;
-    if (left.lastIndex === null) {
-      this.checkCommands(left, this.settings.get_value('left-commands-json').deep_unpack());
-      left.lastIndex = settings.get_value('left-index').deep_unpack();
-    } else if (settings.get_value('left-index').deep_unpack() !== left.lastIndex) {
-      left.lastIndex = settings.get_value('left-index').deep_unpack();
+    location.stopped = false;
+    if (location.lastIndex === null) {
+      this.checkCommands(location, this.settings.get_value(location.name + '-commands-json').deep_unpack());
+      location.lastIndex = settings.get_value(location.name + '-index').deep_unpack();
+    } else if (settings.get_value(location.name + '-index').deep_unpack() !== location.lastIndex) {
+      location.lastIndex = settings.get_value(location.name + '-index').deep_unpack();
     } else {
-      this.checkCommands(left, this.settings.get_value('left-commands-json').deep_unpack());
-    }
-    Main.panel._leftBox.insert_child_at_index(left.box, left.lastIndex);
-  } else {
-    left.stopped = true;
-    if (left.box.get_parent()) {
-      left.box.get_parent().remove_child(left.box);
-    }
-    this.removeOldCommands(left);
-    left.commandsOutput = [];
-    left.output = [];
-    left.box.remove_all_children();
-  }
-}
-
-function onCenterStatusChanged() {
-  if (this.settings.get_value('center-active').deep_unpack()) {
-    if (center.box.get_parent()) {
-      center.box.get_parent().remove_child(center.box);
+      this.checkCommands(location, this.settings.get_value(location.name + '-commands-json').deep_unpack());
     }
 
-    center.stopped = false;
-    if (center.lastIndex === null) {
-      this.checkCommands(center, this.settings.get_value('center-commands-json').deep_unpack());
-      center.lastIndex = settings.get_value('center-index').deep_unpack();
-    } else if (settings.get_value('center-index').deep_unpack() !== center.lastIndex) {
-      center.lastIndex = settings.get_value('center-index').deep_unpack();
+    if (location.name === 'left') {
+      Main.panel._leftBox.insert_child_at_index(location.box, location.lastIndex);
+    } else if (location.name === 'center') {
+      Main.panel._centerBox.insert_child_at_index(location.box, location.lastIndex);
     } else {
-      this.checkCommands(center, this.settings.get_value('center-commands-json').deep_unpack());
-    }
-    Main.panel._centerBox.insert_child_at_index(center.box, settings.get_value('center-index').deep_unpack());
-  } else {
-    center.stopped = true;
-    if (center.box.get_parent()) {
-      center.box.get_parent().remove_child(center.box);
-    }
-    this.removeOldCommands(center);
-    center.commandsOutput = [];
-    center.output = [];
-    center.box.remove_all_children();
-  }
-}
-
-function onRightStatusChanged() {
-  if (this.settings.get_value('right-active').deep_unpack()) {
-    if (right.box.get_parent()) {
-      right.box.get_parent().remove_child(right.box);
+      Main.panel._rightBox.insert_child_at_index(location.box, location.lastIndex);
     }
 
-    right.stopped = false;
-    if (right.lastIndex === null) {
-      this.checkCommands(right, this.settings.get_value('right-commands-json').deep_unpack());
-      right.lastIndex = settings.get_value('right-index').deep_unpack();
-    } else if (settings.get_value('right-index').deep_unpack() !== right.lastIndex) {
-      right.lastIndex = settings.get_value('right-index').deep_unpack();
-    } else {
-      this.checkCommands(right, this.settings.get_value('right-commands-json').deep_unpack());
-    }
-    Main.panel._rightBox.insert_child_at_index(right.box, settings.get_value('right-index').deep_unpack());
   } else {
-    right.stopped = true;
-    if (right.box.get_parent()) {
-      right.box.get_parent().remove_child(right.box);
+    location.stopped = true;
+    if (location.box.get_parent()) {
+      location.box.get_parent().remove_child(location.box);
     }
-    this.removeOldCommands(right);
-    right.commandsOutput = [];
-    right.output = [];
-    right.box.remove_all_children();
+    this.removeOldCommands(location);
+    location.commandsOutput = [];
+    location.output = [];
+    location.box.remove_all_children();
   }
 }
 
@@ -391,19 +276,21 @@ function callback(command, stdout) {
     outputAsOneLine = '';
   }
 
-  if (command.locationName === 'left' && !left.stopped) {
-    if (!left.commandsSettings.commands.some(c => c.uuid === command.uuid)) {
-      left.commandsOutput.splice(index, 1);
-    } else {
-      left.commandsOutput[command.index] = outputAsOneLine
+  let locationIndex = Object.keys(POSITIONS).find(key => POSITIONS[key] === command.locationName)
 
-      if (left.commandsSettings.commands.length < left.commandsOutput.length) {
-        left.commandsOutput = [];
+  if (!this.locations[locationIndex].stopped) {
+    if (!this.locations[locationIndex].commandsSettings.commands.some(c => c.uuid === command.uuid)) {
+      this.locations[locationIndex].commandsOutput.splice(index, 1);
+    } else {
+      this.locations[locationIndex].commandsOutput[command.index] = outputAsOneLine
+
+      if (this.locations[locationIndex].commandsSettings.commands.length < this.locations[locationIndex].commandsOutput.length) {
+        this.locations[locationIndex].commandsOutput = [];
       }
 
       GLib.timeout_add_seconds(0, command.interval, () => {
         if (cancellable && !cancellable.is_cancelled()) {
-          if (command.locationName === 'left' && !left.stopped) {
+          if (!this.locations[locationIndex].stopped) {
             if (!executeQueue.some(c => c.uuid === command.uuid)) {
               executeQueue.push(command);
             }
@@ -414,55 +301,7 @@ function callback(command, stdout) {
       });
     }
 
-    this.setOutput(left, command.index);
-  } else if (command.locationName === 'center' && !center.stopped) {
-    if (!center.commandsSettings.commands.some(c => c.uuid === command.uuid)) {
-      center.commandsOutput.splice(index, 1);
-    } else {
-      center.commandsOutput[command.index] = outputAsOneLine
-
-      if (center.commandsSettings.commands.length < center.commandsOutput.length) {
-        center.commandsOutput = [];
-      }
-
-      GLib.timeout_add_seconds(0, command.interval, () => {
-        if (cancellable && !cancellable.is_cancelled()) {
-          if (command.locationName === 'center' && !center.stopped) {
-            if (!executeQueue.some(c => c.uuid === command.uuid)) {
-              executeQueue.push(command);
-            }
-          }
-        }
-
-        return GLib.SOURCE_REMOVE;
-      });
-    }
-
-    this.setOutput(center, command.index);
-  } else if (command.locationName === 'right' && !right.stopped) {
-    if (!right.commandsSettings.commands.some(c => c.uuid === command.uuid)) {
-      right.commandsOutput.splice(index, 1);
-    } else {
-      right.commandsOutput[command.index] = outputAsOneLine
-
-      if (right.commandsSettings.commands.length < right.commandsOutput.length) {
-        right.commandsOutput = [];
-      }
-
-      GLib.timeout_add_seconds(0, command.interval, () => {
-        if (cancellable && !cancellable.is_cancelled()) {
-          if (command.locationName === 'right' && !right.stopped) {
-            if (!executeQueue.some(c => c.uuid === command.uuid)) {
-              executeQueue.push(command);
-            }
-          }
-        }
-
-        return GLib.SOURCE_REMOVE;
-      });
-    }
-
-    this.setOutput(right, command.index);
+    this.setOutput(this.locations[locationIndex], command.index);
   }
 }
 
