@@ -134,13 +134,7 @@ function onStatusChanged(location) {
             this.checkCommands(location, this.settings.get_value(location.name + '-commands-json').deep_unpack());
         }
 
-        if (location.name === 'left') {
-            Main.panel._leftBox.insert_child_at_index(location.box, location.lastIndex);
-        } else if (location.name === 'center') {
-            Main.panel._centerBox.insert_child_at_index(location.box, location.lastIndex);
-        } else {
-            Main.panel._rightBox.insert_child_at_index(location.box, location.lastIndex);
-        }
+        Main.panel['_' + location.name + 'Box'].insert_child_at_index(location.box, location.lastIndex);
 
     } else {
         location.stopped = true;
