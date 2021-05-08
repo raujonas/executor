@@ -39,79 +39,91 @@ function init() {
     ExtensionUtils.initTranslations('executor');
 }
 
-function buildPrefsWidget() {    
+function buildPrefsWidget() {
 
-    let prefsWidget = new Gtk.Grid({visible: true, column_homogeneous: true});
-    this.notebook = new Gtk.Notebook({visible: true});
+    let prefsWidget = new Gtk.Grid({ visible: true, column_homogeneous: true });
+    this.notebook = new Gtk.Notebook({ visible: true });
     prefsWidget.attach(this.notebook, 0, 0, 1, 1);
     this.commandsArray = {};
     this.commandsArrayCopy = {};
     this.listBox = {};
     let add;
     shellVersion < 40 ?
-                add = 'add':
-                add = 'append';
+        add = 'add' :
+        add = 'append';
     for (let position = 0; position < 3; position++) {
         this.commandsArray[position] = [];
         this.commandsArrayCopy[position] = [];
         try {
-            this.commandsArray[position] = JSON.parse(this.settings.get_value(POSITIONS[position]+'-commands-json').deep_unpack()).commands;
+            this.commandsArray[position] = JSON.parse(this.settings.get_value(POSITIONS[position] + '-commands-json').deep_unpack()).commands;
             this.commandsArrayCopy[position] = JSON.parse(JSON.stringify(this.commandsArray[position]));
         } catch (e) {
             log('Error in json file for location: ' + location.name);
-            this.settings.set_string(POSITIONS[position]+'-commands-json', '{"commands":[{"command":"echo Executor works!","interval":1}]}');
+            this.settings.set_string(POSITIONS[position] + '-commands-json', '{"commands":[{"command":"echo Executor works!","interval":1}]}');
         }
 
-        let grid = new Gtk.Grid({   column_spacing: 12, row_spacing: 12,
-                                    column_homogeneous: true,
-                                    hexpand: true, vexpand: true,
-                                    margin_start: 14, margin_end: 14, margin_top: 14, margin_bottom: 14,
-                                    visible: true
+        let grid = new Gtk.Grid({
+            column_spacing: 12, row_spacing: 12,
+            column_homogeneous: true,
+            hexpand: true, vexpand: true,
+            margin_start: 14, margin_end: 14, margin_top: 14, margin_bottom: 14,
+            visible: true
         });
 
-        let topHbox = new Gtk.Box({orientation: Gtk.Orientation.HORIZONTAL, spacing: 20, visible: true});
+        let topHbox = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 20, visible: true });
         grid.attach(topHbox, 0, 0, 2, 1);
 
-        let active = new Gtk.Switch({   visible: true,
-                                        halign: Gtk.Align.START,
-                                        valign: Gtk.Align.CENTER,
-                                        hexpand: true
+        let active = new Gtk.Switch({
+            visible: true,
+            halign: Gtk.Align.START,
+            valign: Gtk.Align.CENTER,
+            hexpand: true
         });
-        active.set_active(this.settings.get_value(POSITIONS[position]+'-active').deep_unpack());
+        active.set_active(this.settings.get_value(POSITIONS[position] + '-active').deep_unpack());
         active.connect("notify::active", () => {
             this.activeClicked(active.get_active());
-        });    
-        let index = new Gtk.SpinButton({adjustment: new Gtk.Adjustment({lower: 0, upper: 10, step_increment: 1}), visible: true,
-                                        xalign: 0.5});
-        index.set_size_request(100,0);
-        topHbox[add](new Gtk.Label({label: _('Active:'), use_markup: true, visible: true}));
+        });
+        let index = new Gtk.SpinButton({
+            adjustment: new Gtk.Adjustment({ lower: 0, upper: 10, step_increment: 1 }), visible: true,
+            xalign: 0.5
+        });
+        index.set_size_request(100, 0);
+        topHbox[add](new Gtk.Label({ label: _('Active:'), use_markup: true, visible: true }));
         topHbox[add](active);
-        topHbox[add](new Gtk.Label({label: _('Index in status bar:'), visible: true, halign: Gtk.Align.END}));
+        topHbox[add](new Gtk.Label({ label: _('Index in status bar:'), visible: true, halign: Gtk.Align.END }));
         topHbox[add](index);
 
-        grid.attach(new Gtk.Separator({visible: true, orientation: Gtk.Orientation.VERTICAL}), 0, 1, 2, 1);
-        grid.attach(new Gtk.Label({ label: _('Command')+' / '+_('Interval in seconds')+':',
-                                    visible: true, halign: Gtk.Align.START}), 0, 2, 2, 1);
+        grid.attach(new Gtk.Separator({ visible: true, orientation: Gtk.Orientation.VERTICAL }), 0, 1, 2, 1);
+        grid.attach(new Gtk.Label({
+            label: _('Command') + ' / ' + _('Interval in seconds') + ':',
+            visible: true, halign: Gtk.Align.START
+        }), 0, 2, 2, 1);
 
-        this.listBox[position] = new Gtk.ListBox({visible: true});
+        this.listBox[position] = new Gtk.ListBox({ visible: true });
         this.listBox[position].set_selection_mode(0);
         grid.attach(this.listBox[position], 0, 3, 2, 1);
         this.populateCommandList(position);
-        grid.attach(new Gtk.Separator({visible: true, orientation: Gtk.Orientation.VERTICAL}), 0, 4, 2, 1);
+        grid.attach(new Gtk.Separator({ visible: true, orientation: Gtk.Orientation.VERTICAL }), 0, 4, 2, 1);
 
-        let buttonsHbox = new Gtk.Box({orientation: Gtk.Orientation.HORIZONTAL, spacing: 10, visible: true, hexpand: true});
+        let buttonsHbox = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 10, visible: true, hexpand: true });
 
-        let addButton = new Gtk.Button({visible: true, halign: Gtk.Align.START, hexpand: true,
-                                        tooltip_text: _('Add new command')});
-        let cancelButton = new Gtk.Button({visible: true, halign: Gtk.Align.END, hexpand: false,
-                                        tooltip_text: _('Revert to last saved commands')});
-        let saveButton = new Gtk.Button({visible: true, halign: Gtk.Align.END, hexpand: false,
-                                        tooltip_text: _('Save commands')});
+        let addButton = new Gtk.Button({
+            visible: true, halign: Gtk.Align.START, hexpand: true,
+            tooltip_text: _('Add new command')
+        });
+        let cancelButton = new Gtk.Button({
+            visible: true, halign: Gtk.Align.END, hexpand: false,
+            tooltip_text: _('Revert to last saved commands')
+        });
+        let saveButton = new Gtk.Button({
+            visible: true, halign: Gtk.Align.END, hexpand: false,
+            tooltip_text: _('Save commands')
+        });
 
         if (shellVersion < 40) {
-            addButton.set_image(new Gtk.Image({icon_name: 'list-add-symbolic'})); // 'gtk-add'
-            cancelButton.set_image(new Gtk.Image({icon_name: 'document-revert-symbolic'})); // 'gtk-revert-to-saved            
-            saveButton.set_image(new Gtk.Image({icon_name: 'document-save-symbolic'})); // 'gtk-save'
+            addButton.set_image(new Gtk.Image({ icon_name: 'list-add-symbolic' })); // 'gtk-add'
+            cancelButton.set_image(new Gtk.Image({ icon_name: 'document-revert-symbolic' })); // 'gtk-revert-to-saved            
+            saveButton.set_image(new Gtk.Image({ icon_name: 'document-save-symbolic' })); // 'gtk-save'
         } else {
             addButton.set_icon_name('list-add-symbolic');
             cancelButton.set_icon_name('document-revert-symbolic');
@@ -127,11 +139,11 @@ function buildPrefsWidget() {
         buttonsHbox[add](cancelButton);
         buttonsHbox[add](saveButton);
         grid.attach(buttonsHbox, 0, 5, 2, 1);
-        
-        let pos = POSTRANS[position]
-        this.notebook.append_page(grid,new Gtk.Label({label: pos, visible: true, hexpand: true}));
 
-        this.settings.bind(POSITIONS[position]+'-index', index, 'value', Gio.SettingsBindFlags.DEFAULT);
+        let pos = POSTRANS[position]
+        this.notebook.append_page(grid, new Gtk.Label({ label: pos, visible: true, hexpand: true }));
+
+        this.settings.bind(POSITIONS[position] + '-index', index, 'value', Gio.SettingsBindFlags.DEFAULT);
     }
     return prefsWidget;
 }
@@ -145,7 +157,7 @@ function populateCommandList(page_number) {
             this.listBox[page_number].add(this.prepareRow(c, index));
         });
 
-    } else {        
+    } else {
 
         let child = this.listBox[page_number].get_first_child();
         while (child != null) {
@@ -162,34 +174,42 @@ function populateCommandList(page_number) {
 function prepareRow(c, index) {
     let add, addRow;
     if (shellVersion < 40) {
-                add = 'add';
-                addRow = 'add';
+        add = 'add';
+        addRow = 'add';
     } else {
-                add = 'append';
-                addRow = 'set_child';
+        add = 'append';
+        addRow = 'set_child';
     }
 
-    let row = new Gtk.ListBoxRow({visible: true});
-    let command = new Gtk.Entry({visible: true, hexpand:true, margin_end: 10});
+    let row = new Gtk.ListBoxRow({ visible: true });
+    let command = new Gtk.Entry({ visible: true, hexpand: true, margin_end: 10 });
     command.set_text(c.command);
-    let hbox = new Gtk.Box({orientation: Gtk.Orientation.HORIZONTAL, visible: true});
+    let hbox = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, visible: true });
     row[addRow](hbox);
     hbox[add](command);
-    let interval = new Gtk.SpinButton({adjustment: new Gtk.Adjustment({lower: 1,upper: 86400,step_increment: 1}),
-                                       xalign: 0.5, visible: true, margin_end: 10});
+    let interval = new Gtk.SpinButton({
+        adjustment: new Gtk.Adjustment({ lower: 1, upper: 86400, step_increment: 1 }),
+        xalign: 0.5, visible: true, margin_end: 10
+    });
     interval.set_value(c.interval);
     hbox[add](interval);
 
-    let upButton = new Gtk.Button({visible: true, margin_end: 2,
-                            tooltip_text: _('Move row up')});
-    let downButton = new Gtk.Button({visible: true, margin_end: 4,
-                            tooltip_text: _('Move row down')});
-    let remove = new Gtk.Button({visible: true,
-                            tooltip_text: _('Remove row')});
+    let upButton = new Gtk.Button({
+        visible: true, margin_end: 2,
+        tooltip_text: _('Move row up')
+    });
+    let downButton = new Gtk.Button({
+        visible: true, margin_end: 4,
+        tooltip_text: _('Move row down')
+    });
+    let remove = new Gtk.Button({
+        visible: true,
+        tooltip_text: _('Remove row')
+    });
     if (shellVersion < 40) {
-        upButton.set_image(new Gtk.Image({icon_name: 'go-up-symbolic'}));
-        downButton.set_image(new Gtk.Image({icon_name: 'go-down-symbolic'}));
-        remove.set_image(new Gtk.Image({icon_name: 'edit-delete-symbolic'}));
+        upButton.set_image(new Gtk.Image({ icon_name: 'go-up-symbolic' }));
+        downButton.set_image(new Gtk.Image({ icon_name: 'go-down-symbolic' }));
+        remove.set_image(new Gtk.Image({ icon_name: 'edit-delete-symbolic' }));
     } else {
         upButton.set_icon_name('go-up-symbolic');
         downButton.set_icon_name('go-down-symbolic');
@@ -213,14 +233,14 @@ function prepareRow(c, index) {
 
 function addCommandToList() {
     let position = this.notebook.get_current_page();
-    this.commandsArray[position].push({"command":"echo 'new command'","interval":1});
+    this.commandsArray[position].push({ "command": "echo 'new command'", "interval": 1 });
     this.populateCommandList(position);
 }
 
 function removeCommandFromList(index) {
     let position = this.notebook.get_current_page();
     this.commandsArray[position].splice(index, 1);
-    this.populateCommandList(position);     
+    this.populateCommandList(position);
 }
 
 function moveCommandUp(index) {
@@ -244,9 +264,9 @@ function arraymove(array, fromIndex, toIndex) {
 function saveCommands() {
 
     let position = this.notebook.get_current_page();
-        this.commandsArray[position].splice(0, this.commandsArray[position].length);
+    this.commandsArray[position].splice(0, this.commandsArray[position].length);
 
-        let count = 0;
+    let count = 0;
 
     if (shellVersion < 40) {
         this.listBox[position].foreach((element) => count++);
@@ -272,25 +292,26 @@ function saveCommands() {
         this.commandsArray[position].push({
             "command": command,
             "interval": interval,
-            "uuid": this.createUUID()});
+            "uuid": this.createUUID()
+        });
     }
-    
-        this.commandsArrayCopy[position] = JSON.parse(JSON.stringify(this.commandsArray[position]));
-        this.settings.set_string(POSITIONS[position]+'-commands-json', '{"commands":' + JSON.stringify(this.commandsArray[position]) + '}');
+
+    this.commandsArrayCopy[position] = JSON.parse(JSON.stringify(this.commandsArray[position]));
+    this.settings.set_string(POSITIONS[position] + '-commands-json', '{"commands":' + JSON.stringify(this.commandsArray[position]) + '}');
 }
 
 function createUUID() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-      let r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-      return v.toString(16);
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        let r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
     });
-  }
-  
+}
+
 function activeClicked(isActive) {
     let position = this.notebook.get_current_page();
     if (isActive) {
         this.saveCommands();
     }
 
-    this.settings.set_boolean(POSITIONS[position]+'-active', isActive);
+    this.settings.set_boolean(POSITIONS[position] + '-active', isActive);
 }
