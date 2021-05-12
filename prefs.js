@@ -145,6 +145,11 @@ function buildPrefsWidget() {
 
         this.settings.bind(POSITIONS[position] + '-index', index, 'value', Gio.SettingsBindFlags.DEFAULT);
     }
+
+    this.notebook.set_current_page(this.settings.get_value('location').deep_unpack())
+    this.notebook.connect('switch-page', (notebook, page, index) => {
+        this.settings.set_int('location', index);
+    })
     return prefsWidget;
 }
 
