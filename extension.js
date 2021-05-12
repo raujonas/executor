@@ -5,6 +5,7 @@ const Mainloop = imports.mainloop;
 const Gio = imports.gi.Gio;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
+const ExtManager = Main.extensionManager;
 
 let gschema;
 var settings;
@@ -53,12 +54,21 @@ function enable() {
             "lastIndex": null,
             "activeChanged": null,
             "indexChanged": null,
-            "commandsJsonChanged": null
+            "commandsJsonChanged": null,
+            "locationClicked": null
         }
 
         this.locations[position].stopped = false;
 
-        this.locations[position].box = new St.BoxLayout({ style_class: 'panel-button' });
+        this.locations[position].box = new St.BoxLayout({ style_class: 'panel-button', reactive: true });
+
+        this.locations[position].locationClicked = this.locations[position].box.connect(
+            'button-press-event', () => {
+                this.settings.set_int('location', position);
+                ExtManager.openExtensionPrefs(Me.metadata.uuid, '', {});
+            }
+        );
+
         if (this.locations[position].box.get_parent()) {
             this.locations[position].box.get_parent().remove_child(this.locations[position].box);
         }
@@ -104,6 +114,7 @@ function disable() {
         this.settings.disconnect(this.locations[position].activeChanged);
         this.settings.disconnect(this.locations[position].indexChanged);
         this.settings.disconnect(this.locations[position].commandsJsonChanged);
+        this.settings.disconnect(this.locations[position].locationClicked);
     }
 
     log("Executor stopped");
