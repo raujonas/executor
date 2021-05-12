@@ -1,0 +1,77 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-05-12 18:43+0200\n"
+"PO-Revision-Date: 2021-05-12 18:44+0200\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: de_DE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.4.1\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: extension.js:36 prefs.js:98
+msgid "Index in status bar:"
+msgstr "Index in der Statusleiste:"
+
+#: prefs.js:33
+msgid "Left"
+msgstr "Links"
+
+#: prefs.js:34
+msgid "Center"
+msgstr "Mitte"
+
+#: prefs.js:35
+msgid "Right"
+msgstr "Rechts"
+
+#: prefs.js:96
+msgid "Active:"
+msgstr "Aktiv:"
+
+#: prefs.js:103
+msgid "Command"
+msgstr "Befehl"
+
+#: prefs.js:103
+msgid "Interval in seconds"
+msgstr "Intervall in Sekunden"
+
+#: prefs.js:117
+msgid "Add new command"
+msgstr "Neuen Befehl hinzufügen"
+
+#: prefs.js:121
+msgid "Revert to last saved commands"
+msgstr "Auf zuletzt gespeicherte Befehle zurücksetzen"
+
+#: prefs.js:125
+msgid "Save commands"
+msgstr "Befehle speichern"
+
+#: prefs.js:209
+msgid "Move command up"
+msgstr "Befehl nach oben bewegen"
+
+#: prefs.js:213
+msgid "Move command down"
+msgstr "Befehl nach unten bewegen"
+
+#: prefs.js:217
+msgid "Remove command"
+msgstr "Befehle entfernen"
+
+#~ msgid "Move row up"
+#~ msgstr "Zeile nach oben bewegen"
+
+#~ msgid "Remove row"
+#~ msgstr "Zeile entfernen"

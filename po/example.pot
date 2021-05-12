@@ -1,0 +1,70 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-05-12 18:43+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: extension.js:36 prefs.js:98
+msgid "Index in status bar:"
+msgstr ""
+
+#: prefs.js:33
+msgid "Left"
+msgstr ""
+
+#: prefs.js:34
+msgid "Center"
+msgstr ""
+
+#: prefs.js:35
+msgid "Right"
+msgstr ""
+
+#: prefs.js:96
+msgid "Active:"
+msgstr ""
+
+#: prefs.js:103
+msgid "Command"
+msgstr ""
+
+#: prefs.js:103
+msgid "Interval in seconds"
+msgstr ""
+
+#: prefs.js:117
+msgid "Add new command"
+msgstr ""
+
+#: prefs.js:121
+msgid "Revert to last saved commands"
+msgstr ""
+
+#: prefs.js:125
+msgid "Save commands"
+msgstr ""
+
+#: prefs.js:209
+msgid "Move command up"
+msgstr ""
+
+#: prefs.js:213
+msgid "Move command down"
+msgstr ""
+
+#: prefs.js:217
+msgid "Remove command"
+msgstr ""

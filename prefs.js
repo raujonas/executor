@@ -36,10 +36,15 @@ const POSTRANS = {
 };
 
 function init() {
-    ExtensionUtils.initTranslations('executor');
+    ExtensionUtils.initTranslations(Me.metadata.uuid);
+
+
 }
 
 function buildPrefsWidget() {
+
+    ExtensionUtils.initTranslations(Me.metadata.uuid);
+
 
     let prefsWidget = new Gtk.Grid({ visible: true, column_homogeneous: true });
     this.notebook = new Gtk.Notebook({ visible: true });
@@ -201,15 +206,15 @@ function prepareRow(c, index) {
 
     let upButton = new Gtk.Button({
         visible: true, margin_end: 2,
-        tooltip_text: _('Move row up')
+        tooltip_text: _('Move command up')
     });
     let downButton = new Gtk.Button({
         visible: true, margin_end: 4,
-        tooltip_text: _('Move row down')
+        tooltip_text: _('Move command down')
     });
     let remove = new Gtk.Button({
         visible: true,
-        tooltip_text: _('Remove row')
+        tooltip_text: _('Remove command')
     });
     if (shellVersion < 40) {
         upButton.set_image(new Gtk.Image({ icon_name: 'go-up-symbolic' }));

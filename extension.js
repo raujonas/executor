@@ -6,6 +6,8 @@ const Gio = imports.gi.Gio;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const ExtManager = Main.extensionManager;
+const Gettext = imports.gettext.domain('executor');
+let _ = Gettext.gettext;
 
 let gschema;
 var settings;
@@ -23,13 +25,15 @@ const POSITIONS = {
 };
 
 function init() {
-    //nothing todo here
+    ExtensionUtils.initTranslations(Me.metadata.uuid);
 }
 
 function enable() {
     if (cancellable === null) {
         cancellable = new Gio.Cancellable()
     }
+
+    log(_('Index in status bar:'))
 
     log('Executor enabled');
 
