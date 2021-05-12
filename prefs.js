@@ -43,9 +43,6 @@ function buildPrefsWidget() {
 
     let prefsWidget = new Gtk.Grid({ visible: true, column_homogeneous: true });
     this.notebook = new Gtk.Notebook({ visible: true });
-    prefsWidget.connect('destroy', () => {
-        this.settings.set_int('location', this.notebook.get_current_page());
-    })
     prefsWidget.attach(this.notebook, 0, 0, 1, 1);
     this.commandsArray = {};
     this.commandsArrayCopy = {};
@@ -150,6 +147,10 @@ function buildPrefsWidget() {
     }
 
     this.notebook.set_current_page(this.settings.get_value('location').deep_unpack())
+    this.notebook.connect('switch-page', (notebook, page, index) => {
+        this.settings.set_int('location', index);
+        log(index)
+    })
     return prefsWidget;
 }
 
