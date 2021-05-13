@@ -110,6 +110,8 @@ function disable() {
             this.locations[position].box.get_parent().remove_child(this.locations[position].box);
         }
 
+        this.locations[position].box.disconnect(this.locations[position].locationClicked);
+
         this.locations[position].box.remove_all_children();
         this.locations[position].box = null;
 
@@ -119,7 +121,6 @@ function disable() {
         this.settings.disconnect(this.locations[position].activeChanged);
         this.settings.disconnect(this.locations[position].indexChanged);
         this.settings.disconnect(this.locations[position].commandsJsonChanged);
-        this.settings.disconnect(this.locations[position].locationClicked);
     }
 
     log("Executor stopped");
