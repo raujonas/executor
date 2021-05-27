@@ -3,8 +3,12 @@ const Main = imports.ui.main;
 const GLib = imports.gi.GLib;
 const Mainloop = imports.mainloop;
 const Gio = imports.gi.Gio;
+const Gettext = imports.gettext;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
+const Domain = Gettext.domain(Me.metadata.uuid);
+const _ = Domain.gettext;
+const ngettext = Domain.ngettext;
 const ExtManager = Main.extensionManager;
 
 let gschema;
@@ -23,7 +27,7 @@ const POSITIONS = {
 };
 
 function init() {
-    //nothing todo here
+    ExtensionUtils.initTranslations(Me.metadata.uuid);
 }
 
 function enable() {
@@ -331,9 +335,19 @@ async function setOutput(location, index) {
 
     executorSettingsArray.forEach(setting => {
         location.commandsOutput[index] = location.commandsOutput[index].replace(setting, "");
+    })
+
+    executorSettingsArray.forEach(setting => {
         let settingDivided = setting.substring(1, setting.length - 1).split(".");
+
         if (settingDivided[1] == "css") {
             location.output[index].add_style_class_name(settingDivided[2])
+        }
+
+        if (settingDivided[1] == "markup") {
+            location.output[index].get_clutter_text().set_text(location.commandsOutput[index]);
+            location.output[index].get_clutter_text().set_use_markup(true);
+            location.output[index].set_use_markup(true);
         }
     })
 
