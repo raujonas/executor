@@ -105,7 +105,7 @@ You can also combine multiple css classes:
 
 ## **Use of markup**
 
-**Usage**: To use markup there's another settings **`<executor.markup.true>`** which has to be included somewhere in the output to activate markup. 
+**Usage**: To use markup there's another setting **`<executor.markup.true>`** which has to be included somewhere in the output to activate markup. 
 
 **Example**: The following command is an example for using markup with different colors and some italic text, all inside one command. You can find other attributes like `font_family` or `size` [here](https://developer.gnome.org/pygtk/stable/pango-markup-language.html).
 
