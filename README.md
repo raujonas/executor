@@ -103,9 +103,9 @@ You can also combine multiple css classes:
 
 <br/><br/>
 
-## **Use of markdown**
+## **Use of markup**
 
-**Usage**: To use markdown there's another settings **`<executor.markdown.true>`** which has to be included somewhere in the output to activate markup. 
+**Usage**: To use markup there's another settings **`<executor.markup.true>`** which has to be included somewhere in the output to activate markup. 
 
 **Example**: The following command is an example for using markup with different colors and some italic text, all inside one command. You can find other attributes like `font_family` or `size` [here](https://developer.gnome.org/pygtk/stable/pango-markup-language.html).
 
@@ -114,15 +114,15 @@ echo "<executor.markup.true> <span foreground='blue'>Blue text</span> is <i>cool
 ```
 This produces the following output:
 
-<img src="docs/markdown.png" alt="settings">
+<img src="docs/markup.png" alt="settings">
 
 **Note**: Due to a [bug](https://gitlab.gnome.org/GNOME/mutter/-/issues/1324) in ClutterText there is an empty space in front of the first `<span>` tag required 
 
 <br/><br/>
 
-## **Combine css and markdown**
+## **Combine css and markup**
 
-Combination of css and markdown is also possible. In this case the setting for markdown **`<executor.markdown.true>`**  must be located after all css settings. Here is an example:
+Combination of css and markup is also possible. In this case the setting for markup **`<executor.markup.true>`**  must be located after all css settings. Here is an example:
 
 ```
 echo " <span font_family='monospace' foreground='blue'>Blue text</span> is <i>cool</i>! <span foreground='red'>Red text</span><executor.css.green><executor.markup.true> is cool too"
@@ -130,7 +130,7 @@ echo " <span font_family='monospace' foreground='blue'>Blue text</span> is <i>co
 
 This produces the following output:
 
-<img src="docs/css-and-markdown.png" alt="settings">
+<img src="docs/css-and-markup.png" alt="settings">
 
 <br/><br/>
 
