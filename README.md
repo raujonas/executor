@@ -120,6 +120,20 @@ This produces the following output:
 
 <br/><br/>
 
+## **Combine css and markdown**
+
+Combination of css and markdown is also possible. In this case the setting for markdown **`<executor.markdown.true>`**  must be located after all css settings. Here is an example:
+
+```
+echo " <span font_family='monospace' foreground='blue'>Blue text</span> is <i>cool</i>! <span foreground='red'>Red text</span><executor.css.green><executor.markup.true> is cool too"
+```
+
+This produces the following output:
+
+<img src="docs/css-and-markdown.png" alt="settings">
+
+<br/><br/>
+
 ## **More complex scripts**
 
 If you want to execute more complex scripts it might be helpful to store them outside of the extension and create the final output there. 
