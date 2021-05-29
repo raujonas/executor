@@ -3,11 +3,12 @@
 const Gio = imports.gi.Gio;
 const Gtk = imports.gi.Gtk;
 
+const Gettext = imports.gettext;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
-
-const Gettext = imports.gettext.domain('executor');
-let _ = Gettext.gettext;
+const Domain = Gettext.domain(Me.metadata.uuid);
+const _ = Domain.gettext;
+const ngettext = Domain.ngettext;
 
 const Config = imports.misc.config;
 const [major] = Config.PACKAGE_VERSION.split('.');
@@ -36,11 +37,10 @@ const POSTRANS = {
 };
 
 function init() {
-    ExtensionUtils.initTranslations('executor');
+    ExtensionUtils.initTranslations(Me.metadata.uuid);
 }
 
 function buildPrefsWidget() {
-
     let prefsWidget = new Gtk.Grid({ visible: true, column_homogeneous: true });
     this.notebook = new Gtk.Notebook({ visible: true });
     prefsWidget.attach(this.notebook, 0, 0, 1, 1);
@@ -140,8 +140,8 @@ function buildPrefsWidget() {
         buttonsHbox[add](saveButton);
         grid.attach(buttonsHbox, 0, 5, 2, 1);
 
-        let pos = POSTRANS[position]
-        this.notebook.append_page(grid, new Gtk.Label({ label: pos, visible: true, hexpand: true }));
+        let pos = POSTRANS[position];
+        this.notebook.append_page(grid, new Gtk.Label({ label: _(pos), visible: true, hexpand: true }));
 
         this.settings.bind(POSITIONS[position] + '-index', index, 'value', Gio.SettingsBindFlags.DEFAULT);
     }
@@ -201,15 +201,15 @@ function prepareRow(c, index) {
 
     let upButton = new Gtk.Button({
         visible: true, margin_end: 2,
-        tooltip_text: _('Move row up')
+        tooltip_text: _('Move command up')
     });
     let downButton = new Gtk.Button({
         visible: true, margin_end: 4,
-        tooltip_text: _('Move row down')
+        tooltip_text: _('Move command down')
     });
     let remove = new Gtk.Button({
         visible: true,
-        tooltip_text: _('Remove row')
+        tooltip_text: _('Remove command')
     });
     if (shellVersion < 40) {
         upButton.set_image(new Gtk.Image({ icon_name: 'go-up-symbolic' }));

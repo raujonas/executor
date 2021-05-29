@@ -3,8 +3,12 @@ const Main = imports.ui.main;
 const GLib = imports.gi.GLib;
 const Mainloop = imports.mainloop;
 const Gio = imports.gi.Gio;
+const Gettext = imports.gettext;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
+const Domain = Gettext.domain(Me.metadata.uuid);
+const _ = Domain.gettext;
+const ngettext = Domain.ngettext;
 const ExtManager = Main.extensionManager;
 
 let gschema;
@@ -23,7 +27,7 @@ const POSITIONS = {
 };
 
 function init() {
-    //nothing todo here
+    ExtensionUtils.initTranslations(Me.metadata.uuid);
 }
 
 function enable() {
