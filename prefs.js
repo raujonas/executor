@@ -37,7 +37,6 @@ const POSTRANS = {
 };
 
 function init() {
-    log(Me.metadata.uuid)
     ExtensionUtils.initTranslations(Me.metadata.uuid);
 }
 
@@ -141,8 +140,8 @@ function buildPrefsWidget() {
         buttonsHbox[add](saveButton);
         grid.attach(buttonsHbox, 0, 5, 2, 1);
 
-        let pos = POSTRANS[position]
-        this.notebook.append_page(grid, new Gtk.Label({ label: pos, visible: true, hexpand: true }));
+        let pos = POSTRANS[position];
+        this.notebook.append_page(grid, new Gtk.Label({ label: _(pos), visible: true, hexpand: true }));
 
         this.settings.bind(POSITIONS[position] + '-index', index, 'value', Gio.SettingsBindFlags.DEFAULT);
     }
