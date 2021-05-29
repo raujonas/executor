@@ -35,8 +35,6 @@ function enable() {
         cancellable = new Gio.Cancellable()
     }
 
-    log(_('Index in status bar:'))
-
     log('Executor enabled');
 
     gschema = Gio.SettingsSchemaSource.new_from_directory(

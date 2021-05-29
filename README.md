@@ -172,3 +172,9 @@ journalctl /usr/bin/gnome-shell -f
 # **Development**
 
 Please feel free to contribute and suggest ideas or report bugs!
+
+<br/><br/>
+
+# **Translations**
+
+You can add translation for the language of your choice by editing the example.pot with a program like Poedit. Then you can submit your *.po and *.mo file inside the po/ folder.
