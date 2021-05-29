@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-12 18:43+0200\n"
+"POT-Creation-Date: 2021-05-29 14:35+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: extension.js:36 prefs.js:98
+#: extension.js:36 prefs.js:93
 msgid "Index in status bar:"
 msgstr ""
 
@@ -33,38 +33,38 @@ msgstr ""
 msgid "Right"
 msgstr ""
 
-#: prefs.js:96
+#: prefs.js:91
 msgid "Active:"
 msgstr ""
 
-#: prefs.js:103
+#: prefs.js:98
 msgid "Command"
 msgstr ""
 
-#: prefs.js:103
+#: prefs.js:98
 msgid "Interval in seconds"
 msgstr ""
 
-#: prefs.js:117
+#: prefs.js:112
 msgid "Add new command"
 msgstr ""
 
-#: prefs.js:121
+#: prefs.js:116
 msgid "Revert to last saved commands"
 msgstr ""
 
-#: prefs.js:125
+#: prefs.js:120
 msgid "Save commands"
 msgstr ""
 
-#: prefs.js:209
+#: prefs.js:204
 msgid "Move command up"
 msgstr ""
 
-#: prefs.js:213
+#: prefs.js:208
 msgid "Move command down"
 msgstr ""
 
-#: prefs.js:217
+#: prefs.js:212
 msgid "Remove command"
 msgstr ""

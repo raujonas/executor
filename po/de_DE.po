@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-12 18:43+0200\n"
-"PO-Revision-Date: 2021-05-12 18:44+0200\n"
+"POT-Creation-Date: 2021-05-29 14:35+0200\n"
+"PO-Revision-Date: 2021-05-29 14:35+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de_DE\n"
@@ -18,7 +18,7 @@ msgstr ""
 "X-Generator: Poedit 2.4.1\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: extension.js:36 prefs.js:98
+#: extension.js:36 prefs.js:93
 msgid "Index in status bar:"
 msgstr "Index in der Statusleiste:"
 
@@ -34,39 +34,39 @@ msgstr "Mitte"
 msgid "Right"
 msgstr "Rechts"
 
-#: prefs.js:96
+#: prefs.js:91
 msgid "Active:"
 msgstr "Aktiv:"
 
-#: prefs.js:103
+#: prefs.js:98
 msgid "Command"
 msgstr "Befehl"
 
-#: prefs.js:103
+#: prefs.js:98
 msgid "Interval in seconds"
 msgstr "Intervall in Sekunden"
 
-#: prefs.js:117
+#: prefs.js:112
 msgid "Add new command"
 msgstr "Neuen Befehl hinzufügen"
 
-#: prefs.js:121
+#: prefs.js:116
 msgid "Revert to last saved commands"
 msgstr "Auf zuletzt gespeicherte Befehle zurücksetzen"
 
-#: prefs.js:125
+#: prefs.js:120
 msgid "Save commands"
 msgstr "Befehle speichern"
 
-#: prefs.js:209
+#: prefs.js:204
 msgid "Move command up"
 msgstr "Befehl nach oben bewegen"
 
-#: prefs.js:213
+#: prefs.js:208
 msgid "Move command down"
 msgstr "Befehl nach unten bewegen"
 
-#: prefs.js:217
+#: prefs.js:212
 msgid "Remove command"
 msgstr "Befehle entfernen"
 

@@ -3,11 +3,12 @@
 const Gio = imports.gi.Gio;
 const Gtk = imports.gi.Gtk;
 
+const Gettext = imports.gettext;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
-
-const Gettext = imports.gettext.domain('executor');
-let _ = Gettext.gettext;
+const Domain = Gettext.domain(Me.metadata.uuid);
+const _ = Domain.gettext;
+const ngettext = Domain.ngettext;
 
 const Config = imports.misc.config;
 const [major] = Config.PACKAGE_VERSION.split('.');
@@ -36,16 +37,11 @@ const POSTRANS = {
 };
 
 function init() {
+    log(Me.metadata.uuid)
     ExtensionUtils.initTranslations(Me.metadata.uuid);
-
-
 }
 
 function buildPrefsWidget() {
-
-    ExtensionUtils.initTranslations(Me.metadata.uuid);
-
-
     let prefsWidget = new Gtk.Grid({ visible: true, column_homogeneous: true });
     this.notebook = new Gtk.Notebook({ visible: true });
     prefsWidget.attach(this.notebook, 0, 0, 1, 1);
