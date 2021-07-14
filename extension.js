@@ -225,7 +225,7 @@ function checkQueue() {
 function handleCurrentQueue(copy) {
     let current = copy.shift();
 
-    this.execCommand(current, ['/bin/bash', '-c', current.command]);
+    this.execCommand(current, ['bash', '-c', current.command]);
 
     if (copy.length > 0) {
         GLib.timeout_add(0, 50, () => {
