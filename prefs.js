@@ -146,6 +146,33 @@ function buildPrefsWidget() {
         this.settings.bind(POSITIONS[position] + '-index', index, 'value', Gio.SettingsBindFlags.DEFAULT);
     }
 
+    /* General tab */
+    let grid = new Gtk.Grid({
+        column_spacing: 12, row_spacing: 12,
+        column_homogeneous: true,
+        hexpand: true, vexpand: true,
+        margin_start: 14, margin_end: 14, margin_top: 14, margin_bottom: 14,
+        visible: true
+    });
+    let topHbox = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 20, visible: true });
+    grid.attach(topHbox, 0, 0, 2, 1);
+
+    let clickOnOutputActive = new Gtk.Switch({
+        visible: true,
+        halign: Gtk.Align.END,
+        valign: Gtk.Align.CENTER,
+        hexpand: true
+    });
+    clickOnOutputActive.set_active(this.settings.get_value('click-on-output-active').deep_unpack());
+    clickOnOutputActive.connect("notify::active", () => {
+        this.clickOnOutputActiveClicked(clickOnOutputActive.get_active());
+    });
+    topHbox[add](new Gtk.Label({ label: _('Click on output in top bar active:'), use_markup: true, visible: true }));
+    topHbox[add](clickOnOutputActive);
+    grid.attach(new Gtk.Separator({ visible: true, orientation: Gtk.Orientation.VERTICAL }), 0, 1, 2, 1);
+    this.notebook.append_page(grid, new Gtk.Label({ label: _('General'), visible: true, hexpand: true }));
+    /* End of general tab */
+
     this.notebook.set_current_page(this.settings.get_value('location').deep_unpack())
     this.notebook.connect('switch-page', (notebook, page, index) => {
         this.settings.set_int('location', index);
@@ -319,4 +346,8 @@ function activeClicked(isActive) {
     }
 
     this.settings.set_boolean(POSITIONS[position] + '-active', isActive);
+}
+
+function clickOnOutputActiveClicked(isActive) {
+    this.settings.set_boolean('click-on-output-active', isActive);
 }
