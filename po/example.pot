@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-29 19:44+0200\n"
+"POT-Creation-Date: 2021-08-07 21:09+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -57,14 +57,22 @@ msgstr ""
 msgid "Save commands"
 msgstr ""
 
-#: prefs.js:204
+#: prefs.js:170
+msgid "Click on output in top bar active:"
+msgstr ""
+
+#: prefs.js:173
+msgid "General"
+msgstr ""
+
+#: prefs.js:231
 msgid "Move command up"
 msgstr ""
 
-#: prefs.js:208
+#: prefs.js:235
 msgid "Move command down"
 msgstr ""
 
-#: prefs.js:212
+#: prefs.js:239
 msgid "Remove command"
 msgstr ""
