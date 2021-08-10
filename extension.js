@@ -68,13 +68,15 @@ function enable() {
 
         this.locations[position].locationClicked = this.locations[position].box.connect(
             'button-press-event', () => {
-                this.settings.set_int('location', position);
-                GLib.timeout_add(
-                    GLib.PRIORITY_DEFAULT,
-                    100,
-                    () => {
-                        ExtManager.openExtensionPrefs(Me.metadata.uuid, '', {});
-                    });
+                if (this.settings.get_value('click-on-output-active').deep_unpack()) {
+                    this.settings.set_int('location', position);
+                    GLib.timeout_add(
+                        GLib.PRIORITY_DEFAULT,
+                        100,
+                        () => {
+                            ExtManager.openExtensionPrefs(Me.metadata.uuid, '', {});
+                        });
+                }
             }
         );
 
