@@ -216,17 +216,17 @@ function prepareRow(c, index) {
     let row = new Gtk.ListBoxRow({ visible: true });
     let hbox = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, visible: true });
     row[addRow](hbox);
-    let activeButton = new Gtk.CheckButton({
+    let isActiveButton = new Gtk.CheckButton({
         visible: true, margin_end: 10,
         tooltip_text: _('Command active')
     });
     if (c.isActive || c.isActive == null) {
-        activeButton.set_active(true);
+        isActiveButton.set_active(true);
     }
-    activeButton.connect("clicked", () => {
-        activeButton.set_active(activeButton.get_active());
+    isActiveButton.connect("toggled", () => {
+        isActiveButton.set_active(isActiveButton.get_active());
     });
-    hbox[add](activeButton);
+    hbox[add](isActiveButton);
     let command = new Gtk.Entry({ visible: true, hexpand: true, margin_end: 10 });
     command.set_text(c.command);
     hbox[add](command);
@@ -332,8 +332,10 @@ function saveCommands() {
         } else {
             let entry = this.listBox[position].get_row_at_index(i).get_child().get_first_child();
             isActive = entry.get_active();
-            command = entry.get_next_sibling().get_text();
-            interval = entry.get_next_sibling().get_value();
+            entry = entry.get_next_sibling();
+            command = entry.get_text();
+            entry = entry.get_next_sibling();
+            interval = entry.get_value();
         }
         this.commandsArray[position].push({
             "isActive": isActive,
