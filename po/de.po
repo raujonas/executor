@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-08-07 21:09+0200\n"
-"PO-Revision-Date: 2021-08-07 21:09+0200\n"
+"POT-Creation-Date: 2021-08-11 21:43+0200\n"
+"PO-Revision-Date: 2021-08-11 21:43+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -66,15 +66,19 @@ msgstr "Klick auf Output in Statusleiste aktiv:"
 msgid "General"
 msgstr "Allgemein"
 
-#: prefs.js:231
+#: prefs.js:221
+msgid "Command active"
+msgstr "Befehl aktiv"
+
+#: prefs.js:242
 msgid "Move command up"
 msgstr "Befehl nach oben bewegen"
 
-#: prefs.js:235
+#: prefs.js:246
 msgid "Move command down"
 msgstr "Befehl nach unten bewegen"
 
-#: prefs.js:239
+#: prefs.js:250
 msgid "Remove command"
 msgstr "Befehl entfernen"
 
