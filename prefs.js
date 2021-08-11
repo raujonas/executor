@@ -214,10 +214,21 @@ function prepareRow(c, index) {
     }
 
     let row = new Gtk.ListBoxRow({ visible: true });
-    let command = new Gtk.Entry({ visible: true, hexpand: true, margin_end: 10 });
-    command.set_text(c.command);
     let hbox = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, visible: true });
     row[addRow](hbox);
+    let activeButton = new Gtk.CheckButton({
+        visible: true, margin_end: 10,
+        tooltip_text: _('Command active')
+    });
+    if (c.isActive || c.isActive == null) {
+        activeButton.set_active(true);
+    }
+    activeButton.connect("clicked", () => {
+        activeButton.set_active(activeButton.get_active());
+    });
+    hbox[add](activeButton);
+    let command = new Gtk.Entry({ visible: true, hexpand: true, margin_end: 10 });
+    command.set_text(c.command);
     hbox[add](command);
     let interval = new Gtk.SpinButton({
         adjustment: new Gtk.Adjustment({ lower: 1, upper: 86400, step_increment: 1 }),
@@ -227,7 +238,7 @@ function prepareRow(c, index) {
     hbox[add](interval);
 
     let upButton = new Gtk.Button({
-        visible: true, margin_end: 2,
+        visible: true, margin_end: 4,
         tooltip_text: _('Move command up')
     });
     let downButton = new Gtk.Button({
@@ -311,17 +322,21 @@ function saveCommands() {
         }
     }
     for (let i = 0; i < count; i++) {
+        let isActive;
         let command;
         let interval;
         if (shellVersion < 40) {
-            command = this.listBox[position].get_row_at_index(i).get_child().get_children()[0].get_text();
-            interval = this.listBox[position].get_row_at_index(i).get_child().get_children()[1].get_value();
+            isActive = this.listBox[position].get_row_at_index(i).get_child().get_children()[0].get_active();
+            command = this.listBox[position].get_row_at_index(i).get_child().get_children()[1].get_text();
+            interval = this.listBox[position].get_row_at_index(i).get_child().get_children()[2].get_value();
         } else {
             let entry = this.listBox[position].get_row_at_index(i).get_child().get_first_child();
-            command = entry.get_text();
+            isActive = entry.get_active();
+            command = entry.get_next_sibling().get_text();
             interval = entry.get_next_sibling().get_value();
         }
         this.commandsArray[position].push({
+            "isActive": isActive,
             "command": command,
             "interval": interval,
             "uuid": this.createUUID()
