@@ -191,10 +191,12 @@ function checkCommands(location, json) {
     if (location.commandsSettings.commands.length > 0) {
 
         location.commandsSettings.commands.forEach(function (command, index) {
-            if (!executeQueue.some(c => c.uuid === command.uuid)) {
-                command.locationName = location.name;
-                command.index = index;
-                executeQueue.push(command);
+            if (command.isActive || command.isActive == null) {
+                if (!executeQueue.some(c => c.uuid === command.uuid)) {
+                    command.locationName = location.name;
+                    command.index = index;
+                    executeQueue.push(command);
+                }
             }
         }, this);
 
