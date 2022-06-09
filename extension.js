@@ -128,6 +128,7 @@ function disable() {
         this.settings.disconnect(this.locations[position].indexChanged);
         this.settings.disconnect(this.locations[position].commandsJsonChanged);
     }
+    settings = null;
 
     log("Executor stopped");
 }
@@ -319,8 +320,11 @@ function callback(command, stdout) {
                 return GLib.SOURCE_REMOVE;
             });
         }
-
-        this.setOutput(this.locations[locationIndex], command.index);
+        try {
+            this.setOutput(this.locations[locationIndex], command.index);
+        } catch (e) {
+            log('Caught exception while setting output: ' + e);
+        }
     }
 }
 
@@ -337,23 +341,25 @@ async function setOutput(location, index) {
     location.output[index].set_text(location.commandsOutput[index]);
     location.output[index].set_style_class_name("");
 
-    executorSettingsArray.forEach(setting => {
-        location.commandsOutput[index] = location.commandsOutput[index].replace(setting, "");
-    })
-
-    executorSettingsArray.forEach(setting => {
-        let settingDivided = setting.substring(1, setting.length - 1).split(".");
-
-        if (settingDivided[1] == "css") {
-            location.output[index].add_style_class_name(settingDivided[2])
-        }
-
-        if (settingDivided[1] == "markup") {
-            location.output[index].get_clutter_text().set_text(location.commandsOutput[index]);
-            location.output[index].get_clutter_text().set_use_markup(true);
-            location.output[index].set_use_markup(true);
-        }
-    })
+    if (executorSettingsArray != null) {
+        executorSettingsArray.forEach(setting => {
+            location.commandsOutput[index] = location.commandsOutput[index].replace(setting, "");
+        })
+    
+        executorSettingsArray.forEach(setting => {
+            let settingDivided = setting.substring(1, setting.length - 1).split(".");
+    
+            if (settingDivided[1] == "css") {
+                location.output[index].add_style_class_name(settingDivided[2])
+            }
+    
+            if (settingDivided[1] == "markup") {
+                location.output[index].get_clutter_text().set_text(location.commandsOutput[index]);
+                location.output[index].get_clutter_text().set_use_markup(true);
+                location.output[index].set_use_markup(true);
+            }
+        })
+    }    
 
     location.output[index].set_text(location.commandsOutput[index]);
 }
