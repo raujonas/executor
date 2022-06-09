@@ -128,6 +128,7 @@ function disable() {
         this.settings.disconnect(this.locations[position].indexChanged);
         this.settings.disconnect(this.locations[position].commandsJsonChanged);
     }
+    settings = null;
 
     log("Executor stopped");
 }
