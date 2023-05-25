@@ -337,29 +337,27 @@ function resetOutput(location) {
 async function setOutput(location, index) {
     let executorRegex = new RegExp(/(<executor\..*?\..*?>)/g);
     let executorSettingsArray = location.commandsOutput[index].match(executorRegex);
+    let markupSet = false;
 
-    location.output[index].set_text(location.commandsOutput[index]);
     location.output[index].set_style_class_name("");
 
     if (executorSettingsArray != null) {
         executorSettingsArray.forEach(setting => {
             location.commandsOutput[index] = location.commandsOutput[index].replace(setting, "");
-        })
-    
-        executorSettingsArray.forEach(setting => {
+
             let settingDivided = setting.substring(1, setting.length - 1).split(".");
     
             if (settingDivided[1] == "css") {
                 location.output[index].add_style_class_name(settingDivided[2])
-            }
-    
-            if (settingDivided[1] == "markup") {
-                location.output[index].get_clutter_text().set_text(location.commandsOutput[index]);
-                location.output[index].get_clutter_text().set_use_markup(true);
-                location.output[index].set_use_markup(true);
+            } else if (settingDivided[1] == "markup") {
+                markupSet = true
             }
         })
     }    
 
-    location.output[index].set_text(location.commandsOutput[index]);
+    if (markupSet) {
+        location.output[index].get_clutter_text().set_markup(location.commandsOutput[index]);
+    } else {
+        location.output[index].set_text(location.commandsOutput[index]);
+    }
 }
