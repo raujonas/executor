@@ -9,7 +9,7 @@ const POSITIONS = {
     2: 'right',
 };
 
-export default class ExamplePreferences extends ExtensionPreferences {
+export default class ExecutorPreferences extends ExtensionPreferences {
     getPreferencesWidget() {
         const postrans = {
             0: _('Left'),
