@@ -18,6 +18,7 @@ export default class Executor extends Extension {
             this.cancellable = new Gio.Cancellable();
         }
 
+        this.stopped = false;
         this.settings = this.getSettings();
         this.executeQueue = [];
         this.locations = {};
@@ -85,6 +86,8 @@ export default class Executor extends Extension {
     }
 
     disable() {
+        this.stopped = true;
+
         for (let position = 0; position < 3; position++) {
             this.locations[position].stopped = true;
 
@@ -190,7 +193,7 @@ export default class Executor extends Extension {
     }
 
     checkQueue() {
-        if (this.executeQueue.length > 0) {
+        if (!this.stopped && this.executeQueue.length > 0) {
             let copy = this.executeQueue;
             this.executeQueue = [];
             this.handleCurrentQueue(copy);
@@ -214,7 +217,7 @@ export default class Executor extends Extension {
                 }
                 return GLib.SOURCE_REMOVE;
             });
-        } else {
+        } else if (!this.stopped) {
             this.checkQueue();
         }
     }
@@ -290,7 +293,7 @@ export default class Executor extends Extension {
 
                 GLib.timeout_add_seconds(0, command.interval, () => {
                     if (this.cancellable && !this.cancellable.is_cancelled()) {
-                        if (!this.locations[locationIndex].stopped) {
+                        if (!this.stopped && !this.locations[locationIndex].stopped) {
                             if (!this.executeQueue.some((c) => c.uuid === command.uuid)) {
                                 this.executeQueue.push(command);
                             }
