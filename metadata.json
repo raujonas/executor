@@ -1,9 +1,11 @@
 {
-	"name": "Executor",
-	"description": "Execute multiple shell commands periodically with separate intervals and display the output in gnome top bar.",
-	"uuid": "executor@raujonas.github.io",
-	"settings-schema": "org.gnome.shell.extensions.executor",
-	"shell-version": ["45"],
-	"url": "https://github.com/raujonas/executor",
-	"version": 24
+  "name": "Executor",
+  "description": "Execute multiple shell commands periodically with separate intervals and display the output in gnome top bar.",
+  "uuid": "executor@raujonas.github.io",
+  "settings-schema": "org.gnome.shell.extensions.executor",
+  "shell-version": [
+    "45"
+  ],
+  "url": "https://github.com/raujonas/executor",
+  "version": 25
 }
