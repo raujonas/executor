@@ -51,7 +51,8 @@ export default class Executor extends Extension {
                         this.timeoutSourceIds.push(
                             GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
                                 this.openPreferences();
-                                    }));
+                            })
+                        );
                     }
                 }
             );
@@ -211,7 +212,8 @@ export default class Executor extends Extension {
                 GLib.timeout_add(0, 500, () => {
                     this.checkQueue();
                     return GLib.SOURCE_REMOVE;
-                        }));
+                })
+            );
         }
     }
 
@@ -227,7 +229,8 @@ export default class Executor extends Extension {
                         this.handleCurrentQueue(copy);
                     }
                     return GLib.SOURCE_REMOVE;
-                        }));
+                })
+            );
         } else if (!this.stopped) {
             this.checkQueue();
         }
@@ -313,7 +316,8 @@ export default class Executor extends Extension {
                         }
 
                         return GLib.SOURCE_REMOVE;
-                        }));
+                    })
+                );
             }
             try {
                 this.setOutput(this.locations[locationIndex], command.index);
