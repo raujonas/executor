@@ -12,12 +12,13 @@ const POSITIONS = {
 
 export default class Executor extends Extension {
     enable() {
-        log('Executor enabled');
+        console.log('Executor enabled');
 
         if (!this.cancellable) {
             this.cancellable = new Gio.Cancellable();
         }
 
+        this.timeoutSourceIds = []
         this.stopped = false;
         this.settings = this.getSettings();
         this.executeQueue = [];
@@ -47,9 +48,10 @@ export default class Executor extends Extension {
                 () => {
                     if (this.settings.get_value('click-on-output-active').deep_unpack()) {
                         this.settings.set_int('location', position);
-                        GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
-                            this.openPreferences();
-                        });
+                        this.timeoutSourceIds.push(
+                            GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
+                                this.openPreferences();
+                                    }));
                     }
                 }
             );
@@ -112,7 +114,14 @@ export default class Executor extends Extension {
         this.executeQueue = null;
         this.locations = null;
 
-        log('Executor stopped');
+        if (this.timeoutSourceIds.length > 0) {
+            this.timeoutSourceIds.forEach((sourceId) => {
+                GLib.Source.remove(sourceId);
+                sourceId = null;
+            });
+        }
+
+        console.log('Executor stopped');
     }
 
     initOutputLabels(location) {
@@ -164,7 +173,7 @@ export default class Executor extends Extension {
         try {
             location.commandsSettings = JSON.parse(json);
         } catch (e) {
-            log('Error in json file for location: ' + location.name);
+            console.log('Error in json file for location: ' + location.name);
         }
 
         this.initOutputLabels(location);
@@ -186,7 +195,7 @@ export default class Executor extends Extension {
 
             this.resetOutput(location);
         } else {
-            log('No commands specified: ' + location.name);
+            console.log('No commands specified: ' + location.name);
             location.commandsOutput = [];
             this.resetOutput(location);
         }
@@ -198,10 +207,11 @@ export default class Executor extends Extension {
             this.executeQueue = [];
             this.handleCurrentQueue(copy);
         } else {
-            GLib.timeout_add(0, 500, () => {
-                this.checkQueue();
-                return GLib.SOURCE_REMOVE;
-            });
+            this.timeoutSourceIds.push(
+                GLib.timeout_add(0, 500, () => {
+                    this.checkQueue();
+                    return GLib.SOURCE_REMOVE;
+                        }));
         }
     }
 
@@ -211,12 +221,13 @@ export default class Executor extends Extension {
         this.execCommand(current, ['bash', '-c', current.command]);
 
         if (copy.length > 0) {
-            GLib.timeout_add(0, 50, () => {
-                if (copy.length > 0) {
-                    this.handleCurrentQueue(copy);
-                }
-                return GLib.SOURCE_REMOVE;
-            });
+            this.timeoutSourceIds.push(
+                GLib.timeout_add(0, 50, () => {
+                    if (copy.length > 0) {
+                        this.handleCurrentQueue(copy);
+                    }
+                    return GLib.SOURCE_REMOVE;
+                        }));
         } else if (!this.stopped) {
             this.checkQueue();
         }
@@ -238,7 +249,7 @@ export default class Executor extends Extension {
                         if (!proc.get_successful()) {
                             let status = proc.get_exit_status();
 
-                            log(
+                            console.log(
                                 'Executor: error in command "' +
                                     command.command +
                                     '": ' +
@@ -278,7 +289,7 @@ export default class Executor extends Extension {
 
         let locationIndex = Object.keys(POSITIONS).find((key) => POSITIONS[key] === command.locationName);
 
-        if (!this.locations[locationIndex].stopped) {
+        if (!this.stopped && !this.locations[locationIndex].stopped) {
             if (!this.locations[locationIndex].commandsSettings.commands.some((c) => c.uuid === command.uuid)) {
                 this.locations[locationIndex].commandsOutput.splice(index, 1);
             } else {
@@ -291,22 +302,23 @@ export default class Executor extends Extension {
                     this.locations[locationIndex].commandsOutput = [];
                 }
 
-                GLib.timeout_add_seconds(0, command.interval, () => {
-                    if (this.cancellable && !this.cancellable.is_cancelled()) {
-                        if (!this.stopped && !this.locations[locationIndex].stopped) {
-                            if (!this.executeQueue.some((c) => c.uuid === command.uuid)) {
-                                this.executeQueue.push(command);
+                this.timeoutSourceIds.push(
+                    GLib.timeout_add_seconds(0, command.interval, () => {
+                        if (this.cancellable && !this.cancellable.is_cancelled()) {
+                            if (!this.stopped && !this.locations[locationIndex].stopped) {
+                                if (!this.executeQueue.some((c) => c.uuid === command.uuid)) {
+                                    this.executeQueue.push(command);
+                                }
                             }
                         }
-                    }
 
-                    return GLib.SOURCE_REMOVE;
-                });
+                        return GLib.SOURCE_REMOVE;
+                        }));
             }
             try {
                 this.setOutput(this.locations[locationIndex], command.index);
             } catch (e) {
-                log('Caught exception while setting output: ' + e);
+                console.log('Caught exception while setting output: ' + e);
             }
         }
     }
