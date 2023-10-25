@@ -174,7 +174,7 @@ export default class ExecutorPreferences extends ExtensionPreferences {
         });
         clickOnOutputActive.set_active(settings.get_value('click-on-output-active').deep_unpack());
         clickOnOutputActive.connect('notify::active', () => {
-            settings.set_boolean('click-on-output-active', isActive);
+            settings.set_boolean('click-on-output-active', clickOnOutputActive.get_active());
         });
         topHbox.append(
             new Gtk.Label({label: _('Click on output in top bar active:'), use_markup: true, visible: true})
