@@ -17,7 +17,7 @@ export default class ExecutorPreferences extends ExtensionPreferences {
             2: _('Right'),
         };
 
-        this.settings = this.getSettings();
+        const settings = this.getSettings();
 
         let prefsWidget = new Gtk.Grid({visible: true, column_homogeneous: true});
         this.notebook = new Gtk.Notebook({visible: true});
@@ -31,12 +31,12 @@ export default class ExecutorPreferences extends ExtensionPreferences {
             this.commandsArrayCopy[position] = [];
             try {
                 this.commandsArray[position] = JSON.parse(
-                    this.settings.get_value(POSITIONS[position] + '-commands-json').deep_unpack()
+                    settings.get_value(POSITIONS[position] + '-commands-json').deep_unpack()
                 ).commands;
                 this.commandsArrayCopy[position] = JSON.parse(JSON.stringify(this.commandsArray[position]));
             } catch (e) {
-                log('Error in json file for position:', POSITIONS[position]);
-                this.settings.set_string(
+                console.log('Error in json file for position:', POSITIONS[position]);
+                settings.set_string(
                     POSITIONS[position] + '-commands-json',
                     '{"commands":[{"command":"echo Executor works!","interval":1}]}'
                 );
@@ -64,9 +64,14 @@ export default class ExecutorPreferences extends ExtensionPreferences {
                 valign: Gtk.Align.CENTER,
                 hexpand: true,
             });
-            active.set_active(this.settings.get_value(POSITIONS[position] + '-active').deep_unpack());
+            active.set_active(settings.get_value(POSITIONS[position] + '-active').deep_unpack());
             active.connect('notify::active', () => {
-                this.activeClicked(active.get_active());
+                let position = this.notebook.get_current_page();
+                if (active.get_active()) {
+                    this.saveCommands(settings);
+                }
+        
+                settings.set_boolean(POSITIONS[position] + '-active', active.get_active());
             });
             let index = new Gtk.SpinButton({
                 adjustment: new Gtk.Adjustment({lower: 0, upper: 10, step_increment: 1}),
@@ -133,7 +138,7 @@ export default class ExecutorPreferences extends ExtensionPreferences {
                 this.commandsArray[position] = JSON.parse(JSON.stringify(this.commandsArrayCopy[position]));
                 this.populateCommandList(position);
             });
-            saveButton.connect('clicked', this.saveCommands.bind(this));
+            saveButton.connect('clicked', this.saveCommands.bind(this, settings));
             buttonsHbox.append(addButton);
             buttonsHbox.append(cancelButton);
             buttonsHbox.append(saveButton);
@@ -142,7 +147,7 @@ export default class ExecutorPreferences extends ExtensionPreferences {
             let pos = postrans[position];
             this.notebook.append_page(grid, new Gtk.Label({label: _(pos), visible: true, hexpand: true}));
 
-            this.settings.bind(POSITIONS[position] + '-index', index, 'value', Gio.SettingsBindFlags.DEFAULT);
+            settings.bind(POSITIONS[position] + '-index', index, 'value', Gio.SettingsBindFlags.DEFAULT);
         }
 
         /* General tab */
@@ -167,9 +172,9 @@ export default class ExecutorPreferences extends ExtensionPreferences {
             valign: Gtk.Align.CENTER,
             hexpand: true,
         });
-        clickOnOutputActive.set_active(this.settings.get_value('click-on-output-active').deep_unpack());
+        clickOnOutputActive.set_active(settings.get_value('click-on-output-active').deep_unpack());
         clickOnOutputActive.connect('notify::active', () => {
-            this.clickOnOutputActiveClicked(clickOnOutputActive.get_active());
+            settings.set_boolean('click-on-output-active', clickOnOutputActive.get_active());
         });
         topHbox.append(
             new Gtk.Label({label: _('Click on output in top bar active:'), use_markup: true, visible: true})
@@ -179,9 +184,9 @@ export default class ExecutorPreferences extends ExtensionPreferences {
         this.notebook.append_page(grid, new Gtk.Label({label: _('General'), visible: true, hexpand: true}));
         /* End of general tab */
 
-        this.notebook.set_current_page(this.settings.get_value('location').deep_unpack());
+        this.notebook.set_current_page(settings.get_value('location').deep_unpack());
         this.notebook.connect('switch-page', (notebook, page, index) => {
-            this.settings.set_int('location', index);
+            settings.set_int('location', index);
         });
         return prefsWidget;
     }
@@ -291,7 +296,7 @@ export default class ExecutorPreferences extends ExtensionPreferences {
         array.splice(toIndex, 0, element);
     }
 
-    saveCommands() {
+    saveCommands(settings) {
         let position = this.notebook.get_current_page();
         this.commandsArray[position].splice(0, this.commandsArray[position].length);
 
@@ -321,7 +326,7 @@ export default class ExecutorPreferences extends ExtensionPreferences {
         }
 
         this.commandsArrayCopy[position] = JSON.parse(JSON.stringify(this.commandsArray[position]));
-        this.settings.set_string(
+        settings.set_string(
             POSITIONS[position] + '-commands-json',
             '{"commands":' + JSON.stringify(this.commandsArray[position]) + '}'
         );
@@ -335,16 +340,4 @@ export default class ExecutorPreferences extends ExtensionPreferences {
         });
     }
 
-    activeClicked(isActive) {
-        let position = this.notebook.get_current_page();
-        if (isActive) {
-            this.saveCommands();
-        }
-
-        this.settings.set_boolean(POSITIONS[position] + '-active', isActive);
-    }
-
-    clickOnOutputActiveClicked(isActive) {
-        this.settings.set_boolean('click-on-output-active', isActive);
-    }
 }
