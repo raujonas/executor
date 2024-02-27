@@ -2,6 +2,7 @@ import St from 'gi://St';
 import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
 import {Extension, gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
 
 const POSITIONS = {
@@ -29,6 +30,7 @@ export default class Executor extends Extension {
                 name: POSITIONS[position],
                 output: [],
                 box: null,
+                container: null,
                 stopped: null,
                 commandsSettings: {commands: []},
                 commandsOutput: [],
@@ -41,7 +43,9 @@ export default class Executor extends Extension {
 
             this.locations[position].stopped = false;
 
-            this.locations[position].box = new St.BoxLayout({style_class: 'panel-button', reactive: true});
+            this.locations[position].box = new PanelMenu.Button(0.0, 'Executor Extension', true);
+            this.locations[position].box.setSensitive(true);
+            this.locations[position].container = this.locations[position].box.container;
 
             this.locations[position].locationClicked = this.locations[position].box.connect(
                 'button-press-event',
@@ -57,8 +61,8 @@ export default class Executor extends Extension {
                 }
             );
 
-            if (this.locations[position].box.get_parent()) {
-                this.locations[position].box.get_parent().remove_child(this.locations[position].box);
+            if (this.locations[position].container.get_parent()) {
+                this.locations[position].container.get_parent().remove_child(this.locations[position].container);
             }
 
             this.onStatusChanged(this.locations[position]);
@@ -94,8 +98,8 @@ export default class Executor extends Extension {
         for (let position = 0; position < 3; position++) {
             this.locations[position].stopped = true;
 
-            if (this.locations[position].box.get_parent()) {
-                this.locations[position].box.get_parent().remove_child(this.locations[position].box);
+            if (this.locations[position].container.get_parent()) {
+                this.locations[position].container.get_parent().remove_child(this.locations[position].container);
             }
 
             this.locations[position].box.disconnect(this.locations[position].locationClicked);
@@ -135,8 +139,8 @@ export default class Executor extends Extension {
 
     onStatusChanged(location) {
         if (this.settings.get_value(location.name + '-active').deep_unpack()) {
-            if (location.box.get_parent()) {
-                location.box.get_parent().remove_child(location.box);
+            if (location.container.get_parent()) {
+                location.container.get_parent().remove_child(location.container);
             }
 
             location.stopped = false;
@@ -149,11 +153,11 @@ export default class Executor extends Extension {
                 this.checkCommands(location, this.settings.get_value(location.name + '-commands-json').deep_unpack());
             }
 
-            Main.panel['_' + location.name + 'Box'].insert_child_at_index(location.box, location.lastIndex);
+            Main.panel['_' + location.name + 'Box'].insert_child_at_index(location.container, location.lastIndex);
         } else {
             location.stopped = true;
-            if (location.box.get_parent()) {
-                location.box.get_parent().remove_child(location.box);
+            if (location.container.get_parent()) {
+                location.container.get_parent().remove_child(location.container);
             }
             this.removeOldCommands(location);
             location.commandsOutput = [];
