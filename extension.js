@@ -1,8 +1,11 @@
 import St from 'gi://St';
 import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
+import Atk from 'gi://Atk';
+import Clutter from 'gi://Clutter';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
+import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 import {Extension, gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
 
 const POSITIONS = {
@@ -43,13 +46,13 @@ export default class Executor extends Extension {
 
             this.locations[position].stopped = false;
 
-            this.locations[position].box = new PanelMenu.Button(0.0, 'Executor Extension', true);
-            this.locations[position].box.setSensitive(true);
-            this.locations[position].container = this.locations[position].box.container;
-
-            this.locations[position].locationClicked = this.locations[position].box.connect(
-                'button-press-event',
-                () => {
+            this.locations[position].box = new PanelMenu.Button(0.0, 'Executor Extension', false);
+            this.locations[position].box.can_focus = true;
+            this.locations[position].box.sensitive = true;
+            this.locations[position].box.accessible_role = Atk.Role.MENU;
+            this.settingsMenuItem = new PopupMenu.PopupMenuItem("⚙  Settings");
+            this.locations[position].locationClicked = this.settingsMenuItem.connect(
+                'activate', () => {
                     if (this.settings.get_value('click-on-output-active').deep_unpack()) {
                         this.settings.set_int('location', position);
                         this.timeoutSourceIds.push(
@@ -58,9 +61,13 @@ export default class Executor extends Extension {
                             })
                         );
                     }
+                    return Clutter.EVENT_PROPAGATE;
                 }
             );
-
+            this.locations[position].box.menu.addMenuItem(this.settingsMenuItem);
+            
+            this.locations[position].container = this.locations[position].box.container;
+       
             if (this.locations[position].container.get_parent()) {
                 this.locations[position].container.get_parent().remove_child(this.locations[position].container);
             }
@@ -153,7 +160,7 @@ export default class Executor extends Extension {
                 this.checkCommands(location, this.settings.get_value(location.name + '-commands-json').deep_unpack());
             }
 
-            Main.panel['_' + location.name + 'Box'].insert_child_at_index(location.container, location.lastIndex);
+            Main.panel.addToStatusArea(this.uuid+location.name, location.box, location.lastIndex, location.name);
         } else {
             location.stopped = true;
             if (location.container.get_parent()) {
