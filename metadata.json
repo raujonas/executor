@@ -4,8 +4,9 @@
   "uuid": "executor@raujonas.github.io",
   "settings-schema": "org.gnome.shell.extensions.executor",
   "shell-version": [
-    "45"
+    "45",
+    "46"
   ],
   "url": "https://github.com/raujonas/executor",
-  "version": 25
+  "version": 26
 }
