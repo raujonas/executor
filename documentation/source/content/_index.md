@@ -1,3 +1,8 @@
+---
+weight: 1
+title: "Overview"
+---
+
 # **Executor - Gnome Shell Extension**
 ![Maintenance](https://img.shields.io/maintenance/yes/2024)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/raujonas/executor)
@@ -6,10 +11,6 @@
 
 Execute multiple shell commands periodically with separate intervals and display the output in gnome top bar.
 
-<img src="resources/icons/icon.png" alt="result" width="70">
-
 [<img src="https://raw.githubusercontent.com/andyholmes/gnome-shell-extensions-badge/master/get-it-on-ego.svg?sanitize=true" alt="Get it on GNOME Extensions" height="100" width="220">](https://extensions.gnome.org/extension/2932/executor/)
 
-<img src="readme/result.png" alt="result" width="967">
-
-## Documentation: [here](https://raujonas.github.io/executor/)
+<img src="docs/combined.png" alt="result" width="967">
