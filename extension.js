@@ -55,9 +55,11 @@ export default class Executor extends Extension {
                 'activate', () => {
                     if (this.settings.get_value('click-on-output-active').deep_unpack()) {
                         this.settings.set_int('location', position);
+                        let l = this.timeoutSourceIds.length;
                         this.timeoutSourceIds.push(
                             GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
                                 this.openPreferences();
+                                this.timeoutSourceIds[l] = null;
                             })
                         );
                     }
@@ -112,6 +114,7 @@ export default class Executor extends Extension {
             this.locations[position].box.disconnect(this.locations[position].locationClicked);
 
             this.locations[position].box.remove_all_children();
+            this.locations[position].box.destroy(); 
             this.locations[position].box = null;
 
             this.locations[position].commandsOutput = [];
@@ -128,9 +131,11 @@ export default class Executor extends Extension {
 
         if (this.timeoutSourceIds.length > 0) {
             this.timeoutSourceIds.forEach((sourceId) => {
-                GLib.Source.remove(sourceId);
-                sourceId = null;
+                if(sourceId) {
+                    GLib.Source.remove(sourceId);
+                }
             });
+            this.timeoutSourceIds = [];
         }
 
         console.log('Executor stopped');
@@ -219,8 +224,10 @@ export default class Executor extends Extension {
             this.executeQueue = [];
             this.handleCurrentQueue(copy);
         } else {
+            let l = this.timeoutSourceIds.length;
             this.timeoutSourceIds.push(
                 GLib.timeout_add(0, 500, () => {
+                    this.timeoutSourceIds[l] = null;
                     this.checkQueue();
                     return GLib.SOURCE_REMOVE;
                 })
@@ -234,8 +241,10 @@ export default class Executor extends Extension {
         this.execCommand(current, ['bash', '-c', current.command]);
 
         if (copy.length > 0) {
+            let l = this.timeoutSourceIds.length;
             this.timeoutSourceIds.push(
                 GLib.timeout_add(0, 50, () => {
+                    this.timeoutSourceIds[l] = null;
                     if (copy.length > 0) {
                         this.handleCurrentQueue(copy);
                     }
@@ -316,6 +325,7 @@ export default class Executor extends Extension {
                     this.locations[locationIndex].commandsOutput = [];
                 }
 
+                let l = this.timeoutSourceIds.length;
                 this.timeoutSourceIds.push(
                     GLib.timeout_add_seconds(0, command.interval, () => {
                         if (this.cancellable && !this.cancellable.is_cancelled()) {
@@ -325,7 +335,7 @@ export default class Executor extends Extension {
                                 }
                             }
                         }
-
+                        this.timeoutSourceIds[l] = null;
                         return GLib.SOURCE_REMOVE;
                     })
                 );
