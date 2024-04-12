@@ -1,7 +1,11 @@
 import St from 'gi://St';
 import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
+import Atk from 'gi://Atk';
+import Clutter from 'gi://Clutter';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
+import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 import {Extension, gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
 
 const POSITIONS = {
@@ -29,6 +33,7 @@ export default class Executor extends Extension {
                 name: POSITIONS[position],
                 output: [],
                 box: null,
+                container: null,
                 stopped: null,
                 commandsSettings: {commands: []},
                 commandsOutput: [],
@@ -41,24 +46,32 @@ export default class Executor extends Extension {
 
             this.locations[position].stopped = false;
 
-            this.locations[position].box = new St.BoxLayout({style_class: 'panel-button', reactive: true});
-
-            this.locations[position].locationClicked = this.locations[position].box.connect(
-                'button-press-event',
-                () => {
+            this.locations[position].box = new PanelMenu.Button(0.0, 'Executor Extension', false);
+            this.locations[position].box.can_focus = true;
+            this.locations[position].box.sensitive = true;
+            this.locations[position].box.accessible_role = Atk.Role.MENU;
+            this.settingsMenuItem = new PopupMenu.PopupMenuItem("⚙  Settings");
+            this.locations[position].locationClicked = this.settingsMenuItem.connect(
+                'activate', () => {
                     if (this.settings.get_value('click-on-output-active').deep_unpack()) {
                         this.settings.set_int('location', position);
+                        let l = this.timeoutSourceIds.length;
                         this.timeoutSourceIds.push(
                             GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
                                 this.openPreferences();
+                                this.timeoutSourceIds[l] = null;
                             })
                         );
                     }
+                    return Clutter.EVENT_PROPAGATE;
                 }
             );
-
-            if (this.locations[position].box.get_parent()) {
-                this.locations[position].box.get_parent().remove_child(this.locations[position].box);
+            this.locations[position].box.menu.addMenuItem(this.settingsMenuItem);
+            
+            this.locations[position].container = this.locations[position].box.container;
+       
+            if (this.locations[position].container.get_parent()) {
+                this.locations[position].container.get_parent().remove_child(this.locations[position].container);
             }
 
             this.onStatusChanged(this.locations[position]);
@@ -94,13 +107,14 @@ export default class Executor extends Extension {
         for (let position = 0; position < 3; position++) {
             this.locations[position].stopped = true;
 
-            if (this.locations[position].box.get_parent()) {
-                this.locations[position].box.get_parent().remove_child(this.locations[position].box);
+            if (this.locations[position].container.get_parent()) {
+                this.locations[position].container.get_parent().remove_child(this.locations[position].container);
             }
 
             this.locations[position].box.disconnect(this.locations[position].locationClicked);
 
             this.locations[position].box.remove_all_children();
+            this.locations[position].box.destroy(); 
             this.locations[position].box = null;
 
             this.locations[position].commandsOutput = [];
@@ -117,9 +131,11 @@ export default class Executor extends Extension {
 
         if (this.timeoutSourceIds.length > 0) {
             this.timeoutSourceIds.forEach((sourceId) => {
-                GLib.Source.remove(sourceId);
-                sourceId = null;
+                if(sourceId) {
+                    GLib.Source.remove(sourceId);
+                }
             });
+            this.timeoutSourceIds = [];
         }
 
         console.log('Executor stopped');
@@ -135,8 +151,8 @@ export default class Executor extends Extension {
 
     onStatusChanged(location) {
         if (this.settings.get_value(location.name + '-active').deep_unpack()) {
-            if (location.box.get_parent()) {
-                location.box.get_parent().remove_child(location.box);
+            if (location.container.get_parent()) {
+                location.container.get_parent().remove_child(location.container);
             }
 
             location.stopped = false;
@@ -149,11 +165,11 @@ export default class Executor extends Extension {
                 this.checkCommands(location, this.settings.get_value(location.name + '-commands-json').deep_unpack());
             }
 
-            Main.panel['_' + location.name + 'Box'].insert_child_at_index(location.box, location.lastIndex);
+            Main.panel.addToStatusArea(this.uuid+location.name, location.box, location.lastIndex, location.name);
         } else {
             location.stopped = true;
-            if (location.box.get_parent()) {
-                location.box.get_parent().remove_child(location.box);
+            if (location.container.get_parent()) {
+                location.container.get_parent().remove_child(location.container);
             }
             this.removeOldCommands(location);
             location.commandsOutput = [];
@@ -208,8 +224,10 @@ export default class Executor extends Extension {
             this.executeQueue = [];
             this.handleCurrentQueue(copy);
         } else {
+            let l = this.timeoutSourceIds.length;
             this.timeoutSourceIds.push(
                 GLib.timeout_add(0, 500, () => {
+                    this.timeoutSourceIds[l] = null;
                     this.checkQueue();
                     return GLib.SOURCE_REMOVE;
                 })
@@ -223,8 +241,10 @@ export default class Executor extends Extension {
         this.execCommand(current, ['bash', '-c', current.command]);
 
         if (copy.length > 0) {
+            let l = this.timeoutSourceIds.length;
             this.timeoutSourceIds.push(
                 GLib.timeout_add(0, 50, () => {
+                    this.timeoutSourceIds[l] = null;
                     if (copy.length > 0) {
                         this.handleCurrentQueue(copy);
                     }
@@ -305,6 +325,7 @@ export default class Executor extends Extension {
                     this.locations[locationIndex].commandsOutput = [];
                 }
 
+                let l = this.timeoutSourceIds.length;
                 this.timeoutSourceIds.push(
                     GLib.timeout_add_seconds(0, command.interval, () => {
                         if (this.cancellable && !this.cancellable.is_cancelled()) {
@@ -314,7 +335,7 @@ export default class Executor extends Extension {
                                 }
                             }
                         }
-
+                        this.timeoutSourceIds[l] = null;
                         return GLib.SOURCE_REMOVE;
                     })
                 );
