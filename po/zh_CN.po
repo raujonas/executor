@@ -1,0 +1,81 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-11-01 21:57+0200\n"
+"PO-Revision-Date: \n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: zh_CN\n"
+
+#: prefs.js:34
+msgid "Left"
+msgstr "左侧"
+
+#: prefs.js:35
+msgid "Center"
+msgstr "中间"
+
+#: prefs.js:36
+msgid "Right"
+msgstr "右侧"
+
+#: prefs.js:91
+msgid "Active:"
+msgstr "激活"
+
+#: prefs.js:93
+msgid "Index in status bar:"
+msgstr "在状态栏的序列"
+
+#: prefs.js:98
+msgid "Command"
+msgstr "命令"
+
+#: prefs.js:98
+msgid "Interval in seconds"
+msgstr "间隔(秒)"
+
+#: prefs.js:112
+msgid "Add new command"
+msgstr "新增命令"
+
+#: prefs.js:116
+msgid "Revert to last saved commands"
+msgstr "恢复到上次保存的命令"
+
+#: prefs.js:120
+msgid "Save commands"
+msgstr "保存命令"
+
+#: prefs.js:170
+msgid "Click on output in top bar active:"
+msgstr ""
+
+#: prefs.js:173
+msgid "General"
+msgstr "常规"
+
+#: prefs.js:221
+msgid "Command active"
+msgstr "命令激活"
+
+#: prefs.js:242
+msgid "Move command up"
+msgstr "上移"
+
+#: prefs.js:246
+msgid "Move command down"
+msgstr "下移"
+
+#: prefs.js:250
+msgid "Remove command"
+msgstr "移除"
