@@ -4,7 +4,7 @@ title: "Overview"
 ---
 
 # **Executor - Gnome Shell Extension**
-![Maintenance](https://img.shields.io/maintenance/yes/2024)
+![Maintenance](https://img.shields.io/maintenance/yes/2025)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/raujonas/executor)
 ![GitHub Release Date](https://img.shields.io/github/release-date/raujonas/executor)
 ![GitHub Repo stars](https://img.shields.io/github/stars/raujonas/executor?style=social)

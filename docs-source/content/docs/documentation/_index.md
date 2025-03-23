@@ -21,7 +21,7 @@ The commands have to be executed in the source folder of the documentation, e.g.
 The existing pages can be found in `docs-source/content/docs`.
 
 ### Run local server with live updates
-`hugo --server`
+`hugo server`
 
 ### Compile the updated documentation
 `hugo`, then push your changes to GitHub and create a new PR to the main branch.
