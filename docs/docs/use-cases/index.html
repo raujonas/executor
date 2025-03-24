@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-<head>
+<head><script src="/executor/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=executor/livereload" data-no-instant defer></script>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="
@@ -16,7 +16,7 @@ I for example use this extension for hardware monitoring:
 ">
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
-<meta name="color-scheme" content="light dark"><meta property="og:url" content="https://raujonas.github.io/executor/docs/use-cases/">
+<meta name="color-scheme" content="light dark"><meta property="og:url" content="http://localhost:1313/executor/docs/use-cases/">
   <meta property="og:site_name" content="Executor Documentation">
   <meta property="og:title" content="Use cases">
   <meta property="og:description" content="Use cases # Let me know what your use cases are and I will add them here (or create a pull request).
@@ -24,15 +24,15 @@ Hardware monitoring # I for example use this extension for hardware monitoring:"
   <meta property="og:locale" content="en">
   <meta property="og:type" content="website">
 <title>Use cases | Executor Documentation</title>
-<link rel="manifest" href="/executor/manifest.json">
 <link rel="icon" href="/executor/favicon.png" >
-<link rel="canonical" href="https://raujonas.github.io/executor/docs/use-cases/">
-<link rel="stylesheet" href="/executor/book.min.33a48f5432973b8ff9a82679d9e45d67f2c15d4399bd2829269455cfe390b5e8.css" integrity="sha256-M6SPVDKXO4/5qCZ52eRdZ/LBXUOZvSgpJpRVz&#43;OQteg=" crossorigin="anonymous">
-  <script defer src="/executor/flexsearch.min.js"></script>
-  <script defer src="/executor/en.search.min.d2a2ec352370fac58760e2c5f62ee9211fbe5267b078ea0731ee2b97a37743a7.js" integrity="sha256-0qLsNSNw&#43;sWHYOLF9i7pIR&#43;&#43;UmeweOoHMe4rl6N3Q6c=" crossorigin="anonymous"></script>
+<link rel="manifest" href="/executor/manifest.json">
+<link rel="canonical" href="http://localhost:1313/executor/docs/use-cases/">
+<link rel="stylesheet" href="/executor/book.min.6c8b9d2a1fc95075ed7da46ca81060b39add8fff6741ac51259f768929281e2c.css" integrity="sha256-bIudKh/JUHXtfaRsqBBgs5rdj/9nQaxRJZ92iSkoHiw=" crossorigin="anonymous">
+  <script defer src="/executor/fuse.min.js"></script>
+  <script defer src="/executor/en.search.min.bcc3050685d7816707ef2877fed4608742f43edbf2a5ed58c10e6e6b38ba1bc0.js" integrity="sha256-vMMFBoXXgWcH7yh3/tRgh0L0Ptvype1YwQ5uazi6G8A=" crossorigin="anonymous"></script>
 
   <script defer src="/executor/sw.min.2ad4b85a8e3ae85658de24244581ae3430b54381a02cb0a26f4b078754cb51d8.js" integrity="sha256-KtS4Wo466FZY3iQkRYGuNDC1Q4GgLLCib0sHh1TLUdg=" crossorigin="anonymous"></script>
-<link rel="alternate" type="application/rss+xml" href="https://raujonas.github.io/executor/docs/use-cases/index.xml" title="Executor Documentation" />
+<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/executor/docs/use-cases/index.xml" title="Executor Documentation" />
 <!--
 Made with Book Theme
 https://github.com/alex-shpak/hugo-book
@@ -48,16 +48,17 @@ https://github.com/alex-shpak/hugo-book
         
   <nav>
 <h2 class="book-brand">
-  <a class="flex align-center" href="/executor/"><img src="/executor/icons/icon.png" alt="Logo" /><span>Executor Documentation</span>
+  <a class="flex align-center" href="/executor/"><img src="/executor/icons/icon.png" alt="Logo" class="book-icon" /><span>Executor Documentation</span>
   </a>
 </h2>
 
 
-<div class="book-search">
+<div class="book-search hidden">
   <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
   <div class="book-search-spinner hidden"></div>
   <ul id="book-search-results"></ul>
 </div>
+<script>document.querySelector(".book-search").classList.remove("hidden")</script>
 
 
 
@@ -70,7 +71,6 @@ https://github.com/alex-shpak/hugo-book
 
 
 
-  
 
 
 
@@ -325,7 +325,6 @@ https://github.com/alex-shpak/hugo-book
 
 
 
-
   
 <ul>
   
@@ -362,7 +361,7 @@ https://github.com/alex-shpak/hugo-book
     <img src="/executor/svg/menu.svg" class="book-icon" alt="Menu" />
   </label>
 
-  <strong>Use cases</strong>
+  <h3>Use cases</h3>
 
   <label for="toc-control">
     

@@ -2,10 +2,10 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Combine css and markup on Executor Documentation</title>
-    <link>https://raujonas.github.io/executor/docs/configuration/combine-css-and-markup/</link>
+    <link>http://localhost:1313/executor/docs/configuration/combine-css-and-markup/</link>
     <description>Recent content in Combine css and markup on Executor Documentation</description>
     <generator>Hugo</generator>
     <language>en</language>
-    <atom:link href="https://raujonas.github.io/executor/docs/configuration/combine-css-and-markup/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost:1313/executor/docs/configuration/combine-css-and-markup/index.xml" rel="self" type="application/rss+xml" />
   </channel>
 </rss>
