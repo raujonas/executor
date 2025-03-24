@@ -2,38 +2,38 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://localhost:1313/executor/docs/configuration/basic/</loc>
+    <loc>https://raujonas.github.io/executor/docs/configuration/basic/</loc>
   </url><url>
-    <loc>http://localhost:1313/executor/docs/installation/</loc>
+    <loc>https://raujonas.github.io/executor/docs/installation/</loc>
   </url><url>
-    <loc>http://localhost:1313/executor/</loc>
+    <loc>https://raujonas.github.io/executor/</loc>
   </url><url>
-    <loc>http://localhost:1313/executor/docs/configuration/</loc>
+    <loc>https://raujonas.github.io/executor/docs/configuration/</loc>
   </url><url>
-    <loc>http://localhost:1313/executor/docs/configuration/custom-css/</loc>
+    <loc>https://raujonas.github.io/executor/docs/configuration/custom-css/</loc>
   </url><url>
-    <loc>http://localhost:1313/executor/docs/import-export/</loc>
+    <loc>https://raujonas.github.io/executor/docs/import-export/</loc>
   </url><url>
-    <loc>http://localhost:1313/executor/docs/configuration/custom-markup/</loc>
+    <loc>https://raujonas.github.io/executor/docs/configuration/custom-markup/</loc>
   </url><url>
-    <loc>http://localhost:1313/executor/docs/configuration/combine-css-and-markup/</loc>
+    <loc>https://raujonas.github.io/executor/docs/configuration/combine-css-and-markup/</loc>
   </url><url>
-    <loc>http://localhost:1313/executor/docs/use-cases/</loc>
+    <loc>https://raujonas.github.io/executor/docs/use-cases/</loc>
   </url><url>
-    <loc>http://localhost:1313/executor/docs/debugging/</loc>
+    <loc>https://raujonas.github.io/executor/docs/debugging/</loc>
   </url><url>
-    <loc>http://localhost:1313/executor/docs/configuration/complex-scripts/</loc>
+    <loc>https://raujonas.github.io/executor/docs/configuration/complex-scripts/</loc>
   </url><url>
-    <loc>http://localhost:1313/executor/docs/development/</loc>
+    <loc>https://raujonas.github.io/executor/docs/development/</loc>
   </url><url>
-    <loc>http://localhost:1313/executor/docs/translations/</loc>
+    <loc>https://raujonas.github.io/executor/docs/translations/</loc>
   </url><url>
-    <loc>http://localhost:1313/executor/docs/documentation/</loc>
+    <loc>https://raujonas.github.io/executor/docs/documentation/</loc>
   </url><url>
-    <loc>http://localhost:1313/executor/categories/</loc>
+    <loc>https://raujonas.github.io/executor/categories/</loc>
   </url><url>
-    <loc>http://localhost:1313/executor/docs/</loc>
+    <loc>https://raujonas.github.io/executor/docs/</loc>
   </url><url>
-    <loc>http://localhost:1313/executor/tags/</loc>
+    <loc>https://raujonas.github.io/executor/tags/</loc>
   </url>
 </urlset>

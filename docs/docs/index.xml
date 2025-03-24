@@ -2,10 +2,10 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Docs on Executor Documentation</title>
-    <link>http://localhost:1313/executor/docs/</link>
+    <link>https://raujonas.github.io/executor/docs/</link>
     <description>Recent content in Docs on Executor Documentation</description>
     <generator>Hugo</generator>
     <language>en</language>
-    <atom:link href="http://localhost:1313/executor/docs/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://raujonas.github.io/executor/docs/index.xml" rel="self" type="application/rss+xml" />
   </channel>
 </rss>
