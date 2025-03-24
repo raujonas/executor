@@ -4,7 +4,9 @@ title: "Use cases"
 ---
 
 # **Use cases**
-Let me know what your use cases are and I will add them here.
+Let me know what your use cases are and I will add them here (or create a pull request).
+
+## Hardware monitoring 
 
 I for example use this extension for hardware monitoring:
 

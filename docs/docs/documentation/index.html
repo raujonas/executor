@@ -3,26 +3,58 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Updating the documentation # The documentation is hosted on https://raujonas.github.io/executor/ via GitHub Pages.
+<meta name="description" content="
+  Updating the documentation
+  #
+
+The documentation is hosted on https://raujonas.github.io/executor/ via GitHub Pages.
+The framework used is HUGO (
+  https://gohugo.io/).
+
+  Installation of HUGO
+  #
+
+
+  https://gohugo.io/installation/linux/
+
+  Summary of basic commands
+  #
+
+Please refer to 
+  https://gohugo.io/getting-started/quick-start/ as well.
+The commands have to be executed in the source folder of the documentation, e.g. /executor/docs-source/.
+
+  Add new content page
+  #
+
+hugo new content docs/documentation/_index.md
+The existing pages can be found in docs-source/content/docs.
+
+  Run local server with live updates
+  #
+
+hugo server">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
+<meta name="color-scheme" content="light dark"><meta property="og:url" content="https://raujonas.github.io/executor/docs/documentation/">
+  <meta property="og:site_name" content="Executor Documentation">
+  <meta property="og:title" content="Documentation">
+  <meta property="og:description" content="Updating the documentation # The documentation is hosted on https://raujonas.github.io/executor/ via GitHub Pages.
 The framework used is HUGO ( https://gohugo.io/).
 Installation of HUGO # https://gohugo.io/installation/linux/
 Summary of basic commands # Please refer to https://gohugo.io/getting-started/quick-start/ as well. The commands have to be executed in the source folder of the documentation, e.g. /executor/docs-source/.
 Add new content page # hugo new content docs/documentation/_index.md
 The existing pages can be found in docs-source/content/docs.
-Run local server with live updates # hugo --server">
-<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
-<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
-<meta name="color-scheme" content="light dark"><meta property="og:title" content="Documentation" />
-<meta property="og:description" content="" />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://raujonas.github.io/executor/docs/documentation/" />
+Run local server with live updates # hugo server">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="website">
 <title>Documentation | Executor Documentation</title>
-<link rel="manifest" href="/executor/manifest.json">
 <link rel="icon" href="/executor/favicon.png" >
+<link rel="manifest" href="/executor/manifest.json">
 <link rel="canonical" href="https://raujonas.github.io/executor/docs/documentation/">
-<link rel="stylesheet" href="/executor/book.min.33a48f5432973b8ff9a82679d9e45d67f2c15d4399bd2829269455cfe390b5e8.css" integrity="sha256-M6SPVDKXO4/5qCZ52eRdZ/LBXUOZvSgpJpRVz&#43;OQteg=" crossorigin="anonymous">
-  <script defer src="/executor/flexsearch.min.js"></script>
-  <script defer src="/executor/en.search.min.abdd3ed88ad84680e904d773bc3c53e56b2d88660abcdf508eee20eadf73fdec.js" integrity="sha256-q90&#43;2IrYRoDpBNdzvDxT5WstiGYKvN9Qju4g6t9z/ew=" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="/executor/book.min.6c8b9d2a1fc95075ed7da46ca81060b39add8fff6741ac51259f768929281e2c.css" integrity="sha256-bIudKh/JUHXtfaRsqBBgs5rdj/9nQaxRJZ92iSkoHiw=" crossorigin="anonymous">
+  <script defer src="/executor/fuse.min.js"></script>
+  <script defer src="/executor/en.search.min.bcc3050685d7816707ef2877fed4608742f43edbf2a5ed58c10e6e6b38ba1bc0.js" integrity="sha256-vMMFBoXXgWcH7yh3/tRgh0L0Ptvype1YwQ5uazi6G8A=" crossorigin="anonymous"></script>
 
   <script defer src="/executor/sw.min.2ad4b85a8e3ae85658de24244581ae3430b54381a02cb0a26f4b078754cb51d8.js" integrity="sha256-KtS4Wo466FZY3iQkRYGuNDC1Q4GgLLCib0sHh1TLUdg=" crossorigin="anonymous"></script>
 <link rel="alternate" type="application/rss+xml" href="https://raujonas.github.io/executor/docs/documentation/index.xml" title="Executor Documentation" />
@@ -41,16 +73,17 @@ https://github.com/alex-shpak/hugo-book
         
   <nav>
 <h2 class="book-brand">
-  <a class="flex align-center" href="/executor/"><img src="/executor/icons/icon.png" alt="Logo" /><span>Executor Documentation</span>
+  <a class="flex align-center" href="/executor/"><img src="/executor/icons/icon.png" alt="Logo" class="book-icon" /><span>Executor Documentation</span>
   </a>
 </h2>
 
 
-<div class="book-search">
+<div class="book-search hidden">
   <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
   <div class="book-search-spinner hidden"></div>
   <ul id="book-search-results"></ul>
 </div>
+<script>document.querySelector(".book-search").classList.remove("hidden")</script>
 
 
 
@@ -63,7 +96,6 @@ https://github.com/alex-shpak/hugo-book
 
 
 
-  
 
 
 
@@ -95,8 +127,8 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <input type="checkbox" id="section-b21fed9a4136167b3c4ff48ed76cd2c8" class="toggle"  />
-    <label for="section-b21fed9a4136167b3c4ff48ed76cd2c8" class="flex justify-between">
+    <input type="checkbox" id="section-3ab08712676736f7c837738080e63215" class="toggle"  />
+    <label for="section-3ab08712676736f7c837738080e63215" class="flex justify-between">
       <a role="button" class="">Configuration</a>
     </label>
   
@@ -318,7 +350,6 @@ https://github.com/alex-shpak/hugo-book
 
 
 
-
   
 <ul>
   
@@ -355,7 +386,7 @@ https://github.com/alex-shpak/hugo-book
     <img src="/executor/svg/menu.svg" class="book-icon" alt="Menu" />
   </label>
 
-  <strong>Documentation</strong>
+  <h3>Documentation</h3>
 
   <label for="toc-control">
     
@@ -399,7 +430,7 @@ The commands have to be executed in the source folder of the documentation, e.g.
   Run local server with live updates
   <a class="anchor" href="#run-local-server-with-live-updates">#</a>
 </h3>
-<p><code>hugo --server</code></p>
+<p><code>hugo server</code></p>
 <h3 id="compile-the-updated-documentation">
   Compile the updated documentation
   <a class="anchor" href="#compile-the-updated-documentation">#</a>
