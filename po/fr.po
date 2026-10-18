@@ -3,20 +3,20 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-29 19:44+0200\n"
-"PO-Revision-Date: 2021-05-30 10:40+0200\n"
+"POT-Creation-Date: 2021-08-11 21:43+0200\n"
+"PO-Revision-Date: 2025-12-16 22:29+0100\n"
+"Last-Translator: jd-develop\n"
 "Language-Team: \n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.4.2\n"
-"Last-Translator: \n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"Language: fr\n"
+"X-Generator: Poedit 3.4.2\n"
 
 #: prefs.js:34
 msgid "Left"
@@ -32,11 +32,11 @@ msgstr "Droite"
 
 #: prefs.js:91
 msgid "Active:"
-msgstr "Actif:"
+msgstr "Actif :"
 
 #: prefs.js:93
 msgid "Index in status bar:"
-msgstr "Position dans la barre de status:"
+msgstr "Position dans la barre de statut :"
 
 #: prefs.js:98
 msgid "Command"
@@ -44,7 +44,7 @@ msgstr "Commande"
 
 #: prefs.js:98
 msgid "Interval in seconds"
-msgstr "Intervalle en seconde"
+msgstr "Intervalle en secondes"
 
 #: prefs.js:112
 msgid "Add new command"
@@ -58,14 +58,26 @@ msgstr "Revenir aux dernières commandes enregistrées"
 msgid "Save commands"
 msgstr "Enregistrer les commandes"
 
-#: prefs.js:204
+#: prefs.js:170
+msgid "Click on output in top bar active:"
+msgstr "Cliquer sur la sortie de la commande dans la barre ouvre les paramètres :"
+
+#: prefs.js:173
+msgid "General"
+msgstr "Général"
+
+#: prefs.js:221
+msgid "Command active"
+msgstr "Activer la commande"
+
+#: prefs.js:242
 msgid "Move command up"
 msgstr "Monter"
 
-#: prefs.js:208
+#: prefs.js:246
 msgid "Move command down"
 msgstr "Descendre"
 
-#: prefs.js:212
+#: prefs.js:250
 msgid "Remove command"
 msgstr "Supprimer cette commande"
