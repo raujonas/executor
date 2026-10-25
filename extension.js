@@ -2,7 +2,7 @@ import St from 'gi://St';
 import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
-import {Extension, gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
+import { Extension, gettext as _ } from 'resource:///org/gnome/shell/extensions/extension.js';
 
 const POSITIONS = {
     0: 'left',
@@ -30,7 +30,7 @@ export default class Executor extends Extension {
                 output: [],
                 box: null,
                 stopped: null,
-                commandsSettings: {commands: []},
+                commandsSettings: { commands: [] },
                 commandsOutput: [],
                 lastIndex: null,
                 activeChanged: null,
@@ -41,18 +41,19 @@ export default class Executor extends Extension {
 
             this.locations[position].stopped = false;
 
-            this.locations[position].box = new St.BoxLayout({style_class: 'panel-button', reactive: true});
+            this.locations[position].box = new St.BoxLayout({ style_class: 'panel-button', reactive: true });
 
             this.locations[position].locationClicked = this.locations[position].box.connect(
                 'button-press-event',
                 () => {
                     if (this.settings.get_value('click-on-output-active').deep_unpack()) {
                         this.settings.set_int('location', position);
-                        this.timeoutSourceIds.push(
-                            GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
-                                this.openPreferences();
-                            })
-                        );
+                        const sourceId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
+                            this.openPreferences();
+                            this.timeoutSourceIds = this.timeoutSourceIds.filter(item => item !== sourceId);
+                            return GLib.SOURCE_REMOVE;
+                        });
+                        this.timeoutSourceIds.push(sourceId);
                     }
                 }
             );
@@ -128,7 +129,7 @@ export default class Executor extends Extension {
     initOutputLabels(location) {
         location.box.remove_all_children();
         location.commandsSettings.commands.forEach(function (command, index) {
-            location.output[index] = new St.Label({y_expand: true, y_align: 2});
+            location.output[index] = new St.Label({ y_expand: true, y_align: 2 });
             location.box.add_child(location.output[index]);
         }, this);
     }
@@ -190,9 +191,7 @@ export default class Executor extends Extension {
                 }
             }, this);
 
-            //if (location.commandsSettings.commands.length < location.commandsOutput.length) {
             location.commandsOutput = [];
-            //}
 
             this.resetOutput(location);
         } else {
@@ -208,12 +207,12 @@ export default class Executor extends Extension {
             this.executeQueue = [];
             this.handleCurrentQueue(copy);
         } else {
-            this.timeoutSourceIds.push(
-                GLib.timeout_add(0, 500, () => {
-                    this.checkQueue();
-                    return GLib.SOURCE_REMOVE;
-                })
-            );
+            const sourceId = GLib.timeout_add(0, 500, () => {
+                this.checkQueue();
+                this.timeoutSourceIds = this.timeoutSourceIds.filter(item => item !== sourceId);
+                return GLib.SOURCE_REMOVE;
+            });
+            this.timeoutSourceIds.push(sourceId);
         }
     }
 
@@ -223,14 +222,14 @@ export default class Executor extends Extension {
         this.execCommand(current, ['bash', '-c', current.command]);
 
         if (copy.length > 0) {
-            this.timeoutSourceIds.push(
-                GLib.timeout_add(0, 50, () => {
-                    if (copy.length > 0) {
-                        this.handleCurrentQueue(copy);
-                    }
-                    return GLib.SOURCE_REMOVE;
-                })
-            );
+            const sourceId = GLib.timeout_add(0, 50, () => {
+                if (copy.length > 0) {
+                    this.handleCurrentQueue(copy);
+                }
+                this.timeoutSourceIds = this.timeoutSourceIds.filter(item => item !== sourceId);
+                return GLib.SOURCE_REMOVE;
+            });
+            this.timeoutSourceIds.push(sourceId);
         } else if (!this.stopped) {
             this.checkQueue();
         }
@@ -254,9 +253,9 @@ export default class Executor extends Extension {
 
                             console.log(
                                 'Executor: error in command "' +
-                                    command.command +
-                                    '": ' +
-                                    (stderr ? stderr.trim() : GLib.strerror(status))
+                                command.command +
+                                '": ' +
+                                (stderr ? stderr.trim() : GLib.strerror(status))
                             );
 
                             /*throw new Gio.IOErrorEnum({
@@ -305,19 +304,18 @@ export default class Executor extends Extension {
                     this.locations[locationIndex].commandsOutput = [];
                 }
 
-                this.timeoutSourceIds.push(
-                    GLib.timeout_add_seconds(0, command.interval, () => {
-                        if (this.cancellable && !this.cancellable.is_cancelled()) {
-                            if (!this.stopped && !this.locations[locationIndex].stopped) {
-                                if (!this.executeQueue.some((c) => c.uuid === command.uuid)) {
-                                    this.executeQueue.push(command);
-                                }
+                const sourceId = GLib.timeout_add_seconds(0, command.interval, () => {
+                    if (this.cancellable && !this.cancellable.is_cancelled()) {
+                        if (!this.stopped && !this.locations[locationIndex].stopped) {
+                            if (!this.executeQueue.some((c) => c.uuid === command.uuid)) {
+                                this.executeQueue.push(command);
                             }
                         }
-
-                        return GLib.SOURCE_REMOVE;
-                    })
-                );
+                    }
+                    this.timeoutSourceIds = this.timeoutSourceIds.filter(item => item !== sourceId);
+                    return GLib.SOURCE_REMOVE;
+                });
+                this.timeoutSourceIds.push(sourceId);
             }
             try {
                 this.setOutput(this.locations[locationIndex], command.index);
